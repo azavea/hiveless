@@ -23,6 +23,5 @@ import java.{lang => jl}
 
 abstract class UnaryUDFDouble[A: TUnaryDeserializer] extends UnaryUDF[A, jl.Double] {
   def dataType: DataType          = DoubleType
-  def default: jl.Double          = jl.Double.NaN
   def serialize: jl.Double => Any = identity
 }

@@ -15,7 +15,10 @@ scalacOptions ++= Seq(
   "-feature"
 )
 
+addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full)
+
 libraryDependencies ++= Seq(
+  "org.typelevel"            %% "cats-core"         % "2.6.1",
   "org.locationtech.geomesa" %% "geomesa-spark-jts" % "3.3.0",
   "org.apache.spark"         %% "spark-hive"        % "3.1.2" % Provided
 )

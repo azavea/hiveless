@@ -16,24 +16,16 @@
 
 package com.azavea.ghive.jts.udf
 
-import com.azavea.ghive.jts.udf.serializers.{QuarternaryDeserializer, TQuarternaryDeserializer}
+import com.azavea.ghive.jts.udf.serializers._
+import com.azavea.ghive.jts.udf.serializers.syntax._
+
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
-import org.apache.spark.sql.hive.HiveInspectorsExposed
 import org.apache.spark.sql.types.DataType
 
-abstract class QuaternaryUDF[A: TQuarternaryDeserializer, B] extends InitializedGenericUDF {
+abstract class QuaternaryUDF[A: TQuarternaryDeserializer, B] extends InitializedGenericUDF[B] {
   def dataType: DataType
   def function: (A, A, A, A) => B
-  def default: B
-  def serialize: B => Any
 
-  def evaluate(arguments: Array[GenericUDF.DeferredObject]): AnyRef = {
-    val res =
-      QuarternaryDeserializer[A]
-        .deserialize(arguments)
-        .map(function.tupled)
-        .get // OrElse(default)
-
-    HiveInspectorsExposed.wrap(serialize(res), initInspector, dataType)
-  }
+  def eval(arguments: Array[GenericUDF.DeferredObject]): B =
+    arguments.quarternary.map(function.tupled).getOrElse(null.asInstanceOf[B])
 }

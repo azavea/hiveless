@@ -23,6 +23,5 @@ import java.{lang => jl}
 
 abstract class BinaryUDFBoolean[A: TBinaryDeserializer] extends BinaryUDF[A, jl.Boolean] {
   def dataType: DataType           = BooleanType
-  def default: jl.Boolean          = jl.Boolean.FALSE
   def serialize: jl.Boolean => Any = identity
 }

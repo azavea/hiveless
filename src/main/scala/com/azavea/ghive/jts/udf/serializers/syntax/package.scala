@@ -16,22 +16,18 @@
 
 package com.azavea.ghive.jts.udf.serializers
 
-import cats.Functor
-import cats.syntax.functor._
-
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 
-trait UnaryDeserializer[F[_], T] {
-  def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[T]
-}
+package object syntax extends Serializable {
+  implicit class genericUDFDeferredObjectsOps(val self: Array[GenericUDF.DeferredObject]) extends AnyVal {
+    def unary[F[_], T: UnaryDeserializer[F, *]](implicit data: Array[ObjectInspector]): F[T] =
+      UnaryDeserializer[F, T].deserialize(self)
 
-object UnaryDeserializer {
-  def apply[F[_], T](implicit ev: UnaryDeserializer[F, T]): UnaryDeserializer[F, T] = ev
+    def binary[F[_], T: BinaryDeserializer.H[F, *]](implicit data: Array[ObjectInspector]): F[(T, T)] =
+      BinaryDeserializer.instance[F, T].deserialize(self)
 
-  implicit def ADunaryDeserializer[F[_]: Functor, T](implicit ad: ArgumentsDeserializer[F, T]): UnaryDeserializer[F, T] =
-    new UnaryDeserializer[F, T] {
-      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[T] =
-        ad.deserialize(arguments).map { case List(fst) => fst }
-    }
+    def quarternary[F[_], T: QuarternaryDeserializer.H[F, *]](implicit data: Array[ObjectInspector]): F[(T, T, T, T)] =
+      QuarternaryDeserializer.instance[F, T].deserialize(self)
+  }
 }
