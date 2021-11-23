@@ -22,9 +22,9 @@ import com.azavea.ghive.jts.udf.serializers.syntax._
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.spark.sql.types.DataType
 
-abstract class QuaternaryUDF[A: TQuarternaryDeserializer, B] extends InitializedGenericUDF[B] {
+abstract class QuaternaryUDF[T0, T1, T2, T3: TQuarternaryDeserializer[T0, T1, T2, *], B] extends InitializedGenericUDF[B] {
   def dataType: DataType
-  def function: (A, A, A, A) => B
+  def function: (T0, T1, T2, T3) => B
 
   def eval(arguments: Array[GenericUDF.DeferredObject]): B =
     arguments.quarternary.map(function.tupled).getOrElse(null.asInstanceOf[B])

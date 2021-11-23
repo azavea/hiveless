@@ -18,14 +18,13 @@ package com.azavea.ghive.jts.udf
 
 import com.azavea.ghive.jts.udf.serializers._
 import com.azavea.ghive.jts.udf.serializers.syntax._
-
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.spark.sql.types.DataType
 
-abstract class BinaryUDF[A: TBinaryDeserializer, B] extends InitializedGenericUDF[B] {
+abstract class BinaryUDF[T0, T1: TBinaryDeserializer[T0, *], R] extends InitializedGenericUDF[R] {
   def dataType: DataType
-  def function: (A, A) => B
+  def function: (T0, T1) => R
 
-  def eval(arguments: Array[GenericUDF.DeferredObject]): B =
-    arguments.binary.map(function.tupled).getOrElse(null.asInstanceOf[B])
+  def eval(arguments: Array[GenericUDF.DeferredObject]): R =
+    arguments.binary.map(function.tupled).getOrElse(null.asInstanceOf[R])
 }

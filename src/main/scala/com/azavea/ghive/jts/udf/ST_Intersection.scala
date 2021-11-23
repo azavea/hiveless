@@ -19,7 +19,7 @@ package com.azavea.ghive.jts.udf
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
 
-class ST_Intersection extends BinaryUDFGeometry[Geometry] {
+class ST_Intersection extends BinaryUDFGeometry[Geometry, Geometry] {
   val name: String                               = "st_intersection"
   def function: (Geometry, Geometry) => Geometry = SpatialRelationFunctions.ST_Intersection
 }

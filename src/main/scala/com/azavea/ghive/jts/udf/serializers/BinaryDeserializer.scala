@@ -18,9 +18,14 @@ package com.azavea.ghive.jts.udf.serializers
 
 import cats.Functor
 import cats.syntax.functor._
-
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
+import org.apache.spark.sql.catalyst.InternalRow
+import org.apache.spark.sql.hive.HiveInspectorsExposed
+import org.apache.spark.sql.jts.GeometryUDT
+import org.locationtech.jts.geom.Geometry
+
+import scala.util.Try
 
 trait BinaryDeserializer[F[_], T0, T1] {
   def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[(T0, T1)]
@@ -37,4 +42,16 @@ object BinaryDeserializer {
       def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[(T, T)] =
         ad.deserialize(arguments).map { case List(f, s) => (f, s) }
     }
+
+  implicit val geometryDoubleBinaryDeserializer: BinaryDeserializer[Try, Geometry, Double] = new BinaryDeserializer[Try, Geometry, Double] {
+    def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): Try[(Geometry, Double)] = Try {
+      val List(argGeom, argP)     = arguments.toList
+      val List(deserGeom, deserP) = data.toList
+
+      val geom = GeometryUDT.deserialize(HiveInspectorsExposed.unwrap[InternalRow](argGeom.get, deserGeom))
+      val p    = HiveInspectorsExposed.unwrap[Double](argP.get, deserP)
+
+      (geom, p)
+    }
+  }
 }

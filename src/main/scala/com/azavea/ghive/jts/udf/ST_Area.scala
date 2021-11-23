@@ -21,7 +21,7 @@ import org.locationtech.jts.geom.Geometry
 
 import java.{lang => jl}
 
-class ST_Covers extends BinaryUDFBoolean[Geometry, Geometry] {
-  val name: String                                 = "st_covers"
-  def function: (Geometry, Geometry) => jl.Boolean = SpatialRelationFunctions.ST_Covers
+class ST_Area extends UnaryUDFDouble[Geometry] {
+  val name: String                    = "st_area"
+  def function: Geometry => jl.Double = SpatialRelationFunctions.ST_Area
 }

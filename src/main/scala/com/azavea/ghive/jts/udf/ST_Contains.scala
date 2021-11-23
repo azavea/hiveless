@@ -21,7 +21,7 @@ import org.locationtech.jts.geom.Geometry
 
 import java.{lang => jl}
 
-class ST_Contains extends BinaryUDFBoolean[Geometry] {
+class ST_Contains extends BinaryUDFBoolean[Geometry, Geometry] {
   val name: String                                 = "st_contains"
   def function: (Geometry, Geometry) => jl.Boolean = SpatialRelationFunctions.ST_Contains
 }

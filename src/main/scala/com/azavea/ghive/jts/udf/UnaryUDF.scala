@@ -22,10 +22,10 @@ import com.azavea.ghive.jts.udf.serializers.syntax._
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.spark.sql.types.DataType
 
-abstract class UnaryUDF[A: TUnaryDeserializer, B] extends InitializedGenericUDF[B] {
+abstract class UnaryUDF[T: TUnaryDeserializer, R] extends InitializedGenericUDF[R] {
   def dataType: DataType
-  def function: A => B
+  def function: T => R
 
-  def eval(arguments: Array[GenericUDF.DeferredObject]): B =
-    arguments.unary.map(function).getOrElse(null.asInstanceOf[B])
+  def eval(arguments: Array[GenericUDF.DeferredObject]): R =
+    arguments.unary.map(function).getOrElse(null.asInstanceOf[R])
 }

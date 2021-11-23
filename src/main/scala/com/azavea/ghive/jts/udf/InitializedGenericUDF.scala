@@ -21,10 +21,10 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 import org.apache.spark.sql.hive.HiveInspectorsExposed
 import org.apache.spark.sql.types.DataType
 
-trait InitializedGenericUDF[B] extends GenericUDF {
+trait InitializedGenericUDF[R] extends GenericUDF {
   def name: String
   def dataType: DataType
-  def serialize: B => Any
+  def serialize: R => Any
 
   @transient implicit lazy val initInspector: ObjectInspector = HiveInspectorsExposed.toWritableInspector(dataType)
 
@@ -37,7 +37,7 @@ trait InitializedGenericUDF[B] extends GenericUDF {
     initInspector
   }
 
-  def eval(arguments: Array[GenericUDF.DeferredObject]): B
+  def eval(arguments: Array[GenericUDF.DeferredObject]): R
 
   def evaluate(arguments: Array[GenericUDF.DeferredObject]): AnyRef =
     HiveInspectorsExposed.wrap(serialize(eval(arguments)), initInspector, dataType)

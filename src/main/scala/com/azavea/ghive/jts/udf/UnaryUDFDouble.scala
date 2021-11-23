@@ -21,7 +21,7 @@ import org.apache.spark.sql.types.{DataType, DoubleType}
 
 import java.{lang => jl}
 
-abstract class UnaryUDFDouble[A: TUnaryDeserializer] extends UnaryUDF[A, jl.Double] {
+abstract class UnaryUDFDouble[T: TUnaryDeserializer] extends UnaryUDF[T, jl.Double] {
   def dataType: DataType          = DoubleType
   def serialize: jl.Double => Any = identity
 }

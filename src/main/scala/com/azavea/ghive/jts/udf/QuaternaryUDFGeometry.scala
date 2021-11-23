@@ -21,7 +21,7 @@ import org.apache.spark.sql.jts.GeometryUDT
 import org.apache.spark.sql.types.DataType
 import org.locationtech.jts.geom.Geometry
 
-abstract class QuaternaryUDFGeometry[A: TQuarternaryDeserializer] extends QuaternaryUDF[A, Geometry] {
+abstract class QuaternaryUDFGeometry[T0, T1, T2, T3: TQuarternaryDeserializer[T0, T1, T2, *]] extends QuaternaryUDF[T0, T1, T2, T3, Geometry] {
   def dataType: DataType         = GeometryUDT
   def serialize: Geometry => Any = GeometryUDT.serialize
 }

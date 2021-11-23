@@ -21,7 +21,7 @@ import org.locationtech.jts.geom.Geometry
 
 import java.{lang => jl}
 
-class ST_Crosses extends BinaryUDFBoolean[Geometry] {
+class ST_Crosses extends BinaryUDFBoolean[Geometry, Geometry] {
   val name: String                                 = "st_crosses"
   def function: (Geometry, Geometry) => jl.Boolean = SpatialRelationFunctions.ST_Crosses
 }

@@ -19,7 +19,7 @@ package com.azavea.ghive.jts.udf
 import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
 import org.locationtech.jts.geom.Geometry
 
-class ST_MakeBBOX extends QuaternaryUDFGeometry[Double] {
+class ST_MakeBBOX extends QuaternaryUDFGeometry[Double, Double, Double, Double] {
   val name: String                                           = "st_makeBBOX"
   def function: (Double, Double, Double, Double) => Geometry = GeometricConstructorFunctions.ST_MakeBBOX
 }

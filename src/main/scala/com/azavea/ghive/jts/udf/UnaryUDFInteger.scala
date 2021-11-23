@@ -16,12 +16,12 @@
 
 package com.azavea.ghive.jts.udf
 
-import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
-import org.locationtech.jts.geom.Geometry
+import com.azavea.ghive.jts.udf.serializers.TUnaryDeserializer
+import org.apache.spark.sql.types.{DataType, IntegerType}
 
 import java.{lang => jl}
 
-class ST_Covers extends BinaryUDFBoolean[Geometry, Geometry] {
-  val name: String                                 = "st_covers"
-  def function: (Geometry, Geometry) => jl.Boolean = SpatialRelationFunctions.ST_Covers
+abstract class UnaryUDFInteger[A: TUnaryDeserializer] extends UnaryUDF[A, jl.Integer] {
+  def dataType: DataType           = IntegerType
+  def serialize: jl.Integer => Any = identity
 }

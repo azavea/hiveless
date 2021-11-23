@@ -16,12 +16,10 @@
 
 package com.azavea.ghive.jts.udf
 
-import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
+import org.locationtech.geomesa.spark.jts.udf.GeometricAccessorFunctions
 import org.locationtech.jts.geom.Geometry
 
-import java.{lang => jl}
-
-class ST_Covers extends BinaryUDFBoolean[Geometry, Geometry] {
-  val name: String                                 = "st_covers"
-  def function: (Geometry, Geometry) => jl.Boolean = SpatialRelationFunctions.ST_Covers
+class ST_ExteriorRing extends UnaryUDFGeometry[Geometry] {
+  val name: String                   = "st_exteriorRing"
+  def function: Geometry => Geometry = GeometricAccessorFunctions.ST_ExteriorRing
 }

@@ -21,7 +21,7 @@ import org.apache.spark.sql.jts.GeometryUDT
 import org.apache.spark.sql.types.DataType
 import org.locationtech.jts.geom.Geometry
 
-abstract class BinaryUDFGeometry[A: TBinaryDeserializer] extends BinaryUDF[A, Geometry] {
+abstract class BinaryUDFGeometry[T0, T1: TBinaryDeserializer[T0, *]] extends BinaryUDF[T0, T1, Geometry] {
   def dataType: DataType         = GeometryUDT
   def serialize: Geometry => Any = GeometryUDT.serialize
 }

@@ -19,7 +19,7 @@ package com.azavea.ghive.jts.udf
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
 
-class ST_Difference extends BinaryUDFGeometry[Geometry] {
+class ST_Difference extends BinaryUDFGeometry[Geometry, Geometry] {
   val name: String                               = "st_difference"
   def function: (Geometry, Geometry) => Geometry = SpatialRelationFunctions.ST_Difference
 }
