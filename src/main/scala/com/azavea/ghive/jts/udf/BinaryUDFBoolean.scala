@@ -16,10 +16,13 @@
 
 package com.azavea.ghive.jts.udf
 
-import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
-import org.locationtech.jts.geom.Geometry
+import com.azavea.ghive.jts.udf.serializers.TBinaryDeserializer
+import org.apache.spark.sql.types.{BooleanType, DataType}
 
-class ST_MakeBBOX extends QuaternaryUDFGeometry[Double] {
-  val name: String                                           = "st_makeBBOX"
-  def function: (Double, Double, Double, Double) => Geometry = GeometricConstructorFunctions.ST_MakeBBOX
+import java.{lang => jl}
+
+abstract class BinaryUDFBoolean[A: TBinaryDeserializer] extends BinaryUDF[A, jl.Boolean] {
+  def dataType: DataType           = BooleanType
+  def default: jl.Boolean          = jl.Boolean.FALSE
+  def serialize: jl.Boolean => Any = identity
 }

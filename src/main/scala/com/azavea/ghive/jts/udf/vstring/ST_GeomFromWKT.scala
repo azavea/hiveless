@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf.v2
+package com.azavea.ghive.jts.udf.vstring
 
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory
 import org.apache.spark.sql.hive.HiveInspectorsExposed
-import org.apache.spark.sql.jts.{GeometryUDT, JTSTypes}
 import org.apache.spark.unsafe.types.UTF8String
 import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
 
@@ -29,29 +28,24 @@ import scala.util.Try
 class ST_GeomFromWKT extends GenericUDF {
   private var data: ObjectInspector = _
 
-  private def initInspector = HiveInspectorsExposed.toWritableInspector(GeometryUDT.sqlType)
-
   def getDisplayString(children: Array[String]): String = "st_geomFromWKT"
 
   def initialize(arguments: Array[ObjectInspector]): ObjectInspector = {
     data = arguments(0)
-    initInspector
+    // PrimitiveObjectInspectorFactory.javaStringObjectInspector
+    // HiveInspectorsExposed.toWritableInspector(JTSTypes.GeometryTypeInstance.sqlType)
+
+    PrimitiveObjectInspectorFactory.javaStringObjectInspector
   }
 
-  def evaluate(arguments: Array[GenericUDF.DeferredObject]): AnyRef = {
-    val res =
-      GeometricConstructorFunctions
-        .ST_GeomFromWKT(
-          Try(
-            HiveInspectorsExposed
-              .unwrapperFor(data)(arguments(0).get())
-              .asInstanceOf[UTF8String]
-              .toString
-          ).getOrElse("POLYGON EMPTY")
-        )
-
-    HiveInspectorsExposed
-      .publicWrapperFor(initInspector, GeometryUDT.sqlType)(GeometryUDT.serialize(res))
-      .asInstanceOf[AnyRef]
-  }
+  def evaluate(arguments: Array[GenericUDF.DeferredObject]): AnyRef =
+    GeometricConstructorFunctions
+      .ST_GeomFromWKT(
+        Try(
+          HiveInspectorsExposed
+            .unwrapperFor(data)(arguments(0).get())
+            .asInstanceOf[UTF8String]
+            .toString
+        ).getOrElse("POLYGON EMPTY")
+      )
 }

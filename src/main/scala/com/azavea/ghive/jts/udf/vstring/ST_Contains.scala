@@ -14,37 +14,41 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf.v2
+package com.azavea.ghive.jts.udf.vstring
 
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory
 import org.apache.spark.sql.hive.HiveInspectorsExposed
-import org.apache.spark.sql.jts.{GeometryUDT, JTSTypes}
-import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
+import org.apache.spark.unsafe.types.UTF8String
+import org.locationtech.geomesa.spark.jts.udf.{GeometricConstructorFunctions, SpatialRelationFunctions}
 
-class ST_MakeBBOX extends GenericUDF {
+import scala.util.Try
+
+class ST_Contains extends GenericUDF {
   private var data: Array[ObjectInspector] = _
 
-  private def initInspector = HiveInspectorsExposed.toWritableInspector(GeometryUDT.sqlType)
-
-  def getDisplayString(children: Array[String]): String = "st_makeBBOX"
+  def getDisplayString(children: Array[String]): String = "st_contains"
 
   def initialize(arguments: Array[ObjectInspector]): ObjectInspector = {
     data = arguments
-    initInspector
+    PrimitiveObjectInspectorFactory.javaBooleanObjectInspector
   }
 
-  def evaluate(arguments: Array[GenericUDF.DeferredObject]): AnyRef = {
-    val List(xmin, ymin, xmax, ymax) =
+  def evaluate(arguments: Array[GenericUDF.DeferredObject]): AnyRef = Try {
+    val List(l, r) =
       data.toList
         .zip(arguments.toList)
-        .map { case (deser, arg) => HiveInspectorsExposed.unwrapperFor(deser)(arg.get()).asInstanceOf[Double] }
+        .map { case (deser, arg) =>
+          GeometricConstructorFunctions
+            .ST_GeomFromWKT(
+              HiveInspectorsExposed
+                .unwrapperFor(deser)(arg.get())
+                .asInstanceOf[UTF8String]
+                .toString
+            )
+        }
 
-    val res = GeometricConstructorFunctions.ST_MakeBBOX(xmin, ymin, xmax, ymax)
-
-    HiveInspectorsExposed
-      .publicWrapperFor(initInspector, GeometryUDT.sqlType)(GeometryUDT.serialize(res))
-      .asInstanceOf[AnyRef]
-  }
+    SpatialRelationFunctions.ST_Contains(l, r)
+  }.getOrElse(false.asInstanceOf[java.lang.Boolean])
 }

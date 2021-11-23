@@ -16,36 +16,10 @@
 
 package com.azavea.ghive.jts.udf
 
-import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
-import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
-import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory
-import org.apache.spark.sql.hive.HiveInspectorsExposed
-import org.apache.spark.unsafe.types.UTF8String
 import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
+import org.locationtech.jts.geom.Geometry
 
-import scala.util.Try
-
-class ST_GeomFromWKT extends GenericUDF {
-  private var data: ObjectInspector = _
-
-  def getDisplayString(children: Array[String]): String = "st_geomFromWKT"
-
-  def initialize(arguments: Array[ObjectInspector]): ObjectInspector = {
-    data = arguments(0)
-    // PrimitiveObjectInspectorFactory.javaStringObjectInspector
-    // HiveInspectorsExposed.toWritableInspector(JTSTypes.GeometryTypeInstance.sqlType)
-
-    PrimitiveObjectInspectorFactory.javaStringObjectInspector
-  }
-
-  def evaluate(arguments: Array[GenericUDF.DeferredObject]): AnyRef =
-    GeometricConstructorFunctions
-      .ST_GeomFromWKT(
-        Try(
-          HiveInspectorsExposed
-            .unwrapperFor(data)(arguments(0).get())
-            .asInstanceOf[UTF8String]
-            .toString
-        ).getOrElse("POLYGON EMPTY")
-      )
+class ST_GeomFromWKT extends UnaryUDFGeometry[String] {
+  val name: String                 = "st_geomFromWKT"
+  def function: String => Geometry = GeometricConstructorFunctions.ST_GeomFromWKT
 }

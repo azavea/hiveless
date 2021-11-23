@@ -16,10 +16,15 @@
 
 package com.azavea.ghive.jts.udf
 
+import com.azavea.ghive.jts.udf.serializers.TUnaryDeserializer
+import org.apache.spark.sql.jts.GeometryUDT
+import org.apache.spark.sql.types.DataType
 import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
 import org.locationtech.jts.geom.Geometry
 
-class ST_MakeBBOX extends QuaternaryUDFGeometry[Double] {
-  val name: String                                           = "st_makeBBOX"
-  def function: (Double, Double, Double, Double) => Geometry = GeometricConstructorFunctions.ST_MakeBBOX
+abstract class UnaryUDFGeometry[A: TUnaryDeserializer] extends UnaryUDF[A, Geometry] {
+  def dataType: DataType = GeometryUDT
+
+  def serialize: Geometry => Any = GeometryUDT.serialize
+  def default: Geometry          = GeometricConstructorFunctions.ST_GeomFromWKT("POLYGON EMPTY")
 }

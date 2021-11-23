@@ -18,6 +18,7 @@ package org.apache.spark.sql.hive
 
 import org.apache.hadoop.hive.serde2.objectinspector.{ObjectInspector, ObjectInspectorFactory}
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory
+import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.types._
 
 object HiveInspectorsExposed extends HiveInspectors {
@@ -44,7 +45,16 @@ object HiveInspectorsExposed extends HiveInspectors {
         java.util.Arrays.asList(fields.map(f => f.name): _*),
         java.util.Arrays.asList(fields.map(f => toWritableInspector(f.dataType)): _*)
       )
+    case _: UserDefinedType[_] =>
+      val sqlType = dataType.asInstanceOf[UserDefinedType[_]].sqlType
+      toWritableInspector(sqlType)
   }
+
+  override def toInspector(dataType: DataType): ObjectInspector = super.toInspector(dataType)
+
+  override def wrap(a: Any, oi: ObjectInspector, dataType: DataType): AnyRef = super.wrap(a, oi, dataType)
+
+  def unwrap[T](a: Any, deser: ObjectInspector): T = unwrapperFor(deser)(a).asInstanceOf[T]
 
   def publicWrapperFor(oi: ObjectInspector, dataType: DataType): Any => Any = wrapperFor(oi, dataType)
 }

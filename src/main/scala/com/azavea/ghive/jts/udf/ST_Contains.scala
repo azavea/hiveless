@@ -16,40 +16,12 @@
 
 package com.azavea.ghive.jts.udf
 
-import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
-import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
-import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory
-import org.apache.spark.sql.hive.HiveInspectorsExposed
-import org.apache.spark.unsafe.types.UTF8String
-import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
+import org.locationtech.jts.geom.Geometry
 
-import scala.util.Try
+import java.{lang => jl}
 
-class ST_Contains extends GenericUDF {
-  private var data: Array[ObjectInspector] = _
-
-  def getDisplayString(children: Array[String]): String = "st_contains"
-
-  def initialize(arguments: Array[ObjectInspector]): ObjectInspector = {
-    data = arguments
-    PrimitiveObjectInspectorFactory.javaBooleanObjectInspector
-  }
-
-  def evaluate(arguments: Array[GenericUDF.DeferredObject]): AnyRef = Try {
-    val List(l, r) =
-      data.toList
-        .zip(arguments.toList)
-        .map { case (deser, arg) =>
-          GeometricConstructorFunctions
-            .ST_GeomFromWKT(
-              HiveInspectorsExposed
-                .unwrapperFor(deser)(arg.get())
-                .asInstanceOf[UTF8String]
-                .toString
-            )
-        }
-
-    SpatialRelationFunctions.ST_Contains(l, r)
-  }.getOrElse(false.asInstanceOf[java.lang.Boolean])
+class ST_Contains extends BinaryUDFBoolean[Geometry] {
+  val name: String                                 = "st_contains"
+  def function: (Geometry, Geometry) => jl.Boolean = SpatialRelationFunctions.ST_Contains
 }
