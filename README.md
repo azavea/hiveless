@@ -1,6 +1,6 @@
 # Spark GHive
 
-This tiny project adds GIS Hive UDFs.
+This tiny project that implements GIS Hive UDFs.
 
 ## Usage example
 
