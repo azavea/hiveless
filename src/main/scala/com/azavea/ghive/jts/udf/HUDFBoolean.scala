@@ -16,12 +16,14 @@
 
 package com.azavea.ghive.jts.udf
 
-import com.azavea.ghive.jts.udf.serializers.TryBinaryDeserializer
-import org.apache.spark.sql.jts.GeometryUDT
-import org.apache.spark.sql.types.DataType
-import org.locationtech.jts.geom.Geometry
+import com.azavea.ghive.jts.udf.serializers.GenericDeserializer
+import org.apache.spark.sql.types.{BooleanType, DataType}
+import shapeless.HList
 
-abstract class BinaryUDFGeometry[T0, T1: TryBinaryDeserializer[T0, *]] extends BinaryUDF[T0, T1, Geometry] {
-  def dataType: DataType         = GeometryUDT
-  def serialize: Geometry => Any = GeometryUDT.serialize
+import java.{lang => jl}
+import scala.util.Try
+
+abstract class HUDFBoolean[L <: HList](implicit gd: GenericDeserializer[Try, L]) extends HUDF[L, jl.Boolean] {
+  def dataType: DataType                  = BooleanType
+  def serialize: jl.Boolean => jl.Boolean = identity
 }

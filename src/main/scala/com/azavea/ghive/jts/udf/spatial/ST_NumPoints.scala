@@ -16,13 +16,13 @@
 
 package com.azavea.ghive.jts.udf.spatial
 
-import com.azavea.ghive.jts.udf.UnaryUDFInteger
+import com.azavea.ghive.jts.udf.HUDFInteger
+import com.azavea.ghive.jts.udf.coercions._
 import org.locationtech.geomesa.spark.jts.udf.GeometricAccessorFunctions
 import org.locationtech.jts.geom.Geometry
+import shapeless.{::, HNil}
 
-import java.{lang => jl}
-
-class ST_NumPoints extends UnaryUDFInteger[Geometry] {
-  val name: String                     = "st_numPoints"
-  def function: Geometry => jl.Integer = GeometricAccessorFunctions.ST_NumPoints
+class ST_NumPoints extends HUDFInteger[Geometry :: HNil] {
+  val name: String = "st_numPoints"
+  def function     = GeometricAccessorFunctions.ST_NumPoints
 }

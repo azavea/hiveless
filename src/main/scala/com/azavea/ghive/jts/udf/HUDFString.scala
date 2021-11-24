@@ -16,12 +16,14 @@
 
 package com.azavea.ghive.jts.udf
 
-import com.azavea.ghive.jts.udf.serializers.TryUnaryDeserializer
-import org.apache.spark.sql.jts.GeometryUDT
-import org.apache.spark.sql.types.DataType
-import org.locationtech.jts.geom.Geometry
+import com.azavea.ghive.jts.udf.serializers.GenericDeserializer
+import org.apache.spark.sql.types.{DataType, StringType}
+import org.apache.spark.unsafe.types.UTF8String
+import shapeless.HList
 
-abstract class UnaryUDFGeometry[A: TryUnaryDeserializer] extends UnaryUDF[A, Geometry] {
-  def dataType: DataType         = GeometryUDT
-  def serialize: Geometry => Any = GeometryUDT.serialize
+import scala.util.Try
+
+abstract class HUDFString[L <: HList](implicit gd: GenericDeserializer[Try, L]) extends HUDF[L, String] {
+  def dataType: DataType              = StringType
+  def serialize: String => UTF8String = UTF8String.fromString
 }

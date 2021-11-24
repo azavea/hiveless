@@ -16,16 +16,14 @@
 
 package com.azavea.ghive.jts.udf
 
-import com.azavea.ghive.jts.udf.serializers._
-import com.azavea.ghive.jts.udf.serializers.syntax._
+import com.azavea.ghive.jts.udf.serializers.GenericDeserializer
+import org.apache.spark.sql.types.{DataType, DoubleType}
+import shapeless.HList
 
-import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
-import org.apache.spark.sql.types.DataType
+import java.{lang => jl}
+import scala.util.Try
 
-abstract class UnaryUDF[T: TryUnaryDeserializer, R] extends SparkGenericUDF[R] {
-  def dataType: DataType
-  def function: T => R
-
-  def eval(arguments: Array[GenericUDF.DeferredObject]): R =
-    arguments.unary.map(function).getOrElse(null.asInstanceOf[R])
+abstract class HUDFDouble[L <: HList](implicit gd: GenericDeserializer[Try, L]) extends HUDF[L, jl.Double] {
+  def dataType: DataType                = DoubleType
+  def serialize: jl.Double => jl.Double = identity
 }

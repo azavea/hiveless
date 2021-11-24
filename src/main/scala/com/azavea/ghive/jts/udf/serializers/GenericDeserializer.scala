@@ -27,7 +27,7 @@ trait GenericDeserializer[F[_], L <: HList] extends Serializable {
   def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): F[L]
 }
 
-object GenericDeserializer {
+object GenericDeserializer extends Serializable {
   def apply[F[_], L <: HList](implicit ev: GenericDeserializer[F, L]): GenericDeserializer[F, L] = ev
 
   implicit def gdHNil[F[_]: UnaryDeserializer[*[_], HNil]]: GenericDeserializer[F, HNil] = new GenericDeserializer[F, HNil] {

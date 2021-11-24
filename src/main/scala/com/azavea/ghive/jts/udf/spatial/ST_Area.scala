@@ -16,13 +16,14 @@
 
 package com.azavea.ghive.jts.udf.spatial
 
-import com.azavea.ghive.jts.udf.UnaryUDFDouble
+import com.azavea.ghive.jts.udf.coercions._
+import com.azavea.ghive.jts.udf.HUDFDouble
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
 
-import java.{lang => jl}
+import shapeless.{::, HNil}
 
-class ST_Area extends UnaryUDFDouble[Geometry] {
-  val name: String                    = "st_area"
-  def function: Geometry => jl.Double = SpatialRelationFunctions.ST_Area
+class ST_Area extends HUDFDouble[Geometry :: HNil] {
+  val name: String = "st_area"
+  def function     = SpatialRelationFunctions.ST_Area
 }

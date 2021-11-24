@@ -16,16 +16,9 @@
 
 package com.azavea.ghive.jts.udf
 
-import shapeless.{::, HNil}
+import shapeless.HList
 import scala.util.Try
 
-package object serializers {
-  type BinaryDeserializer[F[_], T0, T1]              = GenericDeserializer[F, T0 :: T1 :: HNil]
-  type TernaryDeserializer[F[_], T0, T1, T2]         = GenericDeserializer[F, T0 :: T1 :: T2 :: HNil]
-  type QuarternaryDeserializer[F[_], T0, T1, T2, T3] = GenericDeserializer[F, T0 :: T1 :: T2 :: T3 :: HNil]
-
-  type TryUnaryDeserializer[T]                    = UnaryDeserializer[Try, T]
-  type TryBinaryDeserializer[T0, T1]              = BinaryDeserializer[Try, T0, T1]
-  type TryQuarternaryDeserializer[T0, T1, T2, T3] = QuarternaryDeserializer[Try, T0, T1, T2, T3]
-  type TryTernaryDeserializer[T0, T1, T2]         = TernaryDeserializer[Try, T0, T1, T2]
+package object serializers extends Serializable {
+  type TryGenericDeserializer[L <: HList] = GenericDeserializer[Try, L]
 }

@@ -16,12 +16,14 @@
 
 package com.azavea.ghive.jts.udf.spatial
 
-import com.azavea.ghive.jts.udf.BinaryUDFGeometry
+import com.azavea.ghive.jts.udf.HUDFGeometry
+import com.azavea.ghive.jts.udf.coercions._
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier
+import shapeless.{::, HNil}
 
 // Douglas-Peucker Simplification
-class ST_Simplify extends BinaryUDFGeometry[Geometry, Double] {
-  val name: String                             = "st_simplify"
-  def function: (Geometry, Double) => Geometry = (g, p) => DouglasPeuckerSimplifier.simplify(g, p)
+class ST_Simplify extends HUDFGeometry[Geometry :: Double :: HNil] {
+  val name: String = "st_simplify"
+  def function     = { (g: Geometry, p: Double) => DouglasPeuckerSimplifier.simplify(g, p) }
 }

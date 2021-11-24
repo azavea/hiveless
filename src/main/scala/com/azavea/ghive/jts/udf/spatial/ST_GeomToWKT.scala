@@ -16,11 +16,13 @@
 
 package com.azavea.ghive.jts.udf.spatial
 
-import com.azavea.ghive.jts.udf.UnaryUDFString
+import com.azavea.ghive.jts.udf.HUDFString
+import com.azavea.ghive.jts.udf.coercions._
 import org.locationtech.geomesa.spark.jts.util.WKTUtils
 import org.locationtech.jts.geom.Geometry
+import shapeless.{::, HNil}
 
-class ST_GeomToWKT extends UnaryUDFString[Geometry] {
-  val name: String                 = "st_geomToWKT"
-  def function: Geometry => String = WKTUtils.write
+class ST_GeomToWKT extends HUDFString[Geometry :: HNil] {
+  val name: String = "st_geomToWKT"
+  def function     = WKTUtils.write
 }

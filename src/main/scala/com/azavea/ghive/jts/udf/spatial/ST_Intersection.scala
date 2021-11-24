@@ -16,11 +16,13 @@
 
 package com.azavea.ghive.jts.udf.spatial
 
-import com.azavea.ghive.jts.udf.BinaryUDFGeometry
+import com.azavea.ghive.jts.udf.HUDFGeometry
+import com.azavea.ghive.jts.udf.coercions._
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
+import shapeless.{::, HNil}
 
-class ST_Intersection extends BinaryUDFGeometry[Geometry, Geometry] {
-  val name: String                               = "st_intersection"
-  def function: (Geometry, Geometry) => Geometry = SpatialRelationFunctions.ST_Intersection
+class ST_Intersection extends HUDFGeometry[Geometry :: Geometry :: HNil] {
+  val name: String = "st_intersection"
+  def function     = SpatialRelationFunctions.ST_Intersection
 }

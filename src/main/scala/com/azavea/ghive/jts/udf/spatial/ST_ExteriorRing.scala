@@ -16,11 +16,13 @@
 
 package com.azavea.ghive.jts.udf.spatial
 
-import com.azavea.ghive.jts.udf.UnaryUDFGeometry
+import com.azavea.ghive.jts.udf.HUDFGeometry
+import com.azavea.ghive.jts.udf.coercions._
 import org.locationtech.geomesa.spark.jts.udf.GeometricAccessorFunctions
 import org.locationtech.jts.geom.Geometry
+import shapeless.{::, HNil}
 
-class ST_ExteriorRing extends UnaryUDFGeometry[Geometry] {
-  val name: String                   = "st_exteriorRing"
-  def function: Geometry => Geometry = GeometricAccessorFunctions.ST_ExteriorRing
+class ST_ExteriorRing extends HUDFGeometry[Geometry :: HNil] {
+  val name: String = "st_exteriorRing"
+  def function     = GeometricAccessorFunctions.ST_ExteriorRing
 }

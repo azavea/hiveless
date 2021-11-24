@@ -16,11 +16,13 @@
 
 package com.azavea.ghive.jts.udf.spatial
 
-import com.azavea.ghive.jts.udf.BinaryUDFGeometry
+import com.azavea.ghive.jts.udf.HUDFGeometry
+import com.azavea.ghive.jts.udf.coercions._
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.simplify.TopologyPreservingSimplifier
+import shapeless.{::, HNil}
 
-class ST_SimplifyPreserveTopology extends BinaryUDFGeometry[Geometry, Double] {
-  val name: String                             = "st_simplifyPreserveTopology"
-  def function: (Geometry, Double) => Geometry = (g, p) => TopologyPreservingSimplifier.simplify(g, p)
+class ST_SimplifyPreserveTopology extends HUDFGeometry[Geometry :: Double :: HNil] {
+  val name: String = "st_simplifyPreserveTopology"
+  def function     = { (g: Geometry, p: Double) => TopologyPreservingSimplifier.simplify(g, p) }
 }

@@ -16,13 +16,14 @@
 
 package com.azavea.ghive.jts.udf.spatial
 
-import com.azavea.ghive.jts.udf.BinaryUDFBoolean
+import com.azavea.ghive.jts.udf.HUDFBoolean
+import com.azavea.ghive.jts.udf.coercions._
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
 
-import java.{lang => jl}
+import shapeless.{::, HNil}
 
-class ST_Crosses extends BinaryUDFBoolean[Geometry, Geometry] {
-  val name: String                                 = "st_crosses"
-  def function: (Geometry, Geometry) => jl.Boolean = SpatialRelationFunctions.ST_Crosses
+class ST_Crosses extends HUDFBoolean[Geometry :: Geometry :: HNil] {
+  val name: String = "st_crosses"
+  def function     = SpatialRelationFunctions.ST_Crosses
 }

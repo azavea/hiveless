@@ -16,11 +16,13 @@
 
 package com.azavea.ghive.jts.udf.spatial
 
-import com.azavea.ghive.jts.udf.BinaryUDFGeometry
+import com.azavea.ghive.jts.udf.HUDFGeometry
+import com.azavea.ghive.jts.udf.coercions._
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
+import shapeless.{::, HNil}
 
-class ST_Difference extends BinaryUDFGeometry[Geometry, Geometry] {
-  val name: String                               = "st_difference"
-  def function: (Geometry, Geometry) => Geometry = SpatialRelationFunctions.ST_Difference
+class ST_Difference extends HUDFGeometry[Geometry :: Geometry :: HNil] {
+  val name: String = "st_difference"
+  def function     = SpatialRelationFunctions.ST_Difference
 }
