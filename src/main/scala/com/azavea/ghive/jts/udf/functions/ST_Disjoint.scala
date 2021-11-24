@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf
+package com.azavea.ghive.jts.udf.functions
 
+import com.azavea.ghive.jts.udf.BinaryUDFBoolean
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
 
 import java.{lang => jl}
 
-class ST_Overlaps extends BinaryUDFBoolean[Geometry, Geometry] {
-  val name: String                                 = "st_overlaps"
-  def function: (Geometry, Geometry) => jl.Boolean = SpatialRelationFunctions.ST_Overlaps
+class ST_Disjoint extends BinaryUDFBoolean[Geometry, Geometry] {
+  val name: String                                 = "st_disjoint"
+  def function: (Geometry, Geometry) => jl.Boolean = SpatialRelationFunctions.ST_Disjoint
 }

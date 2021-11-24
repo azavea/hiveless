@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf
+package com.azavea.ghive.jts.udf.functions
 
-import org.locationtech.geomesa.spark.jts.util.WKTUtils
+import com.azavea.ghive.jts.udf.UnaryUDFGeometry
+import org.locationtech.geomesa.spark.jts.udf.GeometricAccessorFunctions
 import org.locationtech.jts.geom.Geometry
 
-class ST_GeomToWKT extends UnaryUDFString[Geometry] {
-  val name: String                 = "st_geomToWKT"
-  def function: Geometry => String = WKTUtils.write
+class ST_ExteriorRing extends UnaryUDFGeometry[Geometry] {
+  val name: String                   = "st_exteriorRing"
+  def function: Geometry => Geometry = GeometricAccessorFunctions.ST_ExteriorRing
 }

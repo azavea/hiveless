@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf
+package com.azavea.ghive.jts.udf.functions
 
+import com.azavea.ghive.jts.udf.BinaryUDFBoolean
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
 
 import java.{lang => jl}
 
-class ST_Area extends UnaryUDFDouble[Geometry] {
-  val name: String                    = "st_area"
-  def function: Geometry => jl.Double = SpatialRelationFunctions.ST_Area
+class ST_Intersects extends BinaryUDFBoolean[Geometry, Geometry] {
+  val name: String                                 = "st_intersection"
+  def function: (Geometry, Geometry) => jl.Boolean = SpatialRelationFunctions.ST_Intersects
 }

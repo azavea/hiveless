@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf
+package com.azavea.ghive.jts.udf.functions
 
-import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
+import com.azavea.ghive.jts.udf.UnaryUDFGeometry
+import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
 import org.locationtech.jts.geom.Geometry
 
-import java.{lang => jl}
-
-class ST_Covers extends BinaryUDFBoolean[Geometry, Geometry] {
-  val name: String                                 = "st_covers"
-  def function: (Geometry, Geometry) => jl.Boolean = SpatialRelationFunctions.ST_Covers
+class ST_GeomFromWKT extends UnaryUDFGeometry[String] {
+  val name: String                 = "st_geomFromWKT"
+  def function: String => Geometry = GeometricConstructorFunctions.ST_GeomFromWKT
 }

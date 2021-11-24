@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf
+package com.azavea.ghive.jts.udf.functions
 
-import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
+import com.azavea.ghive.jts.udf.BinaryUDFGeometry
+import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
 
-class ST_MakeBBOX extends QuaternaryUDFGeometry[Double, Double, Double, Double] {
-  val name: String                                           = "st_makeBBOX"
-  def function: (Double, Double, Double, Double) => Geometry = GeometricConstructorFunctions.ST_MakeBBOX
+class ST_Difference extends BinaryUDFGeometry[Geometry, Geometry] {
+  val name: String                               = "st_difference"
+  def function: (Geometry, Geometry) => Geometry = SpatialRelationFunctions.ST_Difference
 }

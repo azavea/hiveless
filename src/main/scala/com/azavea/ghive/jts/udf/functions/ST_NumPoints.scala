@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf
+package com.azavea.ghive.jts.udf.functions
 
-import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
+import com.azavea.ghive.jts.udf.UnaryUDFInteger
+import org.locationtech.geomesa.spark.jts.udf.GeometricAccessorFunctions
 import org.locationtech.jts.geom.Geometry
 
-class ST_GeomFromWKT extends UnaryUDFGeometry[String] {
-  val name: String                 = "st_geomFromWKT"
-  def function: String => Geometry = GeometricConstructorFunctions.ST_GeomFromWKT
+import java.{lang => jl}
+
+class ST_NumPoints extends UnaryUDFInteger[Geometry] {
+  val name: String                     = "st_numPoints"
+  def function: Geometry => jl.Integer = GeometricAccessorFunctions.ST_NumPoints
 }

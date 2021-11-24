@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf
+package com.azavea.ghive.jts.udf.functions
 
+import com.azavea.ghive.jts.udf.BinaryUDFBoolean
+import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
-import org.locationtech.jts.simplify.TopologyPreservingSimplifier
 
-class ST_SimplifyPreserveTopology extends BinaryUDFGeometry[Geometry, Double] {
-  val name: String                             = "st_simplifyPreserveTopology"
-  def function: (Geometry, Double) => Geometry = (g, p) => TopologyPreservingSimplifier.simplify(g, p)
+import java.{lang => jl}
+
+class ST_Crosses extends BinaryUDFBoolean[Geometry, Geometry] {
+  val name: String                                 = "st_crosses"
+  def function: (Geometry, Geometry) => jl.Boolean = SpatialRelationFunctions.ST_Crosses
 }
