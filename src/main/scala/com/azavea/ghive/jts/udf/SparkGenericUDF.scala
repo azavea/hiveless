@@ -21,7 +21,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 import org.apache.spark.sql.hive.HiveInspectorsExposed
 import org.apache.spark.sql.types.DataType
 
-trait InitializedGenericUDF[R] extends GenericUDF {
+trait SparkGenericUDF[R] extends GenericUDF {
   def name: String
   def dataType: DataType
   def serialize: R => Any
