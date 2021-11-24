@@ -22,11 +22,11 @@ import cats.syntax.functor._
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 
-trait UnaryDeserializer[F[_], T] {
+trait UnaryDeserializer[F[_], T] extends Serializable {
   def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[T]
 }
 
-object UnaryDeserializer {
+object UnaryDeserializer extends Serializable {
   def apply[F[_], T](implicit ev: UnaryDeserializer[F, T]): UnaryDeserializer[F, T] = ev
 
   implicit def ADunaryDeserializer[F[_]: Functor, T](implicit ad: ArgumentsDeserializer[F, T]): UnaryDeserializer[F, T] =

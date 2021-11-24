@@ -20,7 +20,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.{ObjectInspector, ObjectIns
 import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectInspectorFactory
 import org.apache.spark.sql.types._
 
-object HiveInspectorsExposed extends HiveInspectors {
+object HiveInspectorsExposed extends HiveInspectors with Serializable {
   def toWritableInspector(dataType: DataType): ObjectInspector = dataType match {
     case ArrayType(tpe, _) =>
       ObjectInspectorFactory.getStandardListObjectInspector(toWritableInspector(tpe))

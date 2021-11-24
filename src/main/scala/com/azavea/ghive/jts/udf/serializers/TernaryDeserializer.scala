@@ -21,11 +21,11 @@ import cats.syntax.functor._
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 
-trait TernaryDeserializer[F[_], T0, T1, T2] {
+trait TernaryDeserializer[F[_], T0, T1, T2] extends Serializable {
   def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[(T0, T1, T2)]
 }
 
-object TernaryDeserializer {
+object TernaryDeserializer extends Serializable {
   def apply[F[_], T0, T1, T2](implicit ev: TernaryDeserializer[F, T0, T1, T2]): TernaryDeserializer[F, T0, T1, T2] = ev
 
   implicit def ADternaryDeserializer[F[_]: Functor, T](implicit ad: ArgumentsDeserializer[F, T]): TernaryDeserializer[F, T, T, T] =

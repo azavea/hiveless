@@ -26,11 +26,11 @@ import org.locationtech.jts.geom.Geometry
 
 import scala.util.Try
 
-trait ArgumentsDeserializer[F[_], T] {
+trait ArgumentsDeserializer[F[_], T] extends Serializable {
   def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[List[T]]
 }
 
-object ArgumentsDeserializer {
+object ArgumentsDeserializer extends Serializable {
   def apply[F[_], T](implicit ev: ArgumentsDeserializer[F, T]): ArgumentsDeserializer[F, T] = ev
 
   implicit def doubleArgumentsDeserializer: ArgumentsDeserializer[Try, Double] =

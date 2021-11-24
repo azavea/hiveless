@@ -28,11 +28,11 @@ import org.locationtech.jts.geom.Geometry
 
 import scala.util.Try
 
-trait BinaryDeserializer[F[_], T0, T1] {
+trait BinaryDeserializer[F[_], T0, T1] extends Serializable {
   def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[(T0, T1)]
 }
 
-object BinaryDeserializer {
+object BinaryDeserializer extends Serializable {
   def apply[F[_], T0, T1](implicit ev: BinaryDeserializer[F, T0, T1]): BinaryDeserializer[F, T0, T1] = ev
 
   implicit def ADbinaryDeserializer[F[_]: Functor, T](implicit ad: ArgumentsDeserializer[F, T]): BinaryDeserializer[F, T, T] =
