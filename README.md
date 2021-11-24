@@ -26,3 +26,7 @@ CREATE OR REPLACE FUNCTION st_simplifyPreserveTopology AS 'com.azavea.hiveless.s
 CREATE OR REPLACE FUNCTION st_touches AS 'com.azavea.hiveless.spatial.ST_Touches';
 CREATE OR REPLACE FUNCTION st_within AS 'com.azavea.hiveless.spatial.ST_Within';
 ```
+
+## License
+Code is provided under the Apache 2.0 license available at http://opensource.org/licenses/Apache-2.0,
+as well as in the LICENSE file. This is the same license used as Spark.
