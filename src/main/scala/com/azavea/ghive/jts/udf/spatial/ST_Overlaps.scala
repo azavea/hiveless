@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf.functions
+package com.azavea.ghive.jts.udf.spatial
 
 import com.azavea.ghive.jts.udf.BinaryUDFBoolean
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions

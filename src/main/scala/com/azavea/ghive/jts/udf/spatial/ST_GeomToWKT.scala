@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf.functions
+package com.azavea.ghive.jts.udf.spatial
 
-import com.azavea.ghive.jts.udf.UnaryUDFInteger
-import org.locationtech.geomesa.spark.jts.udf.GeometricAccessorFunctions
+import com.azavea.ghive.jts.udf.UnaryUDFString
+import org.locationtech.geomesa.spark.jts.util.WKTUtils
 import org.locationtech.jts.geom.Geometry
 
-import java.{lang => jl}
-
-class ST_NumPoints extends UnaryUDFInteger[Geometry] {
-  val name: String                     = "st_numPoints"
-  def function: Geometry => jl.Integer = GeometricAccessorFunctions.ST_NumPoints
+class ST_GeomToWKT extends UnaryUDFString[Geometry] {
+  val name: String                 = "st_geomToWKT"
+  def function: Geometry => String = WKTUtils.write
 }

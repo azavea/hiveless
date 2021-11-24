@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf.functions
+package com.azavea.ghive.jts.udf.spatial
 
-import com.azavea.ghive.jts.udf.UnaryUDFDouble
-import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
+import com.azavea.ghive.jts.udf.BinaryUDFGeometry
 import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.simplify.DouglasPeuckerSimplifier
 
-import java.{lang => jl}
-
-class ST_Area extends UnaryUDFDouble[Geometry] {
-  val name: String                    = "st_area"
-  def function: Geometry => jl.Double = SpatialRelationFunctions.ST_Area
+// Douglas-Peucker Simplification
+class ST_Simplify extends BinaryUDFGeometry[Geometry, Double] {
+  val name: String                             = "st_simplify"
+  def function: (Geometry, Double) => Geometry = (g, p) => DouglasPeuckerSimplifier.simplify(g, p)
 }

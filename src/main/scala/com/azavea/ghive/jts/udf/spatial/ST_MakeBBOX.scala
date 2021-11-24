@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf.functions
+package com.azavea.ghive.jts.udf.spatial
 
-import com.azavea.ghive.jts.udf.UnaryUDFString
-import org.locationtech.geomesa.spark.jts.util.WKTUtils
+import com.azavea.ghive.jts.udf.QuaternaryUDFGeometry
+import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
 import org.locationtech.jts.geom.Geometry
 
-class ST_GeomToWKT extends UnaryUDFString[Geometry] {
-  val name: String                 = "st_geomToWKT"
-  def function: Geometry => String = WKTUtils.write
+class ST_MakeBBOX extends QuaternaryUDFGeometry[Double, Double, Double, Double] {
+  val name: String                                           = "st_makeBBOX"
+  def function: (Double, Double, Double, Double) => Geometry = GeometricConstructorFunctions.ST_MakeBBOX
 }

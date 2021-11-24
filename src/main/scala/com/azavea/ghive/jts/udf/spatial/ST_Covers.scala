@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf.functions
+package com.azavea.ghive.jts.udf.spatial
 
 import com.azavea.ghive.jts.udf.BinaryUDFBoolean
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
@@ -22,7 +22,7 @@ import org.locationtech.jts.geom.Geometry
 
 import java.{lang => jl}
 
-class ST_Crosses extends BinaryUDFBoolean[Geometry, Geometry] {
-  val name: String                                 = "st_crosses"
-  def function: (Geometry, Geometry) => jl.Boolean = SpatialRelationFunctions.ST_Crosses
+class ST_Covers extends BinaryUDFBoolean[Geometry, Geometry] {
+  val name: String                                 = "st_covers"
+  def function: (Geometry, Geometry) => jl.Boolean = SpatialRelationFunctions.ST_Covers
 }

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf.functions
+package com.azavea.ghive.jts.udf.spatial
 
-import com.azavea.ghive.jts.udf.UnaryUDFGeometry
-import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
+import com.azavea.ghive.jts.udf.BinaryUDFGeometry
+import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
 
-class ST_GeomFromWKT extends UnaryUDFGeometry[String] {
-  val name: String                 = "st_geomFromWKT"
-  def function: String => Geometry = GeometricConstructorFunctions.ST_GeomFromWKT
+class ST_Difference extends BinaryUDFGeometry[Geometry, Geometry] {
+  val name: String                               = "st_difference"
+  def function: (Geometry, Geometry) => Geometry = SpatialRelationFunctions.ST_Difference
 }

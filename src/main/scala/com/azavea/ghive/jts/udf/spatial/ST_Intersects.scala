@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf.functions
+package com.azavea.ghive.jts.udf.spatial
 
-import com.azavea.ghive.jts.udf.BinaryUDFGeometry
+import com.azavea.ghive.jts.udf.BinaryUDFBoolean
+import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
-import org.locationtech.jts.simplify.DouglasPeuckerSimplifier
 
-// Douglas-Peucker Simplification
-class ST_Simplify extends BinaryUDFGeometry[Geometry, Double] {
-  val name: String                             = "st_simplify"
-  def function: (Geometry, Double) => Geometry = (g, p) => DouglasPeuckerSimplifier.simplify(g, p)
+import java.{lang => jl}
+
+class ST_Intersects extends BinaryUDFBoolean[Geometry, Geometry] {
+  val name: String                                 = "st_intersection"
+  def function: (Geometry, Geometry) => jl.Boolean = SpatialRelationFunctions.ST_Intersects
 }

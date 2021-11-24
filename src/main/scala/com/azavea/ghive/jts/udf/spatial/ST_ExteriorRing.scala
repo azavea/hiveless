@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.azavea.ghive.jts.udf.functions
+package com.azavea.ghive.jts.udf.spatial
 
-import com.azavea.ghive.jts.udf.BinaryUDFGeometry
-import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
+import com.azavea.ghive.jts.udf.UnaryUDFGeometry
+import org.locationtech.geomesa.spark.jts.udf.GeometricAccessorFunctions
 import org.locationtech.jts.geom.Geometry
 
-class ST_Intersection extends BinaryUDFGeometry[Geometry, Geometry] {
-  val name: String                               = "st_intersection"
-  def function: (Geometry, Geometry) => Geometry = SpatialRelationFunctions.ST_Intersection
+class ST_ExteriorRing extends UnaryUDFGeometry[Geometry] {
+  val name: String                   = "st_exteriorRing"
+  def function: Geometry => Geometry = GeometricAccessorFunctions.ST_ExteriorRing
 }

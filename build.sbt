@@ -1,4 +1,5 @@
 import de.heikoseeberger.sbtheader._
+import java.time.Year
 
 name         := "spark-ghive"
 version      := "0.1.0-SNAPSHOT"
@@ -34,7 +35,7 @@ libraryDependencies ++= Seq(
   "org.apache.spark"         %% "spark-hive"        % "3.1.2" % Provided
 )
 
-headerLicense := Some(HeaderLicense.ALv2(java.time.Year.now.getValue.toString, "Azavea"))
+headerLicense := Some(HeaderLicense.ALv2(Year.now.getValue.toString, "Azavea"))
 headerMappings := Map(
   FileType.scala -> CommentStyle.cStyleBlockComment.copy(
     commentCreator = { (text, existingText) =>
