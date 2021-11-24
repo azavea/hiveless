@@ -26,19 +26,19 @@ trait SparkGenericUDF[R] extends GenericUDF {
   def dataType: DataType
   def serialize: R => Any
 
-  @transient implicit lazy val initInspector: ObjectInspector = HiveInspectorsExposed.toWritableInspector(dataType)
+  @transient implicit lazy val resultInspector: ObjectInspector = HiveInspectorsExposed.toWritableInspector(dataType)
 
-  implicit protected var data: Array[ObjectInspector] = _
+  implicit protected var inspectors: Array[ObjectInspector] = _
 
   def getDisplayString(children: Array[String]): String = name
 
   def initialize(arguments: Array[ObjectInspector]): ObjectInspector = {
-    data = arguments
-    initInspector
+    inspectors = arguments
+    resultInspector
   }
 
   def eval(arguments: Array[GenericUDF.DeferredObject]): R
 
   def evaluate(arguments: Array[GenericUDF.DeferredObject]): AnyRef =
-    HiveInspectorsExposed.wrap(serialize(eval(arguments)), initInspector, dataType)
+    HiveInspectorsExposed.wrap(serialize(eval(arguments)), resultInspector, dataType)
 }

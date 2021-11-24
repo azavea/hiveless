@@ -24,7 +24,7 @@ import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 
 trait TernaryDeserializer[F[_], T0, T1, T2] extends Serializable {
-  def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[(T0, T1, T2)]
+  def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): F[(T0, T1, T2)]
 }
 
 object TernaryDeserializer extends Serializable {
@@ -33,11 +33,11 @@ object TernaryDeserializer extends Serializable {
   implicit def fromUnaryTernaryDeserializer[F[_]: Apply, T0: UnaryDeserializer[F, *], T1: UnaryDeserializer[F, *], T2: UnaryDeserializer[F, *]]
       : TernaryDeserializer[F, T0, T1, T2] =
     new TernaryDeserializer[F, T0, T1, T2] {
-      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[(T0, T1, T2)] = {
-        val List(at0, at1, at2) = arguments.toList
-        val List(d0, d1, d2)    = data.toList
+      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): F[(T0, T1, T2)] = {
+        val List(a0, a1, a2) = arguments.toList
+        val List(i0, i1, i2) = inspectors.toList
 
-        (at0.deserialize[F, T0](d0), at1.deserialize[F, T1](d1), at2.deserialize[F, T2](d2)).mapN { case (t0, t1, t2) =>
+        (a0.deserialize[F, T0](i0), a1.deserialize[F, T1](i1), a2.deserialize[F, T2](i2)).mapN { case (t0, t1, t2) =>
           (t0, t1, t2)
         }
       }

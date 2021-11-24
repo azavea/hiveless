@@ -16,26 +16,51 @@
 
 package com.azavea.ghive.jts.udf.serializers
 
-import cats.Functor
-import cats.syntax.functor._
-
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
+import org.apache.spark.sql.catalyst.InternalRow
+import org.apache.spark.sql.hive.HiveInspectorsExposed
+import org.apache.spark.sql.jts.GeometryUDT
+import org.apache.spark.sql.types.Decimal
+import org.apache.spark.unsafe.types.UTF8String
+import org.locationtech.jts.geom.Geometry
+
+import scala.util.Try
 
 trait UnaryDeserializer[F[_], T] extends Serializable {
-  def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[T]
-  def deserialize(argument: GenericUDF.DeferredObject, inspector: ObjectInspector): F[T]
+  def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): F[T]
+  def deserialize(argument: GenericUDF.DeferredObject, inspector: ObjectInspector): F[T] =
+    deserialize(Array(argument))(Array(inspector))
 }
 
 object UnaryDeserializer extends Serializable {
   def apply[F[_], T](implicit ev: UnaryDeserializer[F, T]): UnaryDeserializer[F, T] = ev
 
-  implicit def argumentsUnaryDeserializer[F[_]: Functor, T](implicit ad: ArgumentsDeserializer[F, T]): UnaryDeserializer[F, T] =
-    new UnaryDeserializer[F, T] {
-      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[T] =
-        ad.deserialize(arguments).map { case List(fst) => fst }
+  implicit val intUnaryDeserializer: UnaryDeserializer[Try, Int] =
+    new UnaryDeserializer[Try, Int] {
+      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): Try[Int] = Try {
+        HiveInspectorsExposed.unwrap[Decimal](arguments.head.get, inspectors.head).toInt
+      }
+    }
 
-      def deserialize(argument: GenericUDF.DeferredObject, inspector: ObjectInspector): F[T] =
-        ad.deserialize(Array(argument))(Array(inspector)).map(_.head)
+  implicit val doubleUnaryDeserializer: UnaryDeserializer[Try, Double] =
+    new UnaryDeserializer[Try, Double] {
+      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): Try[Double] = Try {
+        HiveInspectorsExposed.unwrap[Decimal](arguments.head.get, inspectors.head).toDouble
+      }
+    }
+
+  implicit val stringUnaryDeserializer: UnaryDeserializer[Try, String] =
+    new UnaryDeserializer[Try, String] {
+      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): Try[String] = Try {
+        HiveInspectorsExposed.unwrap[UTF8String](arguments.head.get, inspectors.head).toString
+      }
+    }
+
+  implicit val geometryUnaryDeserializer: UnaryDeserializer[Try, Geometry] =
+    new UnaryDeserializer[Try, Geometry] {
+      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): Try[Geometry] = Try {
+        GeometryUDT.deserialize(HiveInspectorsExposed.unwrap[InternalRow](arguments.head.get, inspectors.head))
+      }
     }
 }

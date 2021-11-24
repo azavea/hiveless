@@ -19,7 +19,6 @@ package com.azavea.ghive.jts.udf
 import scala.util.Try
 
 package object serializers {
-  type TArgumentsDeserializer[T]                = ArgumentsDeserializer[Try, T]
   type TUnaryDeserializer[T]                    = UnaryDeserializer[Try, T]
   type TBinaryDeserializer[T0, T1]              = BinaryDeserializer[Try, T0, T1]
   type TTernaryDeserializer[T0, T1, T2]         = TernaryDeserializer[Try, T0, T1, T2]
