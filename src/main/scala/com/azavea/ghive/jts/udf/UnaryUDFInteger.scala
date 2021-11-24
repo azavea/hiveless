@@ -16,12 +16,12 @@
 
 package com.azavea.ghive.jts.udf
 
-import com.azavea.ghive.jts.udf.serializers.TUnaryDeserializer
+import com.azavea.ghive.jts.udf.serializers.TryUnaryDeserializer
 import org.apache.spark.sql.types.{DataType, IntegerType}
 
 import java.{lang => jl}
 
-abstract class UnaryUDFInteger[A: TUnaryDeserializer] extends UnaryUDF[A, jl.Integer] {
+abstract class UnaryUDFInteger[A: TryUnaryDeserializer] extends UnaryUDF[A, jl.Integer] {
   def dataType: DataType           = IntegerType
   def serialize: jl.Integer => Any = identity
 }

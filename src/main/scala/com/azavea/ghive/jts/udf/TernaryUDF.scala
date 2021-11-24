@@ -21,7 +21,7 @@ import com.azavea.ghive.jts.udf.serializers.syntax._
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.spark.sql.types.DataType
 
-abstract class TernaryUDF[T0, T1, T2: TTernaryDeserializer[T0, T1, *], R] extends SparkGenericUDF[R] {
+abstract class TernaryUDF[T0, T1, T2: TryTernaryDeserializer[T0, T1, *], R] extends SparkGenericUDF[R] {
   def dataType: DataType
   def function: (T0, T1, T2) => R
 

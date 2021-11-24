@@ -36,7 +36,7 @@ object BinaryDeserializer extends Serializable {
         val List(a0, a1) = arguments.toList
         val List(i0, i1) = inspectors.toList
 
-        (a0.deserialize[F, T0](i0), a1.deserialize[F, T1](i1)).mapN { case (t0, t1) => t0 -> t1 }
+        (a0.deserialize[F, T0](i0), a1.deserialize[F, T1](i1)).tupled
       }
     }
 }

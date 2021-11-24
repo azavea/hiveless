@@ -30,16 +30,18 @@ trait TernaryDeserializer[F[_], T0, T1, T2] extends Serializable {
 object TernaryDeserializer extends Serializable {
   def apply[F[_], T0, T1, T2](implicit ev: TernaryDeserializer[F, T0, T1, T2]): TernaryDeserializer[F, T0, T1, T2] = ev
 
-  implicit def fromUnaryTernaryDeserializer[F[_]: Apply, T0: UnaryDeserializer[F, *], T1: UnaryDeserializer[F, *], T2: UnaryDeserializer[F, *]]
-      : TernaryDeserializer[F, T0, T1, T2] =
+  implicit def fromUnaryTernaryDeserializer[
+      F[_]: Apply,
+      T0: UnaryDeserializer[F, *],
+      T1: UnaryDeserializer[F, *],
+      T2: UnaryDeserializer[F, *]
+  ]: TernaryDeserializer[F, T0, T1, T2] =
     new TernaryDeserializer[F, T0, T1, T2] {
       def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): F[(T0, T1, T2)] = {
         val List(a0, a1, a2) = arguments.toList
         val List(i0, i1, i2) = inspectors.toList
 
-        (a0.deserialize[F, T0](i0), a1.deserialize[F, T1](i1), a2.deserialize[F, T2](i2)).mapN { case (t0, t1, t2) =>
-          (t0, t1, t2)
-        }
+        (a0.deserialize[F, T0](i0), a1.deserialize[F, T1](i1), a2.deserialize[F, T2](i2)).tupled
       }
     }
 }

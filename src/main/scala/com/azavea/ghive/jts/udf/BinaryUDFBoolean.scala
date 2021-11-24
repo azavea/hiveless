@@ -16,12 +16,12 @@
 
 package com.azavea.ghive.jts.udf
 
-import com.azavea.ghive.jts.udf.serializers.TBinaryDeserializer
+import com.azavea.ghive.jts.udf.serializers.TryBinaryDeserializer
 import org.apache.spark.sql.types.{BooleanType, DataType}
 
 import java.{lang => jl}
 
-abstract class BinaryUDFBoolean[T0, T1: TBinaryDeserializer[T0, *]] extends BinaryUDF[T0, T1, jl.Boolean] {
+abstract class BinaryUDFBoolean[T0, T1: TryBinaryDeserializer[T0, *]] extends BinaryUDF[T0, T1, jl.Boolean] {
   def dataType: DataType           = BooleanType
   def serialize: jl.Boolean => Any = identity
 }

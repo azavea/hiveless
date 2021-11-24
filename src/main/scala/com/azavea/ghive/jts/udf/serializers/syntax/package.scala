@@ -21,16 +21,16 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 
 package object syntax extends Serializable {
   implicit class genericUDFDeferredObjectsOps(val self: Array[GenericUDF.DeferredObject]) extends AnyVal {
-    def unary[F[_], T: UnaryDeserializer[F, *]](implicit data: Array[ObjectInspector]): F[T] =
+    def unary[F[_], T: UnaryDeserializer[F, *]](implicit inspectors: Array[ObjectInspector]): F[T] =
       UnaryDeserializer[F, T].deserialize(self)
 
-    def binary[F[_], T0, T1: BinaryDeserializer[F, T0, *]](implicit data: Array[ObjectInspector]): F[(T0, T1)] =
+    def binary[F[_], T0, T1: BinaryDeserializer[F, T0, *]](implicit inspectors: Array[ObjectInspector]): F[(T0, T1)] =
       BinaryDeserializer[F, T0, T1].deserialize(self)
 
-    def ternary[F[_], T0, T1, T2: TernaryDeserializer[F, T0, T1, *]](implicit data: Array[ObjectInspector]): F[(T0, T1, T2)] =
+    def ternary[F[_], T0, T1, T2: TernaryDeserializer[F, T0, T1, *]](implicit inspectors: Array[ObjectInspector]): F[(T0, T1, T2)] =
       TernaryDeserializer[F, T0, T1, T2].deserialize(self)
 
-    def quarternary[F[_], T0, T1, T2, T3: QuarternaryDeserializer[F, T0, T1, T2, *]](implicit data: Array[ObjectInspector]): F[(T0, T1, T2, T3)] =
+    def quarternary[F[_], T0, T1, T2, T3: QuarternaryDeserializer[F, T0, T1, T2, *]](implicit inspectors: Array[ObjectInspector]): F[(T0, T1, T2, T3)] =
       QuarternaryDeserializer[F, T0, T1, T2, T3].deserialize(self)
   }
 

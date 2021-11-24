@@ -16,12 +16,12 @@
 
 package com.azavea.ghive.jts.udf
 
-import com.azavea.ghive.jts.udf.serializers.TUnaryDeserializer
+import com.azavea.ghive.jts.udf.serializers.TryUnaryDeserializer
 import org.apache.spark.sql.jts.GeometryUDT
 import org.apache.spark.sql.types.DataType
 import org.locationtech.jts.geom.Geometry
 
-abstract class UnaryUDFGeometry[A: TUnaryDeserializer] extends UnaryUDF[A, Geometry] {
+abstract class UnaryUDFGeometry[A: TryUnaryDeserializer] extends UnaryUDF[A, Geometry] {
   def dataType: DataType         = GeometryUDT
   def serialize: Geometry => Any = GeometryUDT.serialize
 }

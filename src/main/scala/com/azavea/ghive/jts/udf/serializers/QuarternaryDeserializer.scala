@@ -42,9 +42,7 @@ object QuarternaryDeserializer extends Serializable {
         val List(a0, a1, a2, a3) = arguments.toList
         val List(i0, i1, i2, i3) = inspectors.toList
 
-        (a0.deserialize[F, T0](i0), a1.deserialize[F, T1](i1), a2.deserialize[F, T2](i2), a3.deserialize[F, T3](i3)).mapN { case (t0, t1, t2, t3) =>
-          (t0, t1, t2, t3)
-        }
+        (a0.deserialize[F, T0](i0), a1.deserialize[F, T1](i1), a2.deserialize[F, T2](i2), a3.deserialize[F, T3](i3)).tupled
       }
     }
 }

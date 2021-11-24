@@ -16,11 +16,11 @@
 
 package com.azavea.ghive.jts.udf
 
-import com.azavea.ghive.jts.udf.serializers.TUnaryDeserializer
+import com.azavea.ghive.jts.udf.serializers.TryUnaryDeserializer
 import org.apache.spark.sql.types.{DataType, StringType}
 import org.apache.spark.unsafe.types.UTF8String
 
-abstract class UnaryUDFString[T: TUnaryDeserializer] extends UnaryUDF[T, String] {
+abstract class UnaryUDFString[T: TryUnaryDeserializer] extends UnaryUDF[T, String] {
   def dataType: DataType       = StringType
   def serialize: String => Any = UTF8String.fromString
 }

@@ -16,12 +16,12 @@
 
 package com.azavea.ghive.jts.udf
 
-import com.azavea.ghive.jts.udf.serializers.TTernaryDeserializer
+import com.azavea.ghive.jts.udf.serializers.TryTernaryDeserializer
 import org.apache.spark.sql.jts.GeometryUDT
 import org.apache.spark.sql.types.DataType
 import org.locationtech.jts.geom.Geometry
 
-abstract class TernaryUDFGeometry[T0, T1, T2: TTernaryDeserializer[T0, T1, *]] extends TernaryUDF[T0, T1, T2, Geometry] {
+abstract class TernaryUDFGeometry[T0, T1, T2: TryTernaryDeserializer[T0, T1, *]] extends TernaryUDF[T0, T1, T2, Geometry] {
   def dataType: DataType         = GeometryUDT
   def serialize: Geometry => Any = GeometryUDT.serialize
 }

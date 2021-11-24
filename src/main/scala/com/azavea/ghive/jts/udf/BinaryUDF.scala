@@ -21,7 +21,7 @@ import com.azavea.ghive.jts.udf.serializers.syntax._
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.spark.sql.types.DataType
 
-abstract class BinaryUDF[T0, T1: TBinaryDeserializer[T0, *], R] extends SparkGenericUDF[R] {
+abstract class BinaryUDF[T0, T1: TryBinaryDeserializer[T0, *], R] extends SparkGenericUDF[R] {
   def dataType: DataType
   def function: (T0, T1) => R
 
