@@ -33,4 +33,9 @@ package object syntax extends Serializable {
     def quarternary[F[_], T0, T1, T2, T3: QuarternaryDeserializer[F, T0, T1, T2, *]](implicit data: Array[ObjectInspector]): F[(T0, T1, T2, T3)] =
       QuarternaryDeserializer[F, T0, T1, T2, T3].deserialize(self)
   }
+
+  implicit class genericUDFDeferredObjectOps(val self: GenericUDF.DeferredObject) extends AnyVal {
+    def deserialize[F[_], T: UnaryDeserializer[F, *]](inspector: ObjectInspector): F[T] =
+      UnaryDeserializer[F, T].deserialize(self, inspector)
+  }
 }

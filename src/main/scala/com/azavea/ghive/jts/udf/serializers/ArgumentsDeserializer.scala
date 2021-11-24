@@ -21,6 +21,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.hive.HiveInspectorsExposed
 import org.apache.spark.sql.jts.GeometryUDT
+import org.apache.spark.sql.types.Decimal
 import org.apache.spark.unsafe.types.UTF8String
 import org.locationtech.jts.geom.Geometry
 
@@ -33,12 +34,21 @@ trait ArgumentsDeserializer[F[_], T] extends Serializable {
 object ArgumentsDeserializer extends Serializable {
   def apply[F[_], T](implicit ev: ArgumentsDeserializer[F, T]): ArgumentsDeserializer[F, T] = ev
 
+  implicit def intArgumentsDeserializer: ArgumentsDeserializer[Try, Int] =
+    new ArgumentsDeserializer[Try, Int] {
+      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): Try[List[Int]] = Try {
+        data.toList
+          .zip(arguments.toList)
+          .map { case (deser, arg) => HiveInspectorsExposed.unwrap[Int](arg.get, deser) }
+      }
+    }
+
   implicit def doubleArgumentsDeserializer: ArgumentsDeserializer[Try, Double] =
     new ArgumentsDeserializer[Try, Double] {
       def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): Try[List[Double]] = Try {
         data.toList
           .zip(arguments.toList)
-          .map { case (deser, arg) => HiveInspectorsExposed.unwrap[Double](arg.get, deser) }
+          .map { case (deser, arg) => HiveInspectorsExposed.unwrap[Decimal](arg.get, deser).toDouble }
       }
     }
 

@@ -24,14 +24,18 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 
 trait UnaryDeserializer[F[_], T] extends Serializable {
   def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[T]
+  def deserialize(argument: GenericUDF.DeferredObject, inspector: ObjectInspector): F[T]
 }
 
 object UnaryDeserializer extends Serializable {
   def apply[F[_], T](implicit ev: UnaryDeserializer[F, T]): UnaryDeserializer[F, T] = ev
 
-  implicit def ADunaryDeserializer[F[_]: Functor, T](implicit ad: ArgumentsDeserializer[F, T]): UnaryDeserializer[F, T] =
+  implicit def argumentsUnaryDeserializer[F[_]: Functor, T](implicit ad: ArgumentsDeserializer[F, T]): UnaryDeserializer[F, T] =
     new UnaryDeserializer[F, T] {
       def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[T] =
         ad.deserialize(arguments).map { case List(fst) => fst }
+
+      def deserialize(argument: GenericUDF.DeferredObject, inspector: ObjectInspector): F[T] =
+        ad.deserialize(Array(argument))(Array(inspector)).map(_.head)
     }
 }
