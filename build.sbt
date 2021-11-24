@@ -14,6 +14,17 @@ scalacOptions ++= Seq(
   "-language:existentials",
   "-feature"
 )
+licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
+homepage := Some(url("https://github.com/azavea/spark-ghive"))
+developers := List(
+  Developer(
+    "pomadchin",
+    "Grigory Pomadchin",
+    "@pomadchin",
+    url("https://github.com/pomadchin")
+  )
+)
+versionScheme := Some("semver-spec")
 
 addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full)
 
