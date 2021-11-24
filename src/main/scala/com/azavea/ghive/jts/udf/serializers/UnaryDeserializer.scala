@@ -24,7 +24,8 @@ import org.apache.spark.sql.jts.GeometryUDT
 import org.apache.spark.sql.types.Decimal
 import org.apache.spark.unsafe.types.UTF8String
 import org.locationtech.jts.geom.Geometry
-import cats.{~>, Id}
+import cats.Id
+import shapeless.HNil
 
 import scala.util.Try
 
@@ -32,12 +33,6 @@ trait UnaryDeserializer[F[_], T] extends Serializable { self =>
   def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): F[T]
   def deserialize(argument: GenericUDF.DeferredObject, inspector: ObjectInspector): F[T] =
     deserialize(Array(argument))(Array(inspector))
-
-  def mapK[G[_]](f: F ~> G): UnaryDeserializer[G, T] =
-    new UnaryDeserializer[G, T] {
-      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): G[T] =
-        f(self.deserialize(arguments))
-    }
 }
 
 object UnaryDeserializer extends Serializable {
@@ -55,6 +50,13 @@ object UnaryDeserializer extends Serializable {
     new UnaryDeserializer[Try, T] {
       def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): Try[T] =
         Try(UnaryDeserializer[Id, T].deserialize(arguments))
+    }
+
+  /** Derivation helper deserializer. */
+  implicit val hnilUnaryDeserializer: UnaryDeserializer[Id, HNil] =
+    new UnaryDeserializer[Id, HNil] {
+      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): HNil =
+        HNil
     }
 
   /** Spark internal deserializers. */

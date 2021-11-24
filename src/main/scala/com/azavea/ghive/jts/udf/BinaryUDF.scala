@@ -18,6 +18,8 @@ package com.azavea.ghive.jts.udf
 
 import com.azavea.ghive.jts.udf.serializers._
 import com.azavea.ghive.jts.udf.serializers.syntax._
+import cats.instances.try_._
+
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.spark.sql.types.DataType
 

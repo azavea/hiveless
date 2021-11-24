@@ -16,22 +16,32 @@
 
 package com.azavea.ghive.jts.udf.serializers
 
+import cats.Functor
+import cats.syntax.functor._
+
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
+import shapeless.{::, HNil}
 
 package object syntax extends Serializable {
   implicit class genericUDFDeferredObjectsOps(val self: Array[GenericUDF.DeferredObject]) extends AnyVal {
     def unary[F[_], T: UnaryDeserializer[F, *]](implicit inspectors: Array[ObjectInspector]): F[T] =
       UnaryDeserializer[F, T].deserialize(self)
 
-    def binary[F[_], T0, T1: BinaryDeserializer[F, T0, *]](implicit inspectors: Array[ObjectInspector]): F[(T0, T1)] =
-      BinaryDeserializer[F, T0, T1].deserialize(self)
+    def binary[F[_]: Functor, T0, T1: BinaryDeserializer[F, T0, *]](implicit inspectors: Array[ObjectInspector]): F[(T0, T1)] =
+      GenericDeserializer[F, T0 :: T1 :: HNil]
+        .deserialize(self)
+        .map(_.tupled)
 
-    def ternary[F[_], T0, T1, T2: TernaryDeserializer[F, T0, T1, *]](implicit inspectors: Array[ObjectInspector]): F[(T0, T1, T2)] =
-      TernaryDeserializer[F, T0, T1, T2].deserialize(self)
+    def ternary[F[_]: Functor, T0, T1, T2: TernaryDeserializer[F, T0, T1, *]](implicit inspectors: Array[ObjectInspector]): F[(T0, T1, T2)] =
+      GenericDeserializer[F, T0 :: T1 :: T2 :: HNil]
+        .deserialize(self)
+        .map(_.tupled)
 
-    def quarternary[F[_], T0, T1, T2, T3: QuarternaryDeserializer[F, T0, T1, T2, *]](implicit inspectors: Array[ObjectInspector]): F[(T0, T1, T2, T3)] =
-      QuarternaryDeserializer[F, T0, T1, T2, T3].deserialize(self)
+    def quarternary[F[_]: Functor, T0, T1, T2, T3: QuarternaryDeserializer[F, T0, T1, T2, *]](implicit inspectors: Array[ObjectInspector]): F[(T0, T1, T2, T3)] =
+      GenericDeserializer[F, T0 :: T1 :: T2 :: T3 :: HNil]
+        .deserialize(self)
+        .map(_.tupled)
   }
 
   implicit class genericUDFDeferredObjectOps(val self: GenericUDF.DeferredObject) extends AnyVal {
