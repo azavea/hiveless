@@ -22,6 +22,6 @@ import org.locationtech.jts.geom.Geometry
 import java.{lang => jl}
 
 class ST_NumPoints extends UnaryUDFInteger[Geometry] {
-  val name: String                     = "st_numpoints"
+  val name: String                     = "st_numPoints"
   def function: Geometry => jl.Integer = GeometricAccessorFunctions.ST_NumPoints
 }

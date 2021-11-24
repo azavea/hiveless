@@ -49,5 +49,6 @@ object HiveInspectorsExposed extends HiveInspectors {
       toWritableInspector(sqlType)
   }
 
-  def unwrap[T](a: Any, deser: ObjectInspector): T = unwrapperFor(deser)(a).asInstanceOf[T]
+  def unwrap[T](a: Any, deser: ObjectInspector): T   = unwrapperFor(deser)(a).asInstanceOf[T]
+  def unwrapAny(a: Any, deser: ObjectInspector): Any = unwrapperFor(deser)(a)
 }

@@ -18,20 +18,19 @@ package com.azavea.ghive.jts.udf.serializers
 
 import cats.Functor
 import cats.syntax.functor._
-
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 
-trait QuarternaryDeserializer[F[_], T0, T1, T2, T3] {
-  def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[(T0, T1, T2, T3)]
+trait TernaryDeserializer[F[_], T0, T1, T2] {
+  def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[(T0, T1, T2)]
 }
 
-object QuarternaryDeserializer {
-  def apply[F[_], T0, T1, T2, T3](implicit ev: QuarternaryDeserializer[F, T0, T1, T2, T3]): QuarternaryDeserializer[F, T0, T1, T2, T3] = ev
+object TernaryDeserializer {
+  def apply[F[_], T0, T1, T2](implicit ev: TernaryDeserializer[F, T0, T1, T2]): TernaryDeserializer[F, T0, T1, T2] = ev
 
-  implicit def ADquarternaryDeserializer[F[_]: Functor, T](implicit ad: ArgumentsDeserializer[F, T]): QuarternaryDeserializer[F, T, T, T, T] =
-    new QuarternaryDeserializer[F, T, T, T, T] {
-      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[(T, T, T, T)] =
-        ad.deserialize(arguments).map { case List(fst, snd, trd, frt) => (fst, snd, trd, frt) }
+  implicit def ADternaryDeserializer[F[_]: Functor, T](implicit ad: ArgumentsDeserializer[F, T]): TernaryDeserializer[F, T, T, T] =
+    new TernaryDeserializer[F, T, T, T] {
+      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit data: Array[ObjectInspector]): F[(T, T, T)] =
+        ad.deserialize(arguments).map { case List(fst, snd, trd) => (fst, snd, trd) }
     }
 }

@@ -27,6 +27,9 @@ package object syntax extends Serializable {
     def binary[F[_], T0, T1: BinaryDeserializer[F, T0, *]](implicit data: Array[ObjectInspector]): F[(T0, T1)] =
       BinaryDeserializer[F, T0, T1].deserialize(self)
 
+    def ternary[F[_], T0, T1, T2: TernaryDeserializer[F, T0, T1, *]](implicit data: Array[ObjectInspector]): F[(T0, T1, T2)] =
+      TernaryDeserializer[F, T0, T1, T2].deserialize(self)
+
     def quarternary[F[_], T0, T1, T2, T3: QuarternaryDeserializer[F, T0, T1, T2, *]](implicit data: Array[ObjectInspector]): F[(T0, T1, T2, T3)] =
       QuarternaryDeserializer[F, T0, T1, T2, T3].deserialize(self)
   }

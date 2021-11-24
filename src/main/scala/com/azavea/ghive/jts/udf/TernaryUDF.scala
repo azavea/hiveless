@@ -16,12 +16,15 @@
 
 package com.azavea.ghive.jts.udf
 
-import scala.util.Try
+import com.azavea.ghive.jts.udf.serializers._
+import com.azavea.ghive.jts.udf.serializers.syntax._
+import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
+import org.apache.spark.sql.types.DataType
 
-package object serializers {
-  type TArgumentsDeserializer[T]                = ArgumentsDeserializer[Try, T]
-  type TUnaryDeserializer[T]                    = UnaryDeserializer[Try, T]
-  type TBinaryDeserializer[T0, T1]              = BinaryDeserializer[Try, T0, T1]
-  type TTernaryDeserializer[T0, T1, T2]         = TernaryDeserializer[Try, T0, T1, T2]
-  type TQuarternaryDeserializer[T0, T1, T2, T3] = QuarternaryDeserializer[Try, T0, T1, T2, T3]
+abstract class TernaryUDF[T0, T1, T2: TTernaryDeserializer[T0, T1, *], R] extends InitializedGenericUDF[R] {
+  def dataType: DataType
+  def function: (T0, T1, T2) => R
+
+  def eval(arguments: Array[GenericUDF.DeferredObject]): R =
+    arguments.ternary.map(function.tupled).getOrElse(null.asInstanceOf[R])
 }
