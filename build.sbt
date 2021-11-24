@@ -1,7 +1,7 @@
 import de.heikoseeberger.sbtheader._
 import java.time.Year
 
-name         := "spark-ghive"
+name         := "hiveless"
 version      := "0.1.0-SNAPSHOT"
 scalaVersion := "2.12.15"
 organization := "com.azavea"
@@ -16,7 +16,7 @@ scalacOptions ++= Seq(
   "-feature"
 )
 licenses := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html"))
-homepage := Some(url("https://github.com/azavea/spark-ghive"))
+homepage := Some(url("https://github.com/azavea/hiveless"))
 developers := List(
   Developer(
     "pomadchin",
