@@ -43,8 +43,14 @@ trait UnaryDeserializer[F[_], T] extends Serializable { self =>
 object UnaryDeserializer extends Serializable {
   def apply[F[_], T](implicit ev: UnaryDeserializer[F, T]): UnaryDeserializer[F, T] = ev
 
-  // TODO: Spark throws java.lang.NullPointerException, investigate reasons; happens due to the FunctionK usage
-  // UnaryDeserializer[Id, T].mapK(λ[Id ~> Try](Try(_)))
+  // format: off
+  /**
+   * 1. Spark throws java.lang.NullPointerException, investigate reasons; happens due to the FunctionK usage i.e. UnaryDeserializer[Id, T].mapK(λ[Id ~> Try](Try(_)))
+   * 2. Anonymous functions are not allowed as well: Functor for UnaryDeserializer[F, *]
+   *      fails with unable to find class: com.azavea.ghive.jts.udf.serializers.UnaryDeserializer$$$Lambda$4321/1862326200
+   *      i.e. decimalUnaryDeserializer.map(_.toInt)
+   */
+  // format: on
   implicit def tryUnaryDeserializer[T: UnaryDeserializer[Id, *]]: UnaryDeserializer[Try, T] =
     new UnaryDeserializer[Try, T] {
       def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): Try[T] =
