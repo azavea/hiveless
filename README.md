@@ -3,7 +3,7 @@
 Hiveless is a Scala library for working with Spark and Hive using a more expressive typed API.
 It adds typed HiveUDFs and implements GIS Hive UDFs.
 
-## Usage example
+## Supported GIS functions
 
 ```sql
 CREATE OR REPLACE FUNCTION st_area AS 'com.azavea.hiveless.spatial.ST_Area';
