@@ -16,12 +16,13 @@
 
 package com.azavea.hiveless.spatial
 
+import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.coercions._
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.simplify.TopologyPreservingSimplifier
 import shapeless.{::, HNil}
 
-class ST_SimplifyPreserveTopology extends HUDFGeometry[Geometry :: Double :: HNil] {
+class ST_SimplifyPreserveTopology extends HUDF[Geometry :: Double :: HNil, Geometry] {
   val name: String = "st_simplifyPreserveTopology"
   def function     = { (g: Geometry, p: Double) => TopologyPreservingSimplifier.simplify(g, p) }
 }

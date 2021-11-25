@@ -16,13 +16,15 @@
 
 package com.azavea.hiveless.spatial
 
+import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.coercions._
-import com.azavea.hiveless.HUDFBoolean
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
 import shapeless.{::, HNil}
 
-class ST_Disjoint extends HUDFBoolean[Geometry :: Geometry :: HNil] {
+import java.{lang => jl}
+
+class ST_Disjoint extends HUDF[Geometry :: Geometry :: HNil, jl.Boolean] {
   val name: String = "st_disjoint"
   def function     = SpatialRelationFunctions.ST_Disjoint
 }

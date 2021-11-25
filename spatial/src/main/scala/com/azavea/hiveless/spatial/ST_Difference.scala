@@ -16,12 +16,13 @@
 
 package com.azavea.hiveless.spatial
 
+import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.coercions._
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
 import shapeless.{::, HNil}
 
-class ST_Difference extends HUDFGeometry[Geometry :: Geometry :: HNil] {
+class ST_Difference extends HUDF[Geometry :: Geometry :: HNil, Geometry] {
   val name: String = "st_difference"
   def function     = SpatialRelationFunctions.ST_Difference
 }

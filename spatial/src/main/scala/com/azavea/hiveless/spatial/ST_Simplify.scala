@@ -16,12 +16,13 @@
 
 package com.azavea.hiveless.spatial
 
+import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.coercions._
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier
 import shapeless.{::, HNil}
 
-class ST_Simplify extends HUDFGeometry[Geometry :: Double :: HNil] {
+class ST_Simplify extends HUDF[Geometry :: Double :: HNil, Geometry] {
   val name: String = "st_simplify"
   def function     = { (g: Geometry, p: Double) => DouglasPeuckerSimplifier.simplify(g, p) }
 }

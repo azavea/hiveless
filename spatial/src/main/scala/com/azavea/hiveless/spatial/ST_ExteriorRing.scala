@@ -16,12 +16,13 @@
 
 package com.azavea.hiveless.spatial
 
+import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.coercions._
 import org.locationtech.geomesa.spark.jts.udf.GeometricAccessorFunctions
 import org.locationtech.jts.geom.Geometry
 import shapeless.{::, HNil}
 
-class ST_ExteriorRing extends HUDFGeometry[Geometry :: HNil] {
+class ST_ExteriorRing extends HUDF[Geometry :: HNil, Geometry] {
   val name: String = "st_exteriorRing"
   def function     = GeometricAccessorFunctions.ST_ExteriorRing
 }

@@ -16,13 +16,15 @@
 
 package com.azavea.hiveless.spatial
 
+import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.coercions._
-import com.azavea.hiveless.HUDFInteger
 import org.locationtech.geomesa.spark.jts.udf.GeometricAccessorFunctions
 import org.locationtech.jts.geom.Geometry
 import shapeless.{::, HNil}
 
-class ST_NumPoints extends HUDFInteger[Geometry :: HNil] {
+import java.{lang => jl}
+
+class ST_NumPoints extends HUDF[Geometry :: HNil, jl.Integer] {
   val name: String = "st_numPoints"
   def function     = GeometricAccessorFunctions.ST_NumPoints
 }

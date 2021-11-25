@@ -17,12 +17,14 @@
 package com.azavea.hiveless.spatial
 
 import com.azavea.hiveless.coercions._
-import com.azavea.hiveless.HUDFDouble
+import com.azavea.hiveless.HUDF
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
 import shapeless.{::, HNil}
 
-class ST_Area extends HUDFDouble[Geometry :: HNil] {
+import java.{lang => jl}
+
+class ST_Area extends HUDF[Geometry :: HNil, jl.Double] {
   val name: String = "st_area"
   def function     = SpatialRelationFunctions.ST_Area
 }
