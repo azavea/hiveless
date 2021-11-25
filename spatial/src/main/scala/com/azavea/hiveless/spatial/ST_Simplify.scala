@@ -17,11 +17,11 @@
 package com.azavea.hiveless.spatial
 
 import com.azavea.hiveless.coercions._
-import com.azavea.hiveless.HUDFGeometry
-import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
+import org.locationtech.jts.geom.Geometry
+import org.locationtech.jts.simplify.DouglasPeuckerSimplifier
 import shapeless.{::, HNil}
 
-class ST_MakeBBOX extends HUDFGeometry[Double :: Double :: Double :: Double :: HNil] {
-  val name: String = "st_makeBBOX"
-  def function     = GeometricConstructorFunctions.ST_MakeBBOX
+class ST_Simplify extends HUDFGeometry[Geometry :: Double :: HNil] {
+  val name: String = "st_simplify"
+  def function     = { (g: Geometry, p: Double) => DouglasPeuckerSimplifier.simplify(g, p) }
 }

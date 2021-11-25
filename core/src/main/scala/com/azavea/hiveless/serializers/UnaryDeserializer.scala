@@ -20,10 +20,8 @@ import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.hive.HiveInspectorsExposed
-import org.apache.spark.sql.jts.GeometryUDT
 import org.apache.spark.sql.types.Decimal
 import org.apache.spark.unsafe.types.UTF8String
-import org.locationtech.jts.geom.Geometry
 import cats.Id
 import shapeless.HNil
 
@@ -95,11 +93,5 @@ object UnaryDeserializer extends Serializable {
     new UnaryDeserializer[Id, String] {
       def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): String =
         utf8StringUnaryDeserializer.deserialize(arguments).toString
-    }
-
-  implicit val geometryUnaryDeserializer: UnaryDeserializer[Id, Geometry] =
-    new UnaryDeserializer[Id, Geometry] {
-      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): Geometry =
-        GeometryUDT.deserialize(internalRowUnaryDeserializer.deserialize(arguments))
     }
 }

@@ -17,7 +17,6 @@
 package com.azavea.hiveless.spatial
 
 import com.azavea.hiveless.coercions._
-import com.azavea.hiveless.HUDFGeometry
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
 import shapeless.{::, HNil}

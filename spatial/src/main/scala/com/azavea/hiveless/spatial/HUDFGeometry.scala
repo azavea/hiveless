@@ -16,13 +16,16 @@
 
 package com.azavea.hiveless.spatial
 
-import com.azavea.hiveless.coercions._
-import com.azavea.hiveless.HUDFGeometry
-import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
+import com.azavea.hiveless.HUDF
+import com.azavea.hiveless.serializers.GenericDeserializer
+import org.apache.spark.sql.jts.GeometryUDT
+import org.apache.spark.sql.types.DataType
 import org.locationtech.jts.geom.Geometry
-import shapeless.{::, HNil}
+import shapeless.HList
 
-class ST_Difference extends HUDFGeometry[Geometry :: Geometry :: HNil] {
-  val name: String = "st_difference"
-  def function     = SpatialRelationFunctions.ST_Difference
+import scala.util.Try
+
+abstract class HUDFGeometry[L <: HList](implicit gd: GenericDeserializer[Try, L]) extends HUDF[L, Geometry] {
+  def dataType: DataType         = GeometryUDT
+  def serialize: Geometry => Any = GeometryUDT.serialize
 }

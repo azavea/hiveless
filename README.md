@@ -1,13 +1,16 @@
 # Hiveless
 
 [![CI](https://github.com/azavea/hiveless/actions/workflows/ci.yml/badge.svg)](https://github.com/azavea/hiveless/actions/workflows/ci.yml)
-[![Maven Badge](https://img.shields.io/maven-central/v/com.azavea/hiveless_2.12?color=blue)](https://search.maven.org/search?q=g:com.azavea%20and%20hiveless)
-[![Snapshots Badge](https://img.shields.io/nexus/s/https/oss.sonatype.org/com.azavea/hiveless_2.12)](https://oss.sonatype.org/content/repositories/snapshots/com/azavea/hiveless_2.12/)
+[![Maven Badge](https://img.shields.io/maven-central/v/com.azavea/hiveless-core_2.12?color=blue)](https://search.maven.org/search?q=g:com.azavea%20and%20hiveless)
+[![Snapshots Badge](https://img.shields.io/nexus/s/https/oss.sonatype.org/com.azavea/hiveless-core_2.12)](https://oss.sonatype.org/content/repositories/snapshots/com/azavea/hiveless-core_2.12/)
 
-Hiveless is a Scala library for working with Spark and Hive using a more expressive typed API.
-It adds typed HiveUDFs and implements GIS Hive UDFs.
+Hiveless is a Scala library for working with [Spark](https://spark.apache.org/) and [Hive](https://hive.apache.org/) using a more expressive typed API.
+It adds typed HiveUDFs and implements GIS Hive UDFs. It consists of the following modules:
 
-## Supported GIS functions
+* `hiveless-core` with the typed Hive UDFs API and the initial base set of codecs
+* `hiveless-spatial` with Hive GIS UDFs (depends on [GeoMesa](https://github.com/locationtech/geomesa))
+
+## Supported GIS functions (hiveless-spatial)
 
 ```sql
 CREATE OR REPLACE FUNCTION st_area AS 'com.azavea.hiveless.spatial.ST_Area';

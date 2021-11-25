@@ -17,11 +17,10 @@
 package com.azavea.hiveless.spatial
 
 import com.azavea.hiveless.coercions._
-import com.azavea.hiveless.HUDFGeometry
 import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
 import shapeless.{::, HNil}
 
-class ST_GeomFromWKT extends HUDFGeometry[String :: HNil] {
-  val name: String = "st_geomFromWKT"
-  def function     = GeometricConstructorFunctions.ST_GeomFromWKT
+class ST_MakeBBOX extends HUDFGeometry[Double :: Double :: Double :: Double :: HNil] {
+  val name: String = "st_makeBBOX"
+  def function     = GeometricConstructorFunctions.ST_MakeBBOX
 }

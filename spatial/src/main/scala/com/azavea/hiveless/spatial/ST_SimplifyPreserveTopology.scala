@@ -17,7 +17,6 @@
 package com.azavea.hiveless.spatial
 
 import com.azavea.hiveless.coercions._
-import com.azavea.hiveless.HUDFGeometry
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.simplify.TopologyPreservingSimplifier
 import shapeless.{::, HNil}

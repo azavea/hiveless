@@ -17,12 +17,11 @@
 package com.azavea.hiveless.spatial
 
 import com.azavea.hiveless.coercions._
-import com.azavea.hiveless.HUDFGeometry
+import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
-import org.locationtech.jts.simplify.DouglasPeuckerSimplifier
 import shapeless.{::, HNil}
 
-class ST_Simplify extends HUDFGeometry[Geometry :: Double :: HNil] {
-  val name: String = "st_simplify"
-  def function     = { (g: Geometry, p: Double) => DouglasPeuckerSimplifier.simplify(g, p) }
+class ST_Difference extends HUDFGeometry[Geometry :: Geometry :: HNil] {
+  val name: String = "st_difference"
+  def function     = SpatialRelationFunctions.ST_Difference
 }

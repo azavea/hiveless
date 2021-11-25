@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package com.azavea.hiveless
+package com.azavea.hiveless.spatial
 
-import com.azavea.hiveless.serializers.GenericDeserializer
-import org.apache.spark.sql.jts.GeometryUDT
-import org.apache.spark.sql.types.DataType
-import org.locationtech.jts.geom.Geometry
-import shapeless.HList
+import com.azavea.hiveless.coercions._
+import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
+import shapeless.{::, HNil}
 
-import scala.util.Try
-
-abstract class HUDFGeometry[L <: HList](implicit gd: GenericDeserializer[Try, L]) extends HUDF[L, Geometry] {
-  def dataType: DataType         = GeometryUDT
-  def serialize: Geometry => Any = GeometryUDT.serialize
+class ST_GeomFromWKT extends HUDFGeometry[String :: HNil] {
+  val name: String = "st_geomFromWKT"
+  def function     = GeometricConstructorFunctions.ST_GeomFromWKT
 }
