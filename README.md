@@ -1,5 +1,9 @@
 # Hiveless
 
+[![CI](https://github.com/azavea/hiveless/actions/workflows/ci.yml/badge.svg)](https://github.com/azavea/hiveless/actions/workflows/ci.yml)
+[![Maven Badge](https://img.shields.io/maven-central/v/com.azavea/hiveless_2.12?color=blue)](https://search.maven.org/search?q=g:com.azavea%20and%20hiveless)
+[![Snapshots Badge](https://img.shields.io/nexus/s/https/oss.sonatype.org/com.azavea/hiveless_2.12)](https://oss.sonatype.org/content/repositories/snapshots/com/azavea/hiveless_2.12/)
+
 Hiveless is a Scala library for working with Spark and Hive using a more expressive typed API.
 It adds typed HiveUDFs and implements GIS Hive UDFs.
 
