@@ -5,7 +5,7 @@
 [![Snapshots Badge](https://img.shields.io/nexus/s/https/oss.sonatype.org/com.azavea/hiveless-core_2.12)](https://oss.sonatype.org/content/repositories/snapshots/com/azavea/hiveless-core_2.12/)
 
 Hiveless is a Scala library for working with [Spark](https://spark.apache.org/) and [Hive](https://hive.apache.org/) using a more expressive typed API.
-It adds typed HiveUDFs and implements GIS Hive UDFs. It consists of the following modules:
+It adds typed HiveUDFs and implements Spatial Hive UDFs. It consists of the following modules:
 
 * `hiveless-core` with the typed Hive UDFs API and the initial base set of codecs
 * `hiveless-spatial` with Hive GIS UDFs (depends on [GeoMesa](https://github.com/locationtech/geomesa))
