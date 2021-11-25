@@ -18,17 +18,17 @@ package com.azavea.hiveless
 
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
-import org.apache.spark.sql.hive.HiveInspectorsExposed
+import org.apache.spark.sql.hive.HivelessInternals
 import org.apache.spark.sql.types.DataType
 
-trait SparkGenericUDF[R] extends GenericUDF {
+trait HGenericUDF[R] extends GenericUDF {
   def name: String
   def dataType: DataType
   def serialize: R => Any
 
-  @transient implicit lazy val resultInspector: ObjectInspector = HiveInspectorsExposed.toWritableInspector(dataType)
+  @transient lazy val resultInspector: ObjectInspector = HivelessInternals.toWritableInspector(dataType)
 
-  implicit protected var inspectors: Array[ObjectInspector] = _
+  protected var inspectors: Array[ObjectInspector] = _
 
   def getDisplayString(children: Array[String]): String = name
 
@@ -40,5 +40,5 @@ trait SparkGenericUDF[R] extends GenericUDF {
   def eval(arguments: Array[GenericUDF.DeferredObject]): R
 
   def evaluate(arguments: Array[GenericUDF.DeferredObject]): AnyRef =
-    HiveInspectorsExposed.wrap(serialize(eval(arguments)), resultInspector, dataType)
+    HivelessInternals.wrap(serialize(eval(arguments)), resultInspector, dataType)
 }

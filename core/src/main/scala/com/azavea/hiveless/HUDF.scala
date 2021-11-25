@@ -23,10 +23,10 @@ import shapeless.HList
 
 import scala.util.Try
 
-abstract class HUDF[L <: HList, R](implicit gd: GenericDeserializer[Try, L]) extends SparkGenericUDF[R] {
+abstract class HUDF[L <: HList, R](implicit gd: GenericDeserializer[Try, L]) extends HGenericUDF[R] {
   def dataType: DataType
   def function: L => R
 
   def eval(arguments: Array[GenericUDF.DeferredObject]): R =
-    gd.deserialize(arguments).map(function).getOrElse(null.asInstanceOf[R])
+    gd.deserialize(arguments, inspectors).map(function).getOrElse(null.asInstanceOf[R])
 }

@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package com.azavea.hiveless.spatial
+package com.azavea.hiveless.serializers
 
-import com.azavea.hiveless.HUDF
-import com.azavea.hiveless.serializers.GenericDeserializer
-import org.apache.spark.sql.catalyst.InternalRow
-import org.apache.spark.sql.jts.GeometryUDT
-import org.apache.spark.sql.types.DataType
-import org.locationtech.jts.geom.Geometry
-import shapeless.HList
+import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
+import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 
-import scala.util.Try
-
-abstract class HUDFGeometry[L <: HList](implicit gd: GenericDeserializer[Try, L]) extends HUDF[L, Geometry] {
-  def dataType: DataType                 = GeometryUDT
-  def serialize: Geometry => InternalRow = GeometryUDT.serialize
+trait HDeserialier[F[_], T] extends Serializable {
+  def deserialize(arguments: Array[GenericUDF.DeferredObject], inspectors: Array[ObjectInspector]): F[T]
 }

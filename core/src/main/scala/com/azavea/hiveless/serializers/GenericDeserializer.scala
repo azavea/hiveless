@@ -23,16 +23,20 @@ import shapeless.{::, HList, HNil}
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 
-trait GenericDeserializer[F[_], L <: HList] extends Serializable {
-  def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): F[L]
-}
+trait GenericDeserializer[F[_], L <: HList] extends HDeserialier[F, L]
 
 object GenericDeserializer extends Serializable {
   def apply[F[_], L <: HList](implicit ev: GenericDeserializer[F, L]): GenericDeserializer[F, L] = ev
 
+  // format: off
+  /**
+   * Intentionally not converted into lambda expression, causes the following failure:
+   *   Unable to find class: com.azavea.hiveless.serializers.GenericDeserializer$$$Lambda$4543/585871703
+   */
+  // format: on
   implicit def gdHNil[F[_]: UnaryDeserializer[*[_], HNil]]: GenericDeserializer[F, HNil] = new GenericDeserializer[F, HNil] {
-    def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): F[HNil] =
-      UnaryDeserializer[F, HNil].deserialize(arguments)
+    def deserialize(arguments: Array[GenericUDF.DeferredObject], inspectors: Array[ObjectInspector]): F[HNil] =
+      UnaryDeserializer[F, HNil].deserialize(arguments, inspectors)
   }
 
   // format: off
@@ -50,7 +54,7 @@ object GenericDeserializer extends Serializable {
       dh: UnaryDeserializer[F, H],
       dt: GenericDeserializer[F, T]
   ): GenericDeserializer[F, H :: T] = new GenericDeserializer[F, H :: T] {
-    def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): F[H :: T] =
-      (dh.deserialize(arguments.head, inspectors.head), dt.deserialize(arguments.tail)(inspectors.tail)).mapN(_ :: _)
+    def deserialize(arguments: Array[GenericUDF.DeferredObject], inspectors: Array[ObjectInspector]): F[H :: T] =
+      (dh.deserialize(arguments.head, inspectors.head), dt.deserialize(arguments.tail, inspectors.tail)).mapN(_ :: _)
   }
 }

@@ -19,7 +19,7 @@ package com.azavea.hiveless.serializers
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 import org.apache.spark.sql.catalyst.InternalRow
-import org.apache.spark.sql.hive.HiveInspectorsExposed
+import org.apache.spark.sql.hive.HivelessInternals
 import org.apache.spark.sql.types.Decimal
 import org.apache.spark.unsafe.types.UTF8String
 import cats.Id
@@ -27,10 +27,9 @@ import shapeless.HNil
 
 import scala.util.Try
 
-trait UnaryDeserializer[F[_], T] extends Serializable {
-  def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): F[T]
+trait UnaryDeserializer[F[_], T] extends HDeserialier[F, T] {
   def deserialize(argument: GenericUDF.DeferredObject, inspector: ObjectInspector): F[T] =
-    deserialize(Array(argument))(Array(inspector))
+    deserialize(Array(argument), Array(inspector))
 }
 
 object UnaryDeserializer extends Serializable {
@@ -45,53 +44,28 @@ object UnaryDeserializer extends Serializable {
    */
   // format: on
   implicit def tryUnaryDeserializer[T: UnaryDeserializer[Id, *]]: UnaryDeserializer[Try, T] =
-    new UnaryDeserializer[Try, T] {
-      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): Try[T] =
-        Try(UnaryDeserializer[Id, T].deserialize(arguments))
-    }
+    (arguments, inspectors) => Try(UnaryDeserializer[Id, T].deserialize(arguments, inspectors))
 
   /** Derivation helper deserializer. */
-  implicit val hnilUnaryDeserializer: UnaryDeserializer[Id, HNil] =
-    new UnaryDeserializer[Id, HNil] {
-      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): HNil =
-        HNil
-    }
+  implicit val hnilUnaryDeserializer: UnaryDeserializer[Id, HNil] = (_, _) => HNil
 
   /** Spark internal deserializers. */
   implicit val internalRowUnaryDeserializer: UnaryDeserializer[Id, InternalRow] =
-    new UnaryDeserializer[Id, InternalRow] {
-      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): InternalRow =
-        HiveInspectorsExposed.unwrap[InternalRow](arguments.head.get, inspectors.head)
-    }
+    (arguments, inspectors) => HivelessInternals.unwrap[InternalRow](arguments.head.get, inspectors.head)
 
   implicit val utf8StringUnaryDeserializer: UnaryDeserializer[Id, UTF8String] =
-    new UnaryDeserializer[Id, UTF8String] {
-      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): UTF8String =
-        HiveInspectorsExposed.unwrap[UTF8String](arguments.head.get, inspectors.head)
-    }
+    (arguments, inspectors) => HivelessInternals.unwrap[UTF8String](arguments.head.get, inspectors.head)
 
   implicit val decimalUnaryDeserializer: UnaryDeserializer[Id, Decimal] =
-    new UnaryDeserializer[Id, Decimal] {
-      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): Decimal =
-        HiveInspectorsExposed.unwrap[Decimal](arguments.head.get, inspectors.head)
-    }
+    (arguments, inspectors) => HivelessInternals.unwrap[Decimal](arguments.head.get, inspectors.head)
 
   /** JvmRepr deserializers. */
   implicit val doubleUnaryDeserializer: UnaryDeserializer[Id, Double] =
-    new UnaryDeserializer[Id, Double] {
-      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): Double =
-        decimalUnaryDeserializer.deserialize(arguments).toDouble
-    }
+    (arguments, inspectors) => decimalUnaryDeserializer.deserialize(arguments, inspectors).toDouble
 
   implicit val intUnaryDeserializer: UnaryDeserializer[Id, Int] =
-    new UnaryDeserializer[Id, Int] {
-      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): Int =
-        decimalUnaryDeserializer.deserialize(arguments).toInt
-    }
+    (arguments, inspectors) => decimalUnaryDeserializer.deserialize(arguments, inspectors).toInt
 
   implicit val stringUnaryDeserializer: UnaryDeserializer[Id, String] =
-    new UnaryDeserializer[Id, String] {
-      def deserialize(arguments: Array[GenericUDF.DeferredObject])(implicit inspectors: Array[ObjectInspector]): String =
-        utf8StringUnaryDeserializer.deserialize(arguments).toString
-    }
+    (arguments, inspectors) => utf8StringUnaryDeserializer.deserialize(arguments, inspectors).toString
 }
