@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.azavea.hiveless
+package com.azavea.hiveless.implicits
 
-package object coercions extends Serializable {
+object tuplers extends Serializable {
   implicit def function2Tupler[T0, T1, R](f: (T0, T1) => R): ((T0, T1)) => R                         = f.tupled
   implicit def function3Tupler[T0, T1, T2, R](f: (T0, T1, T2) => R): ((T0, T1, T2)) => R             = f.tupled
   implicit def function4Tupler[T0, T1, T2, T3, R](f: (T0, T1, T2, T3) => R): ((T0, T1, T2, T3)) => R = f.tupled

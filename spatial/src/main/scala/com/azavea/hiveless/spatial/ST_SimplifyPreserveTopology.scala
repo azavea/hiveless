@@ -17,7 +17,7 @@
 package com.azavea.hiveless.spatial
 
 import com.azavea.hiveless.HUDF
-import com.azavea.hiveless.coercions._
+import com.azavea.hiveless.implicits.tuplers._
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.simplify.TopologyPreservingSimplifier
 
