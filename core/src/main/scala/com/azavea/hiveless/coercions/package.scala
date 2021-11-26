@@ -16,18 +16,8 @@
 
 package com.azavea.hiveless
 
-import shapeless.{::, HNil}
-
 package object coercions extends Serializable {
-  implicit def function1HTupler[T, R](f: T => R): (T :: HNil) => R                                  = { case head :: HNil => f(head) }
-  implicit def function2HTupler[T0, T1, R](f: (T0, T1) => R): (T0 :: T1 :: HNil) => R               = { hlist => f.tupled(hlist.tupled) }
-  implicit def function3HTupler[T0, T1, T2, R](f: (T0, T1, T2) => R): (T0 :: T1 :: T2 :: HNil) => R = { hlist => f.tupled(hlist.tupled) }
-  implicit def function4HTupler[T0, T1, T2, T3, R](f: (T0, T1, T2, T3) => R): (T0 :: T1 :: T2 :: T3 :: HNil) => R = { hlist =>
-    f.tupled(hlist.tupled)
-  }
-
   implicit def function2Tupler[T0, T1, R](f: (T0, T1) => R): ((T0, T1)) => R                         = f.tupled
   implicit def function3Tupler[T0, T1, T2, R](f: (T0, T1, T2) => R): ((T0, T1, T2)) => R             = f.tupled
   implicit def function4Tupler[T0, T1, T2, T3, R](f: (T0, T1, T2, T3) => R): ((T0, T1, T2, T3)) => R = f.tupled
-
 }
