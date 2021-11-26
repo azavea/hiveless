@@ -10,7 +10,7 @@ on:
 jobs:
   build:
     name: Build and Test
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'azavea/spark-ghive'
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != 'azavea/hiveless'
     strategy:
       matrix:
         os: [ubuntu-latest]

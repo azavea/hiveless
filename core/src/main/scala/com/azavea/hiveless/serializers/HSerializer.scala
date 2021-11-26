@@ -36,7 +36,7 @@ object HSerializer extends Serializable {
 
   // format: off
   /**
-   * Intentionally not used for instances implementation, causes the following failure:
+   * Intentionally not used for instances implementation, causes the following failure on DataBricks::
    *   Unable to find class: com.azavea.hiveless.serializers.HSerializer$$$Lambda$5659/1670981434
    *   Serialization trace:
    *   s$1 (com.azavea.hiveless.serializers.HSerializer$$anon$1)

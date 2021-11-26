@@ -37,10 +37,11 @@ object UnaryDeserializer extends Serializable {
 
   // format: off
   /**
-   * 1. Spark throws java.lang.NullPointerException, investigate reasons; happens due to the FunctionK usage i.e. UnaryDeserializer[Id, T].mapK(λ[Id ~> Try](Try(_)))
-   * 2. Anonymous functions are not allowed as well: Functor for UnaryDeserializer[F, *]
-   *      fails with unable to find class: com.azavea.hiveless.serializers.UnaryDeserializer$$$Lambda$4321/1862326200
-   *      i.e. decimalUnaryDeserializer.map(_.toInt)
+   * On DataBricks:
+   *   1. Spark throws java.lang.NullPointerException, investigate reasons; happens due to the FunctionK usage i.e. UnaryDeserializer[Id, T].mapK(λ[Id ~> Try](Try(_)))
+   *   2. Anonymous functions are not allowed as well: Functor for UnaryDeserializer[F, *]
+   *        fails with unable to find class: com.azavea.hiveless.serializers.UnaryDeserializer$$$Lambda$4321/1862326200
+   *        i.e. decimalUnaryDeserializer.map(_.toInt)
    */
   // format: on
   implicit def tryUnaryDeserializer[T: UnaryDeserializer[Id, *]]: UnaryDeserializer[Try, T] =

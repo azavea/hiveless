@@ -17,9 +17,10 @@
 package com.azavea.hiveless
 
 import com.azavea.hiveless.serializers.{HSerializer, UnaryDeserializer}
+import cats.Id
 import org.locationtech.jts.geom.Geometry
 import org.apache.spark.sql.jts.GeometryUDT
-import cats.Id
+import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.types.DataType
 
 package object spatial extends Serializable {
@@ -27,7 +28,7 @@ package object spatial extends Serializable {
     (arguments, inspectors) => GeometryUDT.deserialize(UnaryDeserializer.internalRowUnaryDeserializer.deserialize(arguments, inspectors))
 
   implicit val geometrySerializer: HSerializer[Geometry] = new HSerializer[Geometry] {
-    def dataType: DataType         = GeometryUDT
-    def serialize: Geometry => Any = GeometryUDT.serialize
+    def dataType: DataType                 = GeometryUDT
+    def serialize: Geometry => InternalRow = GeometryUDT.serialize
   }
 }
