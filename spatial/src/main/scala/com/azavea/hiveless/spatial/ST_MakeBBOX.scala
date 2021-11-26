@@ -20,9 +20,8 @@ import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.coercions._
 import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
 import org.locationtech.jts.geom.Geometry
-import shapeless.{::, HNil}
 
-class ST_MakeBBOX extends HUDF[Double :: Double :: Double :: Double :: HNil, Geometry] {
+class ST_MakeBBOX extends HUDF[(Double, Double, Double, Double), Geometry] {
   val name: String = "st_makeBBOX"
   def function     = GeometricConstructorFunctions.ST_MakeBBOX
 }

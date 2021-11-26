@@ -20,9 +20,8 @@ import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.coercions._
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
-import shapeless.{::, HNil}
 
-class ST_Intersection extends HUDF[Geometry :: Geometry :: HNil, Geometry] {
+class ST_Intersection extends HUDF[(Geometry, Geometry), Geometry] {
   val name: String = "st_intersection"
   def function     = SpatialRelationFunctions.ST_Intersection
 }

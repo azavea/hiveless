@@ -20,11 +20,10 @@ import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.coercions._
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
-import shapeless.{::, HNil}
 
 import java.{lang => jl}
 
-class ST_Within extends HUDF[Geometry :: Geometry :: HNil, jl.Boolean] {
+class ST_Within extends HUDF[(Geometry, Geometry), jl.Boolean] {
   val name: String = "st_within"
   def function     = SpatialRelationFunctions.ST_Within
 }

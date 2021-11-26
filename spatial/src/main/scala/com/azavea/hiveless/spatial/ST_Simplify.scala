@@ -20,9 +20,8 @@ import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.coercions._
 import org.locationtech.jts.geom.Geometry
 import org.locationtech.jts.simplify.DouglasPeuckerSimplifier
-import shapeless.{::, HNil}
 
-class ST_Simplify extends HUDF[Geometry :: Double :: HNil, Geometry] {
+class ST_Simplify extends HUDF[(Geometry, Double), Geometry] {
   val name: String = "st_simplify"
   def function     = { (g: Geometry, p: Double) => DouglasPeuckerSimplifier.simplify(g, p) }
 }

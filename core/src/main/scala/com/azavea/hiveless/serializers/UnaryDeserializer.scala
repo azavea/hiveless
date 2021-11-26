@@ -59,12 +59,22 @@ object UnaryDeserializer extends Serializable {
   implicit val decimalUnaryDeserializer: UnaryDeserializer[Id, Decimal] =
     (arguments, inspectors) => HivelessInternals.unwrap[Decimal](arguments.head.get, inspectors.head)
 
+  val nativeDoubleUnaryDeserializer: UnaryDeserializer[Id, Double] =
+    (arguments, inspectors) => HivelessInternals.unwrap[Double](arguments.head.get, inspectors.head)
+
+  val nativeIntUnaryDeserializer: UnaryDeserializer[Id, Int] =
+    (arguments, inspectors) => HivelessInternals.unwrap[Int](arguments.head.get, inspectors.head)
+
   /** JvmRepr deserializers. */
   implicit val doubleUnaryDeserializer: UnaryDeserializer[Id, Double] =
-    (arguments, inspectors) => decimalUnaryDeserializer.deserialize(arguments, inspectors).toDouble
+    (arguments, inspectors) =>
+      Try(decimalUnaryDeserializer.deserialize(arguments, inspectors).toDouble)
+        .getOrElse(nativeDoubleUnaryDeserializer.deserialize(arguments, inspectors))
 
   implicit val intUnaryDeserializer: UnaryDeserializer[Id, Int] =
-    (arguments, inspectors) => decimalUnaryDeserializer.deserialize(arguments, inspectors).toInt
+    (arguments, inspectors) =>
+      Try(decimalUnaryDeserializer.deserialize(arguments, inspectors).toInt)
+        .getOrElse(nativeIntUnaryDeserializer.deserialize(arguments, inspectors))
 
   implicit val stringUnaryDeserializer: UnaryDeserializer[Id, String] =
     (arguments, inspectors) => utf8StringUnaryDeserializer.deserialize(arguments, inspectors).toString

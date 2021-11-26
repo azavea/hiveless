@@ -17,12 +17,10 @@
 package com.azavea.hiveless.spatial
 
 import com.azavea.hiveless.HUDF
-import com.azavea.hiveless.coercions._
 import org.locationtech.geomesa.spark.jts.util.WKTUtils
 import org.locationtech.jts.geom.Geometry
-import shapeless.{::, HNil}
 
-class ST_GeomToWKT extends HUDF[Geometry :: HNil, String] {
+class ST_GeomToWKT extends HUDF[Geometry, String] {
   val name: String = "st_geomToWKT"
   def function     = WKTUtils.write
 }

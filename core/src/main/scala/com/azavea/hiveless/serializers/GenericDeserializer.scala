@@ -19,7 +19,6 @@ package com.azavea.hiveless.serializers
 import cats.Apply
 import cats.syntax.apply._
 import shapeless.{::, HList, HNil}
-
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 
@@ -30,7 +29,7 @@ object GenericDeserializer extends Serializable {
 
   // format: off
   /**
-   * Intentionally not converted into lambda expression, causes the following failure:
+   * Intentionally not converted into lambda expression, causes the following failure on DataBricks:
    *   Unable to find class: com.azavea.hiveless.serializers.GenericDeserializer$$$Lambda$4543/585871703
    */
   // format: on
@@ -41,7 +40,7 @@ object GenericDeserializer extends Serializable {
 
   // format: off
   /**
-   * WARNING: wrapping arguments into shapeless.Lazy causes the following failure:
+   * WARNING: wrapping arguments into shapeless.Lazy causes the following failure on DataBricks:
    *   Serialization trace:
    *     t$1 (shapeless.Lazy$$anon$1)
    *     dh$1 (com.azavea.hiveless.serializers.GenericDeserializer$$anon$2)
