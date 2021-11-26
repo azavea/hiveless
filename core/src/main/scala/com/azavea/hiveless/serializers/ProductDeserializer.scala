@@ -29,14 +29,14 @@ object ProductDeserializer extends Serializable {
   def apply[F[_], P](implicit ev: ProductDeserializer[F, P]): ProductDeserializer[F, P] = ev
 
   /** A corner case, to avoid Tuple1[T] usage. */
-  implicit def tuple1FromGenericDeserializerDeserializer[F[_]: Functor, P](implicit
+  implicit def tuple1FromGenericDeserializer[F[_]: Functor, P](implicit
       d: GenericDeserializer[F, P :: HNil]
   ): ProductDeserializer[F, P] = new ProductDeserializer[F, P] {
     def deserialize(arguments: Array[GenericUDF.DeferredObject], inspectors: Array[ObjectInspector]): F[P] =
       d.deserialize(arguments, inspectors).map(_.head)
   }
 
-  implicit def tuplenFromGenericDeserializer[F[_]: Functor, P: IsTuple, R <: HList](implicit
+  implicit def tupleFromGenericDeserializer[F[_]: Functor, P: IsTuple, R <: HList](implicit
       gen: Generic.Aux[P, R],
       d: GenericDeserializer[F, R]
   ): ProductDeserializer[F, P] = new ProductDeserializer[F, P] {
