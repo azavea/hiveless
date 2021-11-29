@@ -16,17 +16,9 @@
 
 package com.azavea.hiveless
 
-import com.azavea.hiveless.serializers.{GenericDeserializer, HSerializer}
-import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
+import com.azavea.hiveless.serializers.HDataTypes
 import org.apache.spark.sql.types.DataType
 
-import scala.util.Try
-
-abstract class HUDF[P, R](implicit d: GenericDeserializer[Try, P], s: HSerializer[R]) extends HGenericUDF[R] {
-  def dataType: DataType  = s.dataType
-  def serialize: R => Any = s.serialize
-  def function: P => R
-
-  def eval(arguments: Array[GenericUDF.DeferredObject]): R =
-    d.deserialize(arguments, inspectors).map(function).getOrElse(null.asInstanceOf[R])
+abstract class HUDTF[R: HDataTypes] extends HGenericUDTF {
+  def dataTypes: List[DataType] = HDataTypes[R].dataTypes
 }

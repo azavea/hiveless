@@ -16,16 +16,33 @@
 
 package com.azavea.hiveless.serializers
 
-import cats.Apply
+import cats.{Apply, Functor}
 import cats.syntax.apply._
-import shapeless.{::, HList, HNil}
+import cats.syntax.functor._
+import shapeless.{::, Generic, HList, HNil, IsTuple}
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 
-trait GenericDeserializer[F[_], L <: HList] extends HDeserialier[F, L]
+trait GenericDeserializer[F[_], L] extends HDeserialier[F, L]
 
 object GenericDeserializer extends Serializable {
-  def apply[F[_], L <: HList](implicit ev: GenericDeserializer[F, L]): GenericDeserializer[F, L] = ev
+  def apply[F[_], L](implicit ev: GenericDeserializer[F, L]): GenericDeserializer[F, L] = ev
+
+  /** A corner case, to avoid Tuple1[T] usage. */
+  implicit def genericDeserializerTuple1[F[_]: Functor, P](implicit
+      d: GenericDeserializer[F, P :: HNil]
+  ): GenericDeserializer[F, P] = new GenericDeserializer[F, P] {
+    def deserialize(arguments: Array[GenericUDF.DeferredObject], inspectors: Array[ObjectInspector]): F[P] =
+      d.deserialize(arguments, inspectors).map(_.head)
+  }
+
+  implicit def genericDeserializerTuple[F[_]: Functor, P: IsTuple, R <: HList](implicit
+      gen: Generic.Aux[P, R],
+      d: GenericDeserializer[F, R]
+  ): GenericDeserializer[F, P] = new GenericDeserializer[F, P] {
+    def deserialize(arguments: Array[GenericUDF.DeferredObject], inspectors: Array[ObjectInspector]): F[P] =
+      d.deserialize(arguments, inspectors).map(gen.from)
+  }
 
   // format: off
   /**
@@ -33,7 +50,7 @@ object GenericDeserializer extends Serializable {
    *   Unable to find class: com.azavea.hiveless.serializers.GenericDeserializer$$$Lambda$4543/585871703
    */
   // format: on
-  implicit def gdHNil[F[_]: UnaryDeserializer[*[_], HNil]]: GenericDeserializer[F, HNil] = new GenericDeserializer[F, HNil] {
+  implicit def genericDeserializerHNil[F[_]: UnaryDeserializer[*[_], HNil]]: GenericDeserializer[F, HNil] = new GenericDeserializer[F, HNil] {
     def deserialize(arguments: Array[GenericUDF.DeferredObject], inspectors: Array[ObjectInspector]): F[HNil] =
       UnaryDeserializer[F, HNil].deserialize(arguments, inspectors)
   }
@@ -49,7 +66,7 @@ object GenericDeserializer extends Serializable {
    *     dt$1 (com.azavea.hiveless.serializers.GenericDeserializer$$anon$2)
    */
   // format: on
-  implicit def gdHCons[F[_]: Apply, H, T <: HList](implicit
+  implicit def genericDeserializerHCons[F[_]: Apply, H, T <: HList](implicit
       dh: UnaryDeserializer[F, H],
       dt: GenericDeserializer[F, T]
   ): GenericDeserializer[F, H :: T] = new GenericDeserializer[F, H :: T] {

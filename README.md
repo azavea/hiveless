@@ -21,6 +21,7 @@ CREATE OR REPLACE FUNCTION st_difference AS 'com.azavea.hiveless.spatial.ST_Diff
 CREATE OR REPLACE FUNCTION st_disjoint AS 'com.azavea.hiveless.spatial.ST_Disjoint';
 CREATE OR REPLACE FUNCTION st_equals AS 'com.azavea.hiveless.spatial.ST_Equals';
 CREATE OR REPLACE FUNCTION st_exteriorRing AS 'com.azavea.hiveless.spatial.ST_ExteriorRing';
+CREATE OR REPLACE FUNCTION st_isGeomField AS 'com.azavea.hiveless.spatial.ST_IsGeomField';
 CREATE OR REPLACE FUNCTION st_geomFromWKT AS 'com.azavea.hiveless.spatial.ST_GeomFromWKT';
 CREATE OR REPLACE FUNCTION st_geomToWKT AS 'com.azavea.hiveless.spatial.ST_GeomToWKT';
 CREATE OR REPLACE FUNCTION st_intersection AS 'com.azavea.hiveless.spatial.ST_Intersection';
