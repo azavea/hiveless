@@ -38,7 +38,7 @@ trait HGenericUDF[R] extends GenericUDF {
     resultInspector
   }
 
-  // eval expects deserialized arguments as an input
+  // eval expects deserialized arguments as an input, returns deserialized arguments as well
   def eval(arguments: Array[AnyRef]): R
 
   def evaluate(arguments: Array[GenericUDF.DeferredObject]): AnyRef = {

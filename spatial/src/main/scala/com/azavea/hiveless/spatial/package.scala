@@ -16,7 +16,7 @@
 
 package com.azavea.hiveless
 
-import com.azavea.hiveless.serializers.{HSerializer, HTypeable}
+import com.azavea.hiveless.serializers.{HConverter, HSerializer}
 import cats.Id
 import org.locationtech.jts.geom.Geometry
 import org.apache.spark.sql.jts.GeometryUDT
@@ -24,8 +24,9 @@ import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.types.DataType
 
 package object spatial extends Serializable {
-  implicit val geometryHTypeable: HTypeable[Id, Geometry] =
-    arguments => GeometryUDT.deserialize(HTypeable.internalRowHTypeable.deserialize(arguments))
+  implicit val geometryHConverter: HConverter[Id, Geometry] = new HConverter[Id, Geometry] {
+    def convert(argument: AnyRef): Geometry = GeometryUDT.deserialize(HConverter.internalRowHConverter.convert(argument))
+  }
 
   implicit val geometrySerializer: HSerializer[Geometry] = new HSerializer[Geometry] {
     def dataType: DataType                 = GeometryUDT
