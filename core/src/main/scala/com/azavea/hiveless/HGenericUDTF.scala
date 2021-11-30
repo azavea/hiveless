@@ -64,7 +64,6 @@ abstract class HGenericUDTF extends GenericUDTF {
 
   // accepts deserialized items
   // returns not serialized items
-  // may mutate the resultInspector!
   def eval(arguments: Array[AnyRef]): Array[AnyRef]
 
   def process(arguments: Array[AnyRef]): Unit = {
