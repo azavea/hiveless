@@ -28,8 +28,8 @@ trait HGenericUDF[R] extends GenericUDF {
 
   protected def serializeNullable: R => Any = HivelessInternals.nullableUDF(serialize)
 
-  @transient lazy val resultInspector: ObjectInspector  = HivelessInternals.toWritableInspector(dataType)
-  protected var inputInspectors: Array[ObjectInspector] = _
+  @transient lazy val resultInspector: ObjectInspector             = HivelessInternals.toWritableInspector(dataType)
+  @transient protected var inputInspectors: Array[ObjectInspector] = _
 
   def getDisplayString(children: Array[String]): String = name
 
