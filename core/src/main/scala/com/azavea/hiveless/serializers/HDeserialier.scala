@@ -16,9 +16,6 @@
 
 package com.azavea.hiveless.serializers
 
-import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
-import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
-
 trait HDeserialier[F[_], T] extends Serializable {
-  def deserialize(arguments: Array[GenericUDF.DeferredObject], inspectors: Array[ObjectInspector]): F[T]
+  def deserialize(arguments: Array[AnyRef]): F[T]
 }

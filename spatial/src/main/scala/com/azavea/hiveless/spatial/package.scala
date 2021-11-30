@@ -25,7 +25,7 @@ import org.apache.spark.sql.types.DataType
 
 package object spatial extends Serializable {
   implicit val geometryUnaryDeserializer: UnaryDeserializer[Id, Geometry] =
-    (arguments, inspectors) => GeometryUDT.deserialize(UnaryDeserializer.internalRowUnaryDeserializer.deserialize(arguments, inspectors))
+    arguments => GeometryUDT.deserialize(UnaryDeserializer.internalRowUnaryDeserializer.deserialize(arguments))
 
   implicit val geometrySerializer: HSerializer[Geometry] = new HSerializer[Geometry] {
     def dataType: DataType                 = GeometryUDT
