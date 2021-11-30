@@ -21,22 +21,24 @@ import cats.syntax.apply._
 import cats.syntax.functor._
 import shapeless.{::, Generic, HList, HNil, IsTuple}
 
-trait GenericDeserializer[F[_], L] extends HDeserialier[F, L]
+trait GenericTypeable[F[_], L] extends Serializable {
+  def deserialize(arguments: Array[AnyRef]): F[L]
+}
 
-object GenericDeserializer extends Serializable {
-  def apply[F[_], L](implicit ev: GenericDeserializer[F, L]): GenericDeserializer[F, L] = ev
+object GenericTypeable extends Serializable {
+  def apply[F[_], L](implicit ev: GenericTypeable[F, L]): GenericTypeable[F, L] = ev
 
   /** A corner case, to avoid Tuple1[T] usage. */
   implicit def genericDeserializerTuple1[F[_]: Functor, P](implicit
-      d: GenericDeserializer[F, P :: HNil]
-  ): GenericDeserializer[F, P] = new GenericDeserializer[F, P] {
+      d: GenericTypeable[F, P :: HNil]
+  ): GenericTypeable[F, P] = new GenericTypeable[F, P] {
     def deserialize(arguments: Array[AnyRef]): F[P] = d.deserialize(arguments).map(_.head)
   }
 
   implicit def genericDeserializerTuple[F[_]: Functor, P: IsTuple, R <: HList](implicit
       gen: Generic.Aux[P, R],
-      d: GenericDeserializer[F, R]
-  ): GenericDeserializer[F, P] = new GenericDeserializer[F, P] {
+      d: GenericTypeable[F, R]
+  ): GenericTypeable[F, P] = new GenericTypeable[F, P] {
     def deserialize(arguments: Array[AnyRef]): F[P] = d.deserialize(arguments).map(gen.from)
   }
 
@@ -46,9 +48,9 @@ object GenericDeserializer extends Serializable {
    *   Unable to find class: com.azavea.hiveless.serializers.GenericDeserializer$$$Lambda$4543/585871703
    */
   // format: on
-  implicit def genericDeserializerHNil[F[_]: UnaryDeserializer[*[_], HNil]]: GenericDeserializer[F, HNil] = new GenericDeserializer[F, HNil] {
+  implicit def genericDeserializerHNil[F[_]: HTypeable[*[_], HNil]]: GenericTypeable[F, HNil] = new GenericTypeable[F, HNil] {
     def deserialize(arguments: Array[AnyRef]): F[HNil] =
-      UnaryDeserializer[F, HNil].deserialize(arguments)
+      HTypeable[F, HNil].deserialize(arguments)
   }
 
   // format: off
@@ -63,10 +65,10 @@ object GenericDeserializer extends Serializable {
    */
   // format: on
   implicit def genericDeserializerHCons[F[_]: Apply, H, T <: HList](implicit
-      dh: UnaryDeserializer[F, H],
-      dt: GenericDeserializer[F, T]
-  ): GenericDeserializer[F, H :: T] = new GenericDeserializer[F, H :: T] {
+      dh: HTypeable[F, H],
+      dt: GenericTypeable[F, T]
+  ): GenericTypeable[F, H :: T] = new GenericTypeable[F, H :: T] {
     def deserialize(arguments: Array[AnyRef]): F[H :: T] =
-      (dh.deserializeUnary(arguments.head), dt.deserialize(arguments.tail)).mapN(_ :: _)
+      (dh.deserialize(arguments.head), dt.deserialize(arguments.tail)).mapN(_ :: _)
   }
 }

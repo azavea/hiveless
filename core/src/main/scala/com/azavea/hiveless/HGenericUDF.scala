@@ -42,7 +42,7 @@ trait HGenericUDF[R] extends GenericUDF {
   def eval(arguments: Array[AnyRef]): R
 
   def evaluate(arguments: Array[GenericUDF.DeferredObject]): AnyRef = {
-    val deserializedArguments = arguments.zip(inputInspectors).map { case (a, i) => HivelessInternals.unwrap[AnyRef](a, i) }
+    val deserializedArguments = arguments.zip(inputInspectors).map { case (a, i) => HivelessInternals.unwrap[AnyRef](a.get, i) }
     HivelessInternals.wrap(serializeNullable(eval(deserializedArguments)), resultInspector, dataType)
   }
 }
