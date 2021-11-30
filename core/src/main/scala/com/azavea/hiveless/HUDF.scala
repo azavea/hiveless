@@ -28,5 +28,5 @@ abstract class HUDF[P, R](implicit d: GenericDeserializer[Try, P], s: HSerialize
   def function: P => R
 
   def eval(arguments: Array[GenericUDF.DeferredObject]): R =
-    d.deserialize(arguments, inspectors).map(function).getOrElse(null.asInstanceOf[R])
+    d.deserialize(arguments, inputInspectors).map(function).getOrElse(null.asInstanceOf[R])
 }

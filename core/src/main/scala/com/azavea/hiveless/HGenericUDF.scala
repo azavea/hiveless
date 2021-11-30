@@ -28,12 +28,12 @@ trait HGenericUDF[R] extends GenericUDF {
 
   @transient lazy val resultInspector: ObjectInspector = HivelessInternals.toWritableInspector(dataType)
 
-  protected var inspectors: Array[ObjectInspector] = _
+  protected var inputInspectors: Array[ObjectInspector] = _
 
   def getDisplayString(children: Array[String]): String = name
 
   def initialize(arguments: Array[ObjectInspector]): ObjectInspector = {
-    inspectors = arguments
+    inputInspectors = arguments
     resultInspector
   }
 
