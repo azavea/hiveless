@@ -16,7 +16,8 @@ lazy val commonSettings = Seq(
     "-language:postfixOps",
     "-language:existentials",
     "-feature",
-    "-target:jvm-1.8"
+    "-target:jvm-1.8",
+    "-Xsource:3"
   ),
   licenses               := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
   homepage               := Some(url("https://github.com/azavea/hiveless")),
