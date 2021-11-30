@@ -49,7 +49,6 @@ object HivelessInternals extends HiveInspectors with Serializable {
       toWritableInspector(sqlType)
   }
 
-  def unwrap[T](a: Any, deser: ObjectInspector): T   = unwrapperFor(deser)(a).asInstanceOf[T]
-  def unwrapAny(a: Any, deser: ObjectInspector): Any = unwrapperFor(deser)(a)
-  def wrap(a: Any, ser: ObjectInspector): AnyRef     = wrapperFor(ser, inspectorToDataType(ser))(a).asInstanceOf[AnyRef]
+  def unwrap[T](a: Any, deser: ObjectInspector): T = unwrapperFor(deser)(a).asInstanceOf[T]
+  def wrap(a: Any, ser: ObjectInspector): AnyRef   = wrapperFor(ser, inspectorToDataType(ser))(a).asInstanceOf[AnyRef]
 }
