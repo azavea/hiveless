@@ -51,4 +51,9 @@ object HivelessInternals extends HiveInspectors with Serializable {
 
   def unwrap[T](a: Any, deser: ObjectInspector): T = unwrapperFor(deser)(a).asInstanceOf[T]
   def wrap(a: Any, ser: ObjectInspector): AnyRef   = wrapperFor(ser, inspectorToDataType(ser))(a).asInstanceOf[AnyRef]
+
+  def nullableUDF[A1, RT](f: A1 => RT): A1 => RT = {
+    case null => null.asInstanceOf[RT]
+    case out1 => f(out1)
+  }
 }

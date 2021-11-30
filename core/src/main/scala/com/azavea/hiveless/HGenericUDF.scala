@@ -26,8 +26,9 @@ trait HGenericUDF[R] extends GenericUDF {
   def dataType: DataType
   def serialize: R => Any
 
-  @transient lazy val resultInspector: ObjectInspector = HivelessInternals.toWritableInspector(dataType)
+  protected def serializeNullable: R => Any = HivelessInternals.nullableUDF(serialize)
 
+  @transient lazy val resultInspector: ObjectInspector  = HivelessInternals.toWritableInspector(dataType)
   protected var inputInspectors: Array[ObjectInspector] = _
 
   def getDisplayString(children: Array[String]): String = name
@@ -39,8 +40,6 @@ trait HGenericUDF[R] extends GenericUDF {
 
   def eval(arguments: Array[GenericUDF.DeferredObject]): R
 
-  def evaluate(arguments: Array[GenericUDF.DeferredObject]): AnyRef = {
-    val e = eval(arguments)
-    HivelessInternals.wrap(if (e != null) serialize(e) else e, resultInspector, dataType)
-  }
+  def evaluate(arguments: Array[GenericUDF.DeferredObject]): AnyRef =
+    HivelessInternals.wrap(serializeNullable(eval(arguments)), resultInspector, dataType)
 }

@@ -26,11 +26,11 @@ trait HDataTypes[T] {
 object HDataTypes {
   def apply[T](implicit ev: HDataTypes[T]): HDataTypes[T] = ev
 
-  implicit def tuple1DataTypesHCons[P](implicit d: HDataTypes[P :: HNil]): HDataTypes[P] =
-    new HDataTypes[P] { def dataTypes: List[DataType] = d.dataTypes }
+  implicit def tuple1DataTypesHCons[T](implicit d: HDataTypes[T :: HNil]): HDataTypes[T] =
+    new HDataTypes[T] { def dataTypes: List[DataType] = d.dataTypes }
 
-  implicit def tupleDataTypes[P: IsTuple, L <: HList](implicit gen: Generic.Aux[P, L], d: HDataTypes[L]): HDataTypes[P] =
-    new HDataTypes[P] { def dataTypes: List[DataType] = d.dataTypes }
+  implicit def tupleDataTypes[T: IsTuple, L <: HList](implicit gen: Generic.Aux[T, L], d: HDataTypes[L]): HDataTypes[T] =
+    new HDataTypes[T] { def dataTypes: List[DataType] = d.dataTypes }
 
   implicit val hnilHDataTypes: HDataTypes[HNil] = new HDataTypes[HNil] { def dataTypes: List[DataType] = Nil }
 

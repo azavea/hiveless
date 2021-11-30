@@ -19,7 +19,7 @@ package com.azavea.hiveless.serializers
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 import org.apache.spark.sql.catalyst.InternalRow
-import org.apache.spark.sql.hive.HivelessInternals
+import org.apache.spark.sql.hive.HivelessInternals.unwrap
 import org.apache.spark.sql.types.Decimal
 import org.apache.spark.unsafe.types.UTF8String
 import cats.Id
@@ -52,19 +52,19 @@ object UnaryDeserializer extends Serializable {
 
   /** Spark internal deserializers. */
   implicit val internalRowUnaryDeserializer: UnaryDeserializer[Id, InternalRow] =
-    (arguments, inspectors) => HivelessInternals.unwrap[InternalRow](arguments.head.get, inspectors.head)
+    (arguments, inspectors) => unwrap[InternalRow](arguments.head.get, inspectors.head)
 
   implicit val utf8StringUnaryDeserializer: UnaryDeserializer[Id, UTF8String] =
-    (arguments, inspectors) => HivelessInternals.unwrap[UTF8String](arguments.head.get, inspectors.head)
+    (arguments, inspectors) => unwrap[UTF8String](arguments.head.get, inspectors.head)
 
   implicit val decimalUnaryDeserializer: UnaryDeserializer[Id, Decimal] =
-    (arguments, inspectors) => HivelessInternals.unwrap[Decimal](arguments.head.get, inspectors.head)
+    (arguments, inspectors) => unwrap[Decimal](arguments.head.get, inspectors.head)
 
   val nativeDoubleUnaryDeserializer: UnaryDeserializer[Id, Double] =
-    (arguments, inspectors) => HivelessInternals.unwrap[Double](arguments.head.get, inspectors.head)
+    (arguments, inspectors) => unwrap[Double](arguments.head.get, inspectors.head)
 
   val nativeIntUnaryDeserializer: UnaryDeserializer[Id, Int] =
-    (arguments, inspectors) => HivelessInternals.unwrap[Int](arguments.head.get, inspectors.head)
+    (arguments, inspectors) => unwrap[Int](arguments.head.get, inspectors.head)
 
   /** JvmRepr deserializers. */
   implicit val doubleUnaryDeserializer: UnaryDeserializer[Id, Double] =
