@@ -69,9 +69,11 @@ abstract class HGenericUDTF extends GenericUDTF {
 
   def process(arguments: Array[AnyRef]): Unit = {
     // get all field inspectors
-    // HUDF handles that in terms of the HDeserializer
-    // which allows a more flexible control over this process
+    // HUDF handles that in terms of the HDeserializer which gives a more flexible control over this process
+    // HUDF operates with the GenericUDF.DeferredObject, which could be null after .get()
+    // it is not the case for the UDTF though
     // For HUDTF we don't expect to know all column types since this function can be applied to the entire function
+    // and we don't operate with the GenericUDF.DeferredObject objects
     val deserializedArguments = arguments.zipWithIndex.map { case (a, idx) =>
       HivelessInternals.unwrap[AnyRef](a, inputFieldInspectors(idx).getFieldObjectInspector)
     }
