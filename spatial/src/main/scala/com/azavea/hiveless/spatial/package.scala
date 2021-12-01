@@ -24,10 +24,11 @@ import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.types.DataType
 
 package object spatial extends Serializable {
-  implicit val geometryUnaryDeserializer: UnaryDeserializer[Id, Geometry] =
-    (arguments, inspectors) => GeometryUDT.deserialize(UnaryDeserializer.internalRowUnaryDeserializer.deserialize(arguments, inspectors))
+  implicit def geometryUnaryDeserializer[T <: Geometry]: UnaryDeserializer[Id, T] =
+    (arguments, inspectors) =>
+      GeometryUDT.deserialize(UnaryDeserializer.internalRowUnaryDeserializer.deserialize(arguments, inspectors)).asInstanceOf[T]
 
-  implicit val geometrySerializer: HSerializer[Geometry] = new HSerializer[Geometry] {
+  implicit def geometrySerializer[T <: Geometry]: HSerializer[T] = new HSerializer[T] {
     def dataType: DataType                 = GeometryUDT
     def serialize: Geometry => InternalRow = GeometryUDT.serialize
   }

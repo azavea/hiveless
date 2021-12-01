@@ -23,7 +23,7 @@ import org.apache.spark.sql.hive.HivelessInternals.unwrap
 import org.apache.spark.sql.types.Decimal
 import org.apache.spark.unsafe.types.UTF8String
 import cats.Id
-import shapeless.HNil
+import shapeless.{HNil, Typeable}
 
 import scala.util.Try
 
@@ -79,4 +79,7 @@ object UnaryDeserializer extends Serializable {
 
   implicit val stringUnaryDeserializer: UnaryDeserializer[Id, String] =
     (arguments, inspectors) => utf8StringUnaryDeserializer.deserialize(arguments, inspectors).toString
+
+  implicit def seqUnaryDeserializer[T]: UnaryDeserializer[Id, Seq[T]] =
+    (arguments, inspectors) => unwrap[Seq[T]](arguments.head.get, inspectors.head)
 }
