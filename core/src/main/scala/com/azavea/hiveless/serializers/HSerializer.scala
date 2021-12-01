@@ -18,6 +18,7 @@ package com.azavea.hiveless.serializers
 
 import org.apache.spark.sql.types._
 import org.apache.spark.unsafe.types.UTF8String
+import org.apache.spark.sql.catalyst.util.ArrayData
 
 import java.{lang => jl}
 import scala.reflect.ClassTag
@@ -70,6 +71,6 @@ object HSerializer extends Serializable {
 
   implicit def seqSerializer[T: HSerializer: ClassTag: λ[τ => C[τ] => Seq[τ]], C[_]]: HSerializer[C[T]] = new HSerializer[C[T]] {
     def dataType: DataType     = ArrayType(HSerializer[T].dataType)
-    def serialize: C[T] => Any = _.toArray
+    def serialize: C[T] => Any = seq => ArrayData.toArrayData(seq.toArray)
   }
 }

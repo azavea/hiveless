@@ -23,8 +23,10 @@ import org.apache.spark.sql.hive.HivelessInternals.unwrap
 import org.apache.spark.sql.types.Decimal
 import org.apache.spark.unsafe.types.UTF8String
 import cats.Id
+import org.apache.spark.sql.catalyst.util.ArrayData
 import shapeless.HNil
 
+import scala.reflect.ClassTag
 import scala.util.Try
 
 trait UnaryDeserializer[F[_], T] extends HDeserialier[F, T] {
@@ -60,6 +62,9 @@ object UnaryDeserializer extends Serializable {
   implicit val decimalUnaryDeserializer: UnaryDeserializer[Id, Decimal] =
     (arguments, inspectors) => unwrap[Decimal](arguments.head.get, inspectors.head)
 
+  implicit val arrayDataUnaryDeserializer: UnaryDeserializer[Id, ArrayData] =
+    (arguments, inspectors) => unwrap[ArrayData](arguments.head.get, inspectors.head)
+
   val nativeDoubleUnaryDeserializer: UnaryDeserializer[Id, Double] =
     (arguments, inspectors) => unwrap[Double](arguments.head.get, inspectors.head)
 
@@ -77,6 +82,9 @@ object UnaryDeserializer extends Serializable {
 
   val nativeByteUnaryDeserializer: UnaryDeserializer[Id, Byte] =
     (arguments, inspectors) => unwrap[Byte](arguments.head.get, inspectors.head)
+
+  def nativeArrayUnaryDeserializer[T]: UnaryDeserializer[Id, Array[T]] =
+    (arguments, inspectors) => unwrap[Array[T]](arguments.head.get, inspectors.head)
 
   /** JvmRepr deserializers. */
   implicit val doubleUnaryDeserializer: UnaryDeserializer[Id, Double] =
@@ -112,6 +120,8 @@ object UnaryDeserializer extends Serializable {
   implicit val stringUnaryDeserializer: UnaryDeserializer[Id, String] =
     (arguments, inspectors) => utf8StringUnaryDeserializer.deserialize(arguments, inspectors).toString
 
-  implicit def seqUnaryDeserializer[T: λ[τ => C[τ] => Seq[τ]], C[_]]: UnaryDeserializer[Id, C[T]] =
-    (arguments, inspectors) => unwrap[C[T]](arguments.head.get, inspectors.head)
+  implicit def seqUnaryDeserializer[T: HSerializer: ClassTag]: UnaryDeserializer[Id, Array[T]] =
+    (arguments, inspectors) =>
+      Try(arrayDataUnaryDeserializer.deserialize(arguments, inspectors).toArray[T](HSerializer[T].dataType))
+        .getOrElse(nativeArrayUnaryDeserializer.deserialize(arguments, inspectors))
 }
