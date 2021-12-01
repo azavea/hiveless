@@ -16,8 +16,6 @@
 
 package com.azavea.hiveless.serializers
 
-import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
-import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.hive.HivelessInternals.unwrap
 import org.apache.spark.sql.types.Decimal
@@ -29,10 +27,7 @@ import shapeless.HNil
 import scala.reflect.ClassTag
 import scala.util.Try
 
-trait UnaryDeserializer[F[_], T] extends HDeserialier[F, T] {
-  def deserialize(argument: GenericUDF.DeferredObject, inspector: ObjectInspector): F[T] =
-    deserialize(Array(argument), Array(inspector))
-}
+trait UnaryDeserializer[F[_], T] extends HDeserialier[F, T]
 
 object UnaryDeserializer extends Serializable {
   def apply[F[_], T](implicit ev: UnaryDeserializer[F, T]): UnaryDeserializer[F, T] = ev

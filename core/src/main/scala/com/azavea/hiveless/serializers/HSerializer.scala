@@ -31,14 +31,14 @@ trait HSerializer[T] extends Serializable {
 /**
  * Identity serializer that just carries the corresponding Spark type. Useful since HSerializer.instance may cause serialization errors.
  */
-trait IdentityHSerializer[T] extends HSerializer[T] { def serialize: T => T = identity }
+trait IdHSerializer[T] extends HSerializer[T] { def serialize: T => T = identity }
 
 object HSerializer extends Serializable {
   def apply[T](implicit ev: HSerializer[T]): HSerializer[T] = ev
 
   // format: off
   /**
-   * Intentionally not used for instances implementation, causes the following failure on DataBricks::
+   * Intentionally not used for instances implementation, causes the following failure on DataBricks:
    *   Unable to find class: com.azavea.hiveless.serializers.HSerializer$$$Lambda$5659/1670981434
    *   Serialization trace:
    *   s$1 (com.azavea.hiveless.serializers.HSerializer$$anon$1)
@@ -49,25 +49,25 @@ object HSerializer extends Serializable {
     def serialize: T => Any = s
   }
 
-  implicit val booleanSerializer: HSerializer[Boolean] = new IdentityHSerializer[Boolean] { def dataType: DataType = BooleanType }
-  implicit val doubleSerializer: HSerializer[Double]   = new IdentityHSerializer[Double] { def dataType: DataType = DoubleType }
-  implicit val floatSerializer: HSerializer[Float]     = new IdentityHSerializer[Float] { def dataType: DataType = FloatType }
-  implicit val longSerializer: HSerializer[Long]       = new IdentityHSerializer[Long] { def dataType: DataType = LongType }
-  implicit val integerSerializer: HSerializer[Int]     = new IdentityHSerializer[Int] { def dataType: DataType = IntegerType }
-  implicit val shortSerializer: HSerializer[Short]     = new IdentityHSerializer[Short] { def dataType: DataType = ShortType }
-  implicit val byteSerializer: HSerializer[Byte]       = new IdentityHSerializer[Byte] { def dataType: DataType = ByteType }
+  implicit val booleanSerializer: HSerializer[Boolean] = new IdHSerializer[Boolean] { def dataType: DataType = BooleanType }
+  implicit val doubleSerializer: HSerializer[Double]   = new IdHSerializer[Double] { def dataType: DataType = DoubleType }
+  implicit val floatSerializer: HSerializer[Float]     = new IdHSerializer[Float] { def dataType: DataType = FloatType }
+  implicit val longSerializer: HSerializer[Long]       = new IdHSerializer[Long] { def dataType: DataType = LongType }
+  implicit val integerSerializer: HSerializer[Int]     = new IdHSerializer[Int] { def dataType: DataType = IntegerType }
+  implicit val shortSerializer: HSerializer[Short]     = new IdHSerializer[Short] { def dataType: DataType = ShortType }
+  implicit val byteSerializer: HSerializer[Byte]       = new IdHSerializer[Byte] { def dataType: DataType = ByteType }
   implicit val stringSerializer: HSerializer[String] = new HSerializer[String] {
     def dataType: DataType       = StringType
     def serialize: String => Any = UTF8String.fromString
   }
 
-  implicit val jlBooleanSerializer: HSerializer[jl.Boolean] = new IdentityHSerializer[jl.Boolean] { def dataType: DataType = BooleanType }
-  implicit val jlDoubleSerializer: HSerializer[jl.Double]   = new IdentityHSerializer[jl.Double] { def dataType: DataType = DoubleType }
-  implicit val jlFloatSerializer: HSerializer[jl.Float]     = new IdentityHSerializer[jl.Float] { def dataType: DataType = FloatType }
-  implicit val jlLongSerializer: HSerializer[jl.Long]       = new IdentityHSerializer[jl.Long] { def dataType: DataType = LongType }
-  implicit val jlIntegerSerializer: HSerializer[jl.Integer] = new IdentityHSerializer[jl.Integer] { def dataType: DataType = IntegerType }
-  implicit val jlShortSerializer: HSerializer[jl.Short]     = new IdentityHSerializer[jl.Short] { def dataType: DataType = ShortType }
-  implicit val jlByteSerializer: HSerializer[jl.Byte]       = new IdentityHSerializer[jl.Byte] { def dataType: DataType = ByteType }
+  implicit val jlBooleanSerializer: HSerializer[jl.Boolean] = new IdHSerializer[jl.Boolean] { def dataType: DataType = BooleanType }
+  implicit val jlDoubleSerializer: HSerializer[jl.Double]   = new IdHSerializer[jl.Double] { def dataType: DataType = DoubleType }
+  implicit val jlFloatSerializer: HSerializer[jl.Float]     = new IdHSerializer[jl.Float] { def dataType: DataType = FloatType }
+  implicit val jlLongSerializer: HSerializer[jl.Long]       = new IdHSerializer[jl.Long] { def dataType: DataType = LongType }
+  implicit val jlIntegerSerializer: HSerializer[jl.Integer] = new IdHSerializer[jl.Integer] { def dataType: DataType = IntegerType }
+  implicit val jlShortSerializer: HSerializer[jl.Short]     = new IdHSerializer[jl.Short] { def dataType: DataType = ShortType }
+  implicit val jlByteSerializer: HSerializer[jl.Byte]       = new IdHSerializer[jl.Byte] { def dataType: DataType = ByteType }
 
   implicit def seqSerializer[T: HSerializer: ClassTag: λ[τ => C[τ] => Seq[τ]], C[_]]: HSerializer[C[T]] = new HSerializer[C[T]] {
     def dataType: DataType     = ArrayType(HSerializer[T].dataType)

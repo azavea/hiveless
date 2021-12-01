@@ -21,4 +21,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 
 trait HDeserialier[F[_], T] extends Serializable {
   def deserialize(arguments: Array[GenericUDF.DeferredObject], inspectors: Array[ObjectInspector]): F[T]
+
+  def deserialize(argument: GenericUDF.DeferredObject, inspector: ObjectInspector): F[T] =
+    deserialize(Array(argument), Array(inspector))
 }
