@@ -20,13 +20,13 @@ import org.apache.spark.unsafe.types.UTF8String
 
 import java.{lang => jl}
 
-trait HConverter[T] {
+trait HConverter[T] extends Serializable {
   def convert(argument: Any): T
 }
 
 trait IdHConverter[T] extends HConverter[T] { def convert(argument: Any): T = argument.asInstanceOf[T] }
 
-object HConverter {
+object HConverter extends Serializable {
   def apply[T](implicit ev: HConverter[T]): HConverter[T] = ev
 
   implicit val booleanConverter: HConverter[Boolean] = new IdHConverter[Boolean] {}

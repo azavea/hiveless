@@ -34,6 +34,5 @@ class ST_ConvexHull extends AbstractGenericUDAFResolver {
     def reset: Unit = accumulator = null
   }
 
-  class ST_ConvexHullEvaluator extends HGenericUDAFEvaluator[Geometry]
-  override def getEvaluator(info: Array[TypeInfo]): GenericUDAFEvaluator = new ST_ConvexHullEvaluator
+  override def getEvaluator(info: Array[TypeInfo]): GenericUDAFEvaluator = HGenericUDAFEvaluator[Geometry]
 }

@@ -38,6 +38,6 @@ abstract class HAggregationBuffer[T: HSerializer] extends AggregationBuffer with
   def reset: Unit
 }
 
-object HAggregationBuffer {
+object HAggregationBuffer extends Serializable {
   def apply[T](implicit ev: HAggregationBuffer[T]): HAggregationBuffer[T] = ev
 }

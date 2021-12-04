@@ -23,7 +23,7 @@ import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.hive.HivelessInternals
 import org.apache.spark.sql.types.DataType
 
-abstract class HGenericUDAFEvaluator[T: HAggregationBuffer: HDataTypes: HConverter] extends GenericUDAFEvaluator with Serializable {
+class HGenericUDAFEvaluator[T: HAggregationBuffer: HDataTypes: HConverter] extends GenericUDAFEvaluator with Serializable {
   def dataType: DataType = HDataTypes[T].dataTypes.head
 
   protected def convertNullable: Any => T                = HivelessInternals.nullableUDF(HConverter[T].convert)
@@ -56,4 +56,8 @@ abstract class HGenericUDAFEvaluator[T: HAggregationBuffer: HDataTypes: HConvert
 
   def terminate(aggregationBuffer: GenericUDAFEvaluator.AggregationBuffer): AnyRef =
     terminatePartial(aggregationBuffer)
+}
+
+object HGenericUDAFEvaluator extends Serializable {
+  def apply[T: HAggregationBuffer: HDataTypes: HConverter]: HGenericUDAFEvaluator[T] = new HGenericUDAFEvaluator[T]
 }

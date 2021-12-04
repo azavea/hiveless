@@ -20,10 +20,10 @@ import org.apache.spark.sql.types.DataType
 import shapeless.{::, Generic, HList, HNil, IsTuple}
 
 /** HDataType of type T (jvmRepr) that matches the catalystRepr */
-trait HDataTypes[T] {
+trait HDataTypes[T] extends Serializable {
   def dataTypes: List[DataType]
 }
-object HDataTypes {
+object HDataTypes extends Serializable {
   def apply[T](implicit ev: HDataTypes[T]): HDataTypes[T] = ev
 
   implicit def tuple1DataTypesHCons[T](implicit d: HDataTypes[T :: HNil]): HDataTypes[T] =
