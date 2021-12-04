@@ -30,8 +30,8 @@ abstract class HAggregationBuffer[T: HSerializer] extends AggregationBuffer with
   protected def serializeNullable: T => Any            = HivelessInternals.nullableUDF(serialize)
   @transient lazy val resultInspector: ObjectInspector = HivelessInternals.toWritableInspector(dataType)
 
-  def union(argument: T): Unit
-  def union(argument: Seq[T]): Unit = argument.foreach(union)
+  def add(argument: T): Unit
+  def add(argument: Seq[T]): Unit = argument.foreach(add)
 
   def get: AnyRef = HivelessInternals.wrap(serializeNullable(accumulator), resultInspector)
 

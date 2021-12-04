@@ -44,7 +44,7 @@ class HGenericUDAFEvaluator[T: HAggregationBuffer: HDataTypes: HConverter] exten
   def iterate(aggregationBuffer: GenericUDAFEvaluator.AggregationBuffer, objects: Array[AnyRef]): Unit =
     aggregationBuffer
       .asInstanceOf[HAggregationBuffer[T]]
-      .union(objects.zip(inputInspectors).map { case (o, i) => convertNullable(HivelessInternals.unwrap[InternalRow](o, i)) }.filter(_ != null))
+      .add(objects.zip(inputInspectors).map { case (o, i) => convertNullable(HivelessInternals.unwrap[InternalRow](o, i)) }.filter(_ != null))
 
   def terminatePartial(aggregationBuffer: GenericUDAFEvaluator.AggregationBuffer): AnyRef =
     aggregationBuffer

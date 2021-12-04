@@ -25,7 +25,7 @@ class ST_ConvexHull extends AbstractGenericUDAFResolver {
   implicit def geometryConvexHullBuffer: HAggregationBuffer[Geometry] = new HAggregationBuffer[Geometry] {
     protected var accumulator: Geometry = _
 
-    def union(argument: Geometry): Unit =
+    def add(argument: Geometry): Unit =
       if (argument != null)
         if (accumulator == null) accumulator = argument.convexHull()
         // convexHull of the argument to avoid collecting union into the Geometry Collection
