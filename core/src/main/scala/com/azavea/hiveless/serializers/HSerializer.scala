@@ -69,7 +69,7 @@ object HSerializer extends Serializable {
   implicit val jlShortSerializer: HSerializer[jl.Short]     = new IdHSerializer[jl.Short] { def dataType: DataType = ShortType }
   implicit val jlByteSerializer: HSerializer[jl.Byte]       = new IdHSerializer[jl.Byte] { def dataType: DataType = ByteType }
 
-  implicit def seqSerializer[T: HSerializer: ClassTag: λ[τ => C[τ] => Seq[τ]], C[_]]: HSerializer[C[T]] = new HSerializer[C[T]] {
+  implicit def arraySerializer[T: HSerializer: ClassTag: λ[τ => C[τ] => Seq[τ]], C[_]]: HSerializer[C[T]] = new HSerializer[C[T]] {
     def dataType: DataType     = ArrayType(HSerializer[T].dataType)
     def serialize: C[T] => Any = seq => ArrayData.toArrayData(seq.toArray)
   }

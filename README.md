@@ -20,6 +20,7 @@ CREATE OR REPLACE FUNCTION st_asLatLonText AS 'com.azavea.hiveless.spatial.ST_As
 CREATE OR REPLACE FUNCTION st_asText AS 'com.azavea.hiveless.spatial.ST_AsText';
 CREATE OR REPLACE FUNCTION st_centroid AS 'com.azavea.hiveless.spatial.ST_Centroid';
 CREATE OR REPLACE FUNCTION st_contains AS 'com.azavea.hiveless.spatial.ST_Contains';
+CREATE OR REPLACE FUNCTION st_convexHull AS 'com.azavea.hiveless.spatial.ST_ConvexHull';
 CREATE OR REPLACE FUNCTION st_covers AS 'com.azavea.hiveless.spatial.ST_Covers';
 CREATE OR REPLACE FUNCTION st_crosses AS 'com.azavea.hiveless.spatial.ST_Crosses';
 CREATE OR REPLACE FUNCTION st_difference AS 'com.azavea.hiveless.spatial.ST_Difference';
