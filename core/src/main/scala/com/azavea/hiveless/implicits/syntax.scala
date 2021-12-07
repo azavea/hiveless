@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package com.azavea.hiveless.serializers
+package com.azavea.hiveless.implicits
 
+import com.azavea.hiveless.serializers.HDeserialier
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
-import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 
-trait HDeserialier[F[_], T] extends Serializable {
-  def deserialize(arguments: Array[GenericUDF.DeferredObject], inspectors: Array[ObjectInspector]): F[T]
+object syntax {
+  implicit class DeferredObjectOps(val self: GenericUDF.DeferredObject) extends AnyVal {
 
-  def deserialize(argument: GenericUDF.DeferredObject, inspector: ObjectInspector): F[T] =
-    deserialize(Array(argument), Array(inspector))
-}
-
-object HDeserialier extends Serializable {
-  sealed abstract class Errors(override val getMessage: String) extends RuntimeException
-  object Errors {
-    final case object NullArgument extends Errors("NULL argument passed.")
+    /** Behaves like a regular get, but throws when the result is null. */
+    def getNonEmpty: AnyRef = Option(self.get) match {
+      case Some(r) => r
+      case _       => throw HDeserialier.Errors.NullArgument
+    }
   }
 }

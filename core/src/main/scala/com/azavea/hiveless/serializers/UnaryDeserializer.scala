@@ -16,6 +16,7 @@
 
 package com.azavea.hiveless.serializers
 
+import com.azavea.hiveless.implicits.syntax._
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.hive.HivelessInternals.unwrap
 import org.apache.spark.sql.types.Decimal
@@ -49,37 +50,47 @@ object UnaryDeserializer extends Serializable {
 
   /** Spark internal deserializers. */
   implicit val internalRowUnaryDeserializer: UnaryDeserializer[Id, InternalRow] =
-    (arguments, inspectors) => unwrap[InternalRow](arguments.head.get, inspectors.head)
+    (arguments, inspectors) => unwrap[InternalRow](arguments.head.getNonEmpty, inspectors.head)
 
   implicit val utf8StringUnaryDeserializer: UnaryDeserializer[Id, UTF8String] =
-    (arguments, inspectors) => unwrap[UTF8String](arguments.head.get, inspectors.head)
+    (arguments, inspectors) => unwrap[UTF8String](arguments.head.getNonEmpty, inspectors.head)
 
   implicit val decimalUnaryDeserializer: UnaryDeserializer[Id, Decimal] =
-    (arguments, inspectors) => unwrap[Decimal](arguments.head.get, inspectors.head)
+    (arguments, inspectors) => unwrap[Decimal](arguments.head.getNonEmpty, inspectors.head)
 
   implicit val arrayDataUnaryDeserializer: UnaryDeserializer[Id, ArrayData] =
-    (arguments, inspectors) => unwrap[ArrayData](arguments.head.get, inspectors.head)
+    (arguments, inspectors) => unwrap[ArrayData](arguments.head.getNonEmpty, inspectors.head)
 
   val nativeDoubleUnaryDeserializer: UnaryDeserializer[Id, Double] =
-    (arguments, inspectors) => unwrap[Double](arguments.head.get, inspectors.head)
+    (arguments, inspectors) =>
+      Try(unwrap[Double](arguments.head.getNonEmpty, inspectors.head))
+        .getOrElse(unwrap[Int](arguments.head.getNonEmpty, inspectors.head).toDouble)
 
   val nativeFloatUnaryDeserializer: UnaryDeserializer[Id, Float] =
-    (arguments, inspectors) => unwrap[Float](arguments.head.get, inspectors.head)
+    (arguments, inspectors) =>
+      Try(unwrap[Float](arguments.head.getNonEmpty, inspectors.head))
+        .getOrElse(unwrap[Int](arguments.head.getNonEmpty, inspectors.head).toFloat)
 
   val nativeLongUnaryDeserializer: UnaryDeserializer[Id, Long] =
-    (arguments, inspectors) => unwrap[Long](arguments.head.get, inspectors.head)
+    (arguments, inspectors) =>
+      Try(unwrap[Long](arguments.head.getNonEmpty, inspectors.head))
+        .getOrElse(unwrap[Int](arguments.head.getNonEmpty, inspectors.head).toLong)
 
   val nativeIntUnaryDeserializer: UnaryDeserializer[Id, Int] =
-    (arguments, inspectors) => unwrap[Int](arguments.head.get, inspectors.head)
+    (arguments, inspectors) => unwrap[Int](arguments.head.getNonEmpty, inspectors.head)
 
   val nativeShortUnaryDeserializer: UnaryDeserializer[Id, Short] =
-    (arguments, inspectors) => unwrap[Short](arguments.head.get, inspectors.head)
+    (arguments, inspectors) =>
+      Try(unwrap[Short](arguments.head.getNonEmpty, inspectors.head))
+        .getOrElse(unwrap[Int](arguments.head.getNonEmpty, inspectors.head).toShort)
 
   val nativeByteUnaryDeserializer: UnaryDeserializer[Id, Byte] =
-    (arguments, inspectors) => unwrap[Byte](arguments.head.get, inspectors.head)
+    (arguments, inspectors) =>
+      Try(unwrap[Byte](arguments.head.getNonEmpty, inspectors.head))
+        .getOrElse(unwrap[Int](arguments.head.getNonEmpty, inspectors.head).toByte)
 
   def nativeArrayUnaryDeserializer[T]: UnaryDeserializer[Id, Array[T]] =
-    (arguments, inspectors) => unwrap[Array[T]](arguments.head.get, inspectors.head)
+    (arguments, inspectors) => unwrap[Array[T]](arguments.head.getNonEmpty, inspectors.head)
 
   /** JvmRepr deserializers. */
   implicit val doubleUnaryDeserializer: UnaryDeserializer[Id, Double] =
