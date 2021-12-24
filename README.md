@@ -9,6 +9,7 @@ It adds typed HiveUDFs and implements Spatial Hive UDFs. It consists of the foll
 
 * `hiveless-core` with the typed Hive UDFs API and the initial base set of codecs
 * `hiveless-spatial` with Hive GIS UDFs (depends on [GeoMesa](https://github.com/locationtech/geomesa))
+  * There is also a forked release [CartoDB/analytics-toolbox-databricks](https://github.com/CartoDB/analytics-toolbox-databricks), which is a complete `hiveless-spatial` copy at this point. However, it may contain an extended GIS functionality in the future.
 
 ## Hiveless-spatial supported GIS functions
 
