@@ -22,6 +22,7 @@ import org.apache.spark.sql.types._
 
 object HivelessInternals extends HiveInspectors with Serializable {
   def toWritableInspector(dataType: DataType): ObjectInspector = dataType match {
+    case ArrayType(ByteType, _) => toWritableInspector(BinaryType)
     case ArrayType(tpe, _) =>
       ObjectInspectorFactory.getStandardListObjectInspector(toWritableInspector(tpe))
     case MapType(keyType, valueType, _) =>
