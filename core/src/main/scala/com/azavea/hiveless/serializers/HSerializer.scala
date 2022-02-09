@@ -69,6 +69,17 @@ object HSerializer extends Serializable {
   implicit val jlShortSerializer: HSerializer[jl.Short]     = new IdHSerializer[jl.Short] { def dataType: DataType = ShortType }
   implicit val jlByteSerializer: HSerializer[jl.Byte]       = new IdHSerializer[jl.Byte] { def dataType: DataType = ByteType }
 
+  // format: off
+  /**
+   * Array of bytes is handled differently in between Spark / Hive comparing to the other Array types.
+   * The Spark DataType in this case corresponds to BinaryType, and no serialization is needed.
+   */
+  // format: on
+  implicit def binarySerializer[C[_]](implicit ev: C[Byte] => Seq[Byte]): HSerializer[C[Byte]] = new HSerializer[C[Byte]] {
+    def dataType: DataType        = BinaryType
+    def serialize: C[Byte] => Any = seq => seq.toArray
+  }
+
   implicit def arraySerializer[T: HSerializer: ClassTag: λ[τ => C[τ] => Seq[τ]], C[_]]: HSerializer[C[T]] = new HSerializer[C[T]] {
     def dataType: DataType     = ArrayType(HSerializer[T].dataType)
     def serialize: C[T] => Any = seq => ArrayData.toArrayData(seq.toArray)
