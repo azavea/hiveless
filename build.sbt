@@ -63,7 +63,7 @@ lazy val core = project
       "org.typelevel"    %% "cats-core"  % "2.6.1",
       "com.chuusai"      %% "shapeless"  % "2.3.3", // to be compatible with Spark 3.1.x
       "org.apache.spark" %% "spark-hive" % "3.1.2" % Provided,
-      "org.scalatest"    %% "scalatest"  % "3.2.10" % Test
+      "org.scalatest"    %% "scalatest"  % "3.2.11" % Test
     )
   )
 
