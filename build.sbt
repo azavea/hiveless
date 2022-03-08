@@ -40,7 +40,8 @@ lazy val commonSettings = Seq(
         existingText.flatMap(_ => existingText.map(_.trim)).getOrElse(newText)
       }
     )
-  )
+  ),
+  resolvers += "apache-snapshots" at "https://repository.apache.org/content/repositories/snapshots/"
 )
 
 lazy val root = (project in file("."))
@@ -91,4 +92,19 @@ lazy val spatial = project
       case "META-INF/ECLIPSEF.RSA" | "META-INF/ECLIPSEF.SF" => MergeStrategy.discard
       case _                                                => MergeStrategy.first
     }
+  )
+
+lazy val geoparquet = project
+  .settings(commonSettings)
+  .settings(name := "hiveless-geoparquet")
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.apache.spark" %% "spark-core" % "3.2.0",
+      "org.apache.spark" %% "spark-sql"  % "3.2.0",
+      "org.apache.parquet" % "parquet-avro" % "1.12.1",
+      "org.apache.parquet" % "parquet-hadoop" % "1.12.1",
+      // "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.11",
+      // "org.codehaus.jackson" % "jackson-core-asl" % "1.9.11",
+      "org.scalatest"    %% "scalatest"  % "3.2.10" % Test
+    )
   )
