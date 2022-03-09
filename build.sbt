@@ -41,7 +41,10 @@ lazy val commonSettings = Seq(
       }
     )
   ),
-  resolvers += "apache-snapshots" at "https://repository.apache.org/content/repositories/snapshots/"
+  resolvers ++= Seq(
+    "apache-snapshots" at "https://repository.apache.org/content/repositories/snapshots/",
+    Resolver.mavenLocal
+  )
 )
 
 lazy val root = (project in file("."))
@@ -101,8 +104,9 @@ lazy val geoparquet = project
     libraryDependencies ++= Seq(
       "org.apache.spark" %% "spark-core" % "3.2.0",
       "org.apache.spark" %% "spark-sql"  % "3.2.0",
-      "org.apache.parquet" % "parquet-avro" % "1.12.1",
-      "org.apache.parquet" % "parquet-hadoop" % "1.12.1",
+      "org.apache.parquet" % "parquet-avro" % "1.13.0-SNAPSHOT",
+      "org.apache.parquet" % "parquet-arrow" % "1.13.0-SNAPSHOT",
+      "org.apache.parquet" % "parquet-hadoop" % "1.13.0-SNAPSHOT",
       // "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.11",
       // "org.codehaus.jackson" % "jackson-core-asl" % "1.9.11",
       "org.scalatest"    %% "scalatest"  % "3.2.10" % Test

@@ -15,7 +15,8 @@
  * KIND, either express or implied.  See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */
+ *//*
+
 package org.apache.parquet.hadoop;
 
 import static org.apache.parquet.bytes.BytesUtils.readIntLittleEndian;
@@ -117,9 +118,11 @@ import org.apache.yetus.audience.InterfaceAudience.Private;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+*/
 /**
  * Internal implementation of the Parquet file reader as a block container
- */
+ *//*
+
 public class ParquetFileReader implements Closeable {
 
     private static final Logger LOG = LoggerFactory.getLogger(ParquetFileReader.class);
@@ -130,7 +133,8 @@ public class ParquetFileReader implements Closeable {
 
     private final CRC32 crc;
 
-    /**
+    */
+/**
      * for files provided, check if there's a summary file.
      * If a summary file is found it is used otherwise the file footer is used.
      * @param configuration the hadoop conf to connect to the file system;
@@ -138,7 +142,8 @@ public class ParquetFileReader implements Closeable {
      * @return the footers for those files using the summary file if possible.
      * @throws IOException if there is an exception while reading footers
      * @deprecated metadata files are not recommended and will be removed in 2.0.0
-     */
+     *//*
+
     @Deprecated
     public static List<Footer> readAllFootersInParallelUsingSummaryFiles(Configuration configuration, List<FileStatus> partFiles) throws IOException {
         return readAllFootersInParallelUsingSummaryFiles(configuration, partFiles, false);
@@ -148,7 +153,8 @@ public class ParquetFileReader implements Closeable {
         return skipRowGroups ? SKIP_ROW_GROUPS : NO_FILTER;
     }
 
-    /**
+    */
+/**
      * for files provided, check if there's a summary file.
      * If a summary file is found it is used otherwise the file footer is used.
      * @param configuration the hadoop conf to connect to the file system;
@@ -157,7 +163,8 @@ public class ParquetFileReader implements Closeable {
      * @return the footers for those files using the summary file if possible.
      * @throws IOException if there is an exception while reading footers
      * @deprecated metadata files are not recommended and will be removed in 2.0.0
-     */
+     *//*
+
     @Deprecated
     public static List<Footer> readAllFootersInParallelUsingSummaryFiles(
             final Configuration configuration,
@@ -251,19 +258,22 @@ public class ParquetFileReader implements Closeable {
         }
     }
 
-    /**
+    */
+/**
      * @param configuration the conf to access the File System
      * @param partFiles the files to read
      * @return the footers
      * @throws IOException if an exception was raised while reading footers
      * @deprecated metadata files are not recommended and will be removed in 2.0.0
-     */
+     *//*
+
     @Deprecated
     public static List<Footer> readAllFootersInParallel(final Configuration configuration, List<FileStatus> partFiles) throws IOException {
         return readAllFootersInParallel(configuration, partFiles, false);
     }
 
-    /**
+    */
+/**
      * read all the footers of the files provided
      * (not using summary files)
      * @param configuration the conf to access the File System
@@ -273,7 +283,8 @@ public class ParquetFileReader implements Closeable {
      * @throws IOException if there is an exception while reading footers
      * @deprecated will be removed in 2.0.0;
      *             use {@link ParquetFileReader#open(InputFile, ParquetReadOptions)}
-     */
+     *//*
+
     @Deprecated
     public static List<Footer> readAllFootersInParallel(final Configuration configuration, List<FileStatus> partFiles, final boolean skipRowGroups) throws IOException {
         List<Callable<Footer>> footers = new ArrayList<Callable<Footer>>();
@@ -293,7 +304,8 @@ public class ParquetFileReader implements Closeable {
         }
     }
 
-    /**
+    */
+/**
      * Read the footers of all the files under that path (recursively)
      * not using summary files.
      *
@@ -304,14 +316,16 @@ public class ParquetFileReader implements Closeable {
      * @throws IOException if an exception is thrown while reading the footers
      * @deprecated will be removed in 2.0.0;
      *             use {@link ParquetFileReader#open(InputFile, ParquetReadOptions)}
-     */
+     *//*
+
     @Deprecated
     public static List<Footer> readAllFootersInParallel(Configuration configuration, FileStatus fileStatus, boolean skipRowGroups) throws IOException {
         List<FileStatus> statuses = listFiles(configuration, fileStatus);
         return readAllFootersInParallel(configuration, statuses, skipRowGroups);
     }
 
-    /**
+    */
+/**
      * Read the footers of all the files under that path (recursively)
      * not using summary files.
      * rowGroups are not skipped
@@ -321,20 +335,23 @@ public class ParquetFileReader implements Closeable {
      * @throws IOException if an exception is thrown while reading the footers
      * @deprecated will be removed in 2.0.0;
      *             use {@link ParquetFileReader#open(InputFile, ParquetReadOptions)}
-     */
+     *//*
+
     @Deprecated
     public static List<Footer> readAllFootersInParallel(Configuration configuration, FileStatus fileStatus) throws IOException {
         return readAllFootersInParallel(configuration, fileStatus, false);
     }
 
-    /**
+    */
+/**
      * @param configuration a configuration
      * @param path a file path
      * @return a list of footers
      * @throws IOException if an exception is thrown while reading the footers
      * @deprecated will be removed in 2.0.0;
      *             use {@link ParquetFileReader#open(InputFile, ParquetReadOptions)}
-     */
+     *//*
+
     @Deprecated
     public static List<Footer> readFooters(Configuration configuration, Path path) throws IOException {
         return readFooters(configuration, status(configuration, path));
@@ -344,7 +361,8 @@ public class ParquetFileReader implements Closeable {
         return path.getFileSystem(configuration).getFileStatus(path);
     }
 
-    /**
+    */
+/**
      * this always returns the row groups
      * @param configuration a configuration
      * @param pathStatus a file status to read footers from
@@ -352,13 +370,15 @@ public class ParquetFileReader implements Closeable {
      * @throws IOException if an exception is thrown while reading the footers
      * @deprecated will be removed in 2.0.0;
      *             use {@link ParquetFileReader#open(InputFile, ParquetReadOptions)}
-     */
+     *//*
+
     @Deprecated
     public static List<Footer> readFooters(Configuration configuration, FileStatus pathStatus) throws IOException {
         return readFooters(configuration, pathStatus, false);
     }
 
-    /**
+    */
+/**
      * Read the footers of all the files under that path (recursively)
      * using summary files if possible
      * @param configuration the configuration to access the FS
@@ -368,7 +388,8 @@ public class ParquetFileReader implements Closeable {
      * @throws IOException if an exception is thrown while reading the footers
      * @deprecated will be removed in 2.0.0;
      *             use {@link ParquetFileReader#open(InputFile, ParquetReadOptions)}
-     */
+     *//*
+
     @Deprecated
     public static List<Footer> readFooters(Configuration configuration, FileStatus pathStatus, boolean skipRowGroups) throws IOException {
         List<FileStatus> files = listFiles(configuration, pathStatus);
@@ -389,14 +410,16 @@ public class ParquetFileReader implements Closeable {
         }
     }
 
-    /**
+    */
+/**
      * Specifically reads a given summary file
      * @param configuration a configuration
      * @param summaryStatus file status for a summary file
      * @return the metadata translated for each file
      * @throws IOException if an exception is thrown while reading the summary file
      * @deprecated metadata files are not recommended and will be removed in 2.0.0
-     */
+     *//*
+
     @Deprecated
     public static List<Footer> readSummaryFile(Configuration configuration, FileStatus summaryStatus) throws IOException {
         final Path parent = summaryStatus.getPath().getParent();
@@ -440,7 +463,8 @@ public class ParquetFileReader implements Closeable {
         return result;
     }
 
-    /**
+    */
+/**
      * Reads the meta data block in the footer of the file
      * @param configuration a configuration
      * @param file the parquet File
@@ -448,13 +472,15 @@ public class ParquetFileReader implements Closeable {
      * @throws IOException if an error occurs while reading the file
      * @deprecated will be removed in 2.0.0;
      *             use {@link ParquetFileReader#open(InputFile, ParquetReadOptions)}
-     */
+     *//*
+
     @Deprecated
     public static final ParquetMetadata readFooter(Configuration configuration, Path file) throws IOException {
         return readFooter(configuration, file, NO_FILTER);
     }
 
-    /**
+    */
+/**
      * Reads the meta data in the footer of the file.
      * Skipping row groups (or not) based on the provided filter
      * @param configuration a configuration
@@ -464,25 +490,29 @@ public class ParquetFileReader implements Closeable {
      * @throws IOException  if an error occurs while reading the file
      * @deprecated will be removed in 2.0.0;
      *             use {@link ParquetFileReader#open(InputFile, ParquetReadOptions)}
-     */
+     *//*
+
     public static ParquetMetadata readFooter(Configuration configuration, Path file, MetadataFilter filter) throws IOException {
         return readFooter(HadoopInputFile.fromPath(file, configuration), filter);
     }
 
-    /**
+    */
+/**
      * @param configuration a configuration
      * @param file the Parquet File
      * @return the metadata with row groups.
      * @throws IOException  if an error occurs while reading the file
      * @deprecated will be removed in 2.0.0;
      *             use {@link ParquetFileReader#open(InputFile, ParquetReadOptions)}
-     */
+     *//*
+
     @Deprecated
     public static final ParquetMetadata readFooter(Configuration configuration, FileStatus file) throws IOException {
         return readFooter(configuration, file, NO_FILTER);
     }
 
-    /**
+    */
+/**
      * Reads the meta data block in the footer of the file
      * @param configuration a configuration
      * @param file the parquet File
@@ -491,13 +521,15 @@ public class ParquetFileReader implements Closeable {
      * @throws IOException if an error occurs while reading the file
      * @deprecated will be removed in 2.0.0;
      *             use {@link ParquetFileReader#open(InputFile, ParquetReadOptions)}
-     */
+     *//*
+
     @Deprecated
     public static final ParquetMetadata readFooter(Configuration configuration, FileStatus file, MetadataFilter filter) throws IOException {
         return readFooter(HadoopInputFile.fromStatus(file, configuration), filter);
     }
 
-    /**
+    */
+/**
      * Reads the meta data block in the footer of the file using provided input stream
      * @param file a {@link InputFile} to read
      * @param filter the filter to apply to row groups
@@ -505,7 +537,8 @@ public class ParquetFileReader implements Closeable {
      * @throws IOException if an error occurs while reading the file
      * @deprecated will be removed in 2.0.0;
      *             use {@link ParquetFileReader#open(InputFile, ParquetReadOptions)}
-     */
+     *//*
+
     @Deprecated
     public static final ParquetMetadata readFooter(InputFile file, MetadataFilter filter) throws IOException {
         ParquetReadOptions options;
@@ -594,65 +627,75 @@ public class ParquetFileReader implements Closeable {
         return  converter.readParquetMetadata(footerBytesStream, options.getMetadataFilter(), fileDecryptor, true, 0);
     }
 
-    /**
+    */
+/**
      * @param conf a configuration
      * @param file a file path to open
      * @return a parquet file reader
      * @throws IOException if there is an error while opening the file
      * @deprecated will be removed in 2.0.0; use {@link #open(InputFile)}
-     */
+     *//*
+
     @Deprecated
     public static ParquetFileReader open(Configuration conf, Path file) throws IOException {
         return new ParquetFileReader(HadoopInputFile.fromPath(file, conf),
                 HadoopReadOptions.builder(conf, file).build());
     }
 
-    /**
+    */
+/**
      * @param conf a configuration
      * @param file a file path to open
      * @param filter a metadata filter
      * @return a parquet file reader
      * @throws IOException if there is an error while opening the file
      * @deprecated will be removed in 2.0.0; use {@link #open(InputFile,ParquetReadOptions)}
-     */
+     *//*
+
     @Deprecated
     public static ParquetFileReader open(Configuration conf, Path file, MetadataFilter filter) throws IOException {
         return open(HadoopInputFile.fromPath(file, conf),
                 HadoopReadOptions.builder(conf, file).withMetadataFilter(filter).build());
     }
 
-    /**
+    */
+/**
      * @param conf a configuration
      * @param file a file path to open
      * @param footer a footer for the file if already loaded
      * @return a parquet file reader
      * @throws IOException if there is an error while opening the file
      * @deprecated will be removed in 2.0.0
-     */
+     *//*
+
     @Deprecated
     public static ParquetFileReader open(Configuration conf, Path file, ParquetMetadata footer) throws IOException {
         return new ParquetFileReader(conf, file, footer);
     }
 
-    /**
+    */
+/**
      * Open a {@link InputFile file}.
      *
      * @param file an input file
      * @return an open ParquetFileReader
      * @throws IOException if there is an error while opening the file
-     */
+     *//*
+
     public static ParquetFileReader open(InputFile file) throws IOException {
         return new ParquetFileReader(file, ParquetReadOptions.builder().build());
     }
 
-    /**
+    */
+/**
      * Open a {@link InputFile file} with {@link ParquetReadOptions options}.
      *
      * @param file an input file
      * @param options parquet read options
      * @return an open ParquetFileReader
      * @throws IOException if there is an error while opening the file
-     */
+     *//*
+
     public static ParquetFileReader open(InputFile file, ParquetReadOptions options) throws IOException {
         return new ParquetFileReader(file, options);
     }
@@ -675,21 +718,24 @@ public class ParquetFileReader implements Closeable {
 
     private InternalFileDecryptor fileDecryptor = null;
 
-    /**
+    */
+/**
      * @param configuration the Hadoop conf
      * @param filePath Path for the parquet file
      * @param blocks the blocks to read
      * @param columns the columns to read (their path)
      * @throws IOException if the file can not be opened
      * @deprecated will be removed in 2.0.0.
-     */
+     *//*
+
     @Deprecated
     public ParquetFileReader(Configuration configuration, Path filePath, List<BlockMetaData> blocks,
                              List<ColumnDescriptor> columns) throws IOException {
         this(configuration, null, filePath, blocks, columns);
     }
 
-    /**
+    */
+/**
      * @param configuration the Hadoop conf
      * @param fileMetaData fileMetaData for parquet file
      * @param filePath Path for the parquet file
@@ -697,7 +743,8 @@ public class ParquetFileReader implements Closeable {
      * @param columns the columns to read (their path)
      * @throws IOException if the file can not be opened
      * @deprecated will be removed in 2.0.0.
-     */
+     *//*
+
     @Deprecated
     public ParquetFileReader(
             Configuration configuration, FileMetaData fileMetaData,
@@ -723,26 +770,30 @@ public class ParquetFileReader implements Closeable {
         this.crc = options.usePageChecksumVerification() ? new CRC32() : null;
     }
 
-    /**
+    */
+/**
      * @param conf the Hadoop Configuration
      * @param file Path to a parquet file
      * @param filter a {@link MetadataFilter} for selecting row groups
      * @throws IOException if the file can not be opened
      * @deprecated will be removed in 2.0.0.
-     */
+     *//*
+
     @Deprecated
     public ParquetFileReader(Configuration conf, Path file, MetadataFilter filter) throws IOException {
         this(HadoopInputFile.fromPath(file, conf),
                 HadoopReadOptions.builder(conf, file).withMetadataFilter(filter).build());
     }
 
-    /**
+    */
+/**
      * @param conf the Hadoop Configuration
      * @param file Path to a parquet file
      * @param footer a {@link ParquetMetadata} footer already read from the file
      * @throws IOException if the file can not be opened
      * @deprecated will be removed in 2.0.0.
-     */
+     *//*
+
     @Deprecated
     public ParquetFileReader(Configuration conf, Path file, ParquetMetadata footer) throws IOException {
         this.converter = new ParquetMetadataConverter(conf);
@@ -837,10 +888,12 @@ public class ParquetFileReader implements Closeable {
         return total;
     }
 
-    /**
+    */
+/**
      * @return the path for this file
      * @deprecated will be removed in 2.0.0; use {@link #getFile()} instead
-     */
+     *//*
+
     @Deprecated
     public Path getPath() {
         return new Path(file.toString());
@@ -888,11 +941,13 @@ public class ParquetFileReader implements Closeable {
         writer.appendRowGroups(f, blocks, true);
     }
 
-    /**
+    */
+/**
      * Reads all the columns requested from the row group at the current file position.
      * @throws IOException if an error occurs while reading
      * @return the PageReadStore which can provide PageReaders for each column.
-     */
+     *//*
+
     public PageReadStore readNextRowGroup() throws IOException {
         if (currentBlock == blocks.size()) {
             return null;
@@ -983,7 +1038,8 @@ public class ParquetFileReader implements Closeable {
         return currentRowGroup;
     }
 
-    /**
+    */
+/**
      * Reads all the columns requested from the row group at the current file position. It may skip specific pages based
      * on the column indexes according to the actual filter. As the rows are not aligned among the pages of the different
      * columns row synchronization might be required. See the documentation of the class SynchronizingColumnReader for
@@ -992,7 +1048,8 @@ public class ParquetFileReader implements Closeable {
      * @return the PageReadStore which can provide PageReaders for each column
      * @throws IOException
      *           if any I/O error occurs while reading
-     */
+     *//*
+
     public PageReadStore readNextFilteredRowGroup() throws IOException {
         if (currentBlock == blocks.size()) {
             return null;
@@ -1117,13 +1174,15 @@ public class ParquetFileReader implements Closeable {
         return true;
     }
 
-    /**
+    */
+/**
      * Returns a {@link DictionaryPageReadStore} for the row group that would be
      * returned by calling {@link #readNextRowGroup()} or skipped by calling
      * {@link #skipNextRowGroup()}.
      *
      * @return a DictionaryPageReadStore for the next row group
-     */
+     *//*
+
     public DictionaryPageReadStore getNextDictionaryReader() {
         if (nextDictionaryReader == null && currentBlock < blocks.size()) {
             this.nextDictionaryReader = getDictionaryReader(blocks.get(currentBlock));
@@ -1135,7 +1194,8 @@ public class ParquetFileReader implements Closeable {
         return new DictionaryPageReader(this, block);
     }
 
-    /**
+    */
+/**
      * Reads and decompresses a dictionary page for the given column chunk.
      *
      * Returns null if the given column chunk has no dictionary page.
@@ -1143,7 +1203,8 @@ public class ParquetFileReader implements Closeable {
      * @param meta a column's ColumnChunkMetaData to read the dictionary from
      * @return an uncompressed DictionaryPage or null
      * @throws IOException if there is an error while reading the dictionary
-     */
+     *//*
+
     DictionaryPage readDictionary(ColumnChunkMetaData meta) throws IOException {
         if (!meta.hasDictionaryPage()) {
             return null;
@@ -1216,13 +1277,15 @@ public class ParquetFileReader implements Closeable {
         return new BloomFilterReader(this, block);
     }
 
-    /**
+    */
+/**
      * Reads Bloom filter data for the given column chunk.
      *
      * @param meta a column's ColumnChunkMetaData to read the dictionary from
      * @return an BloomFilter object.
      * @throws IOException if there is an error while reading the Bloom filter.
-     */
+     *//*
+
     public BloomFilter readBloomFilter(ColumnChunkMetaData meta) throws IOException {
         long bloomFilterOffset = meta.getBloomFilterOffset();
         if (bloomFilterOffset < 0) {
@@ -1280,13 +1343,15 @@ public class ParquetFileReader implements Closeable {
         return new BlockSplitBloomFilter(bitset);
     }
 
-    /**
+    */
+/**
      * @param column
      *          the column chunk which the column index is to be returned for
      * @return the column index for the specified column chunk or {@code null} if there is no index
      * @throws IOException
      *           if any I/O error occurs during reading the file
-     */
+     *//*
+
     @Private
     public ColumnIndex readColumnIndex(ColumnChunkMetaData column) throws IOException {
         IndexReference ref = column.getColumnIndexReference();
@@ -1309,13 +1374,15 @@ public class ParquetFileReader implements Closeable {
                 Util.readColumnIndex(f, columnIndexDecryptor, columnIndexAAD));
     }
 
-    /**
+    */
+/**
      * @param column
      *          the column chunk which the offset index is to be returned for
      * @return the offset index for the specified column chunk or {@code null} if there is no index
      * @throws IOException
      *           if any I/O error occurs during reading the file
-     */
+     *//*
+
     @Private
     public OffsetIndex readOffsetIndex(ColumnChunkMetaData column) throws IOException {
         IndexReference ref = column.getOffsetIndexReference();
@@ -1348,10 +1415,12 @@ public class ParquetFileReader implements Closeable {
         }
     }
 
-    /*
+    */
+/*
      * Builder to concatenate the buffers of the discontinuous parts for the same column. These parts are generated as a
      * result of the column-index based filtering when some pages might be skipped at reading.
-     */
+     *//*
+
     private class ChunkListBuilder {
         private class ChunkData {
             final List<ByteBuffer> buffers = new ArrayList<>();
@@ -1399,20 +1468,24 @@ public class ParquetFileReader implements Closeable {
         }
     }
 
-    /**
+    */
+/**
      * The data for a column chunk
-     */
+     *//*
+
     private class Chunk {
 
         protected final ChunkDescriptor descriptor;
         protected final ByteBufferInputStream stream;
         final OffsetIndex offsetIndex;
 
-        /**
+        */
+/**
          * @param descriptor descriptor for the chunk
          * @param buffers ByteBuffers that contain the chunk
          * @param offsetIndex the offset index for this column; might be null
-         */
+         *//*
+
         public Chunk(ChunkDescriptor descriptor, List<ByteBuffer> buffers, OffsetIndex offsetIndex) {
             this.descriptor = descriptor;
             this.stream = ByteBufferInputStream.wrap(buffers);
@@ -1427,10 +1500,12 @@ public class ParquetFileReader implements Closeable {
             return Util.readPageHeader(stream, blockDecryptor, pageHeaderAAD);
         }
 
-        /**
+        */
+/**
          * Calculate checksum of input bytes, throw decoding exception if it does not match the provided
          * reference crc
-         */
+         *//*
+
         private void verifyCrc(int referenceCrc, byte[] bytes, String exceptionMsg) {
             crc.reset();
             crc.update(bytes);
@@ -1439,10 +1514,12 @@ public class ParquetFileReader implements Closeable {
             }
         }
 
-        /**
+        */
+/**
          * Read all of the pages in a given column chunk.
          * @return the list of pages
-         */
+         *//*
+
         public ColumnChunkPageReader readAllPages() throws IOException {
             return readAllPages(null, null, null, -1, -1);
         }
@@ -1579,28 +1656,34 @@ public class ParquetFileReader implements Closeable {
             return offsetIndex.getPageOrdinal(dataPageCountReadSoFar);
         }
 
-        /**
+        */
+/**
          * @param size the size of the page
          * @return the page
          * @throws IOException if there is an error while reading from the file stream
-         */
+         *//*
+
         public BytesInput readAsBytesInput(int size) throws IOException {
             return BytesInput.from(stream.sliceBuffers(size));
         }
 
     }
 
-    /**
+    */
+/**
      * deals with a now fixed bug where compressedLength was missing a few bytes.
-     */
+     *//*
+
     private class WorkaroundChunk extends Chunk {
 
         private final SeekableInputStream f;
 
-        /**
+        */
+/**
          * @param descriptor the descriptor of the chunk
          * @param f the file stream positioned at the end of this chunk
-         */
+         *//*
+
         private WorkaroundChunk(ChunkDescriptor descriptor, List<ByteBuffer> buffers, SeekableInputStream f, OffsetIndex offsetIndex) {
             super(descriptor, buffers, offsetIndex);
             this.f = f;
@@ -1650,9 +1733,11 @@ public class ParquetFileReader implements Closeable {
     }
 
 
-    /**
+    */
+/**
      * Information needed to read a column chunk or a part of it.
-     */
+     *//*
+
     private static class ChunkDescriptor {
 
         private final ColumnDescriptor col;
@@ -1660,12 +1745,14 @@ public class ParquetFileReader implements Closeable {
         private final long fileOffset;
         private final long size;
 
-        /**
+        */
+/**
          * @param col column this chunk is part of
          * @param metadata metadata for the column
          * @param fileOffset offset in the file where this chunk starts
          * @param size size of the chunk
-         */
+         *//*
+
         private ChunkDescriptor(
                 ColumnDescriptor col,
                 ColumnChunkMetaData metadata,
@@ -1695,38 +1782,46 @@ public class ParquetFileReader implements Closeable {
         }
     }
 
-    /**
+    */
+/**
      * Describes a list of consecutive parts to be read at once. A consecutive part may contain whole column chunks or
      * only parts of them (some pages).
-     */
+     *//*
+
     private class ConsecutivePartList {
 
         private final long offset;
         private long length;
         private final List<ChunkDescriptor> chunks = new ArrayList<>();
 
-        /**
+        */
+/**
          * @param offset where the first chunk starts
-         */
+         *//*
+
         ConsecutivePartList(long offset) {
             this.offset = offset;
         }
 
-        /**
+        */
+/**
          * adds a chunk to the list.
          * It must be consecutive to the previous chunk
          * @param descriptor a chunk descriptor
-         */
+         *//*
+
         public void addChunk(ChunkDescriptor descriptor) {
             chunks.add(descriptor);
             length += descriptor.size;
         }
 
-        /**
+        */
+/**
          * @param f file to read the chunks from
          * @param builder used to build chunk list to read the pages for the different columns
          * @throws IOException if there is an error while reading from the stream
-         */
+         *//*
+
         public void readAll(SeekableInputStream f, ChunkListBuilder builder) throws IOException {
             List<Chunk> result = new ArrayList<Chunk>(chunks.size());
             f.seek(offset);
@@ -1759,11 +1854,14 @@ public class ParquetFileReader implements Closeable {
             }
         }
 
-        /**
+        */
+/**
          * @return the position following the last byte of these chunks
-         */
+         *//*
+
         public long endPos() {
             return offset + length;
         }
     }
 }
+*/

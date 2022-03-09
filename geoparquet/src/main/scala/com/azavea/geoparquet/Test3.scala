@@ -15,12 +15,12 @@ import org.apache.parquet.schema.Type
 import java.io.IOException
 import scala.collection.mutable.ListBuffer
 
-object Test2 {
+object Test3 {
   def main(args: Array[String]): Unit = {
     // val path = "/Users/daunnc/subversions/git/github/pomadchin/geoparquet/examples/geoparquet/spark_output.snappy.parquet"
-    val path = "/Users/daunnc/subversions/git/github/pomadchin/geoparquet/examples/geoparquet/java_write_output.snappy.parquet"
+    val path = "/Users/daunnc/subversions/git/github/pomadchin/geoparquet/examples/geoparquet/java_write_output_test.snappy.parquet"
 
-    val res = ParquetReaderUtils.getParquetDataIndex(path)
+    val res = ParquetReaderUtils2.getParquetDataIndex(path)
 
     res
     println(s"res.schema: ${res.schema}")
@@ -30,7 +30,7 @@ object Test2 {
 
 import scala.collection.JavaConverters._
 
-object ParquetReaderUtils {
+object ParquetReaderUtils2 {
   def getParquetDataIndex(filePath: String): Parquet = {
     val simpleGroups = new ListBuffer[SimpleGroup]()
     val reader = ParquetFileReader.open(HadoopInputFile.fromPath(new Path(filePath), new Configuration))
@@ -53,15 +53,15 @@ object ParquetReaderUtils {
     // println(s"rowCounts: ${rowCounts}")
     // println(s"rowCountsSum: ${rowCountsSum}")
     // println(s"paths: ${paths}")
-    // println(s"--offsets--")
-    // offsets.foreach { o => println(o) }
-    // println(s"-----------")
+    println(s"--offsets--")
+    offsets.foreach { o => println(o) }
+    println(s"-----------")
 
     // reader.getDictionaryReader(mds(65))
     // read the correct offset
     // reader.readRowGroup(56)
     // var pages2: PageReadStore = reader.readNextRowGroup
-    var pages: PageReadStore = reader.readRowGroup(56)
+    var pages: PageReadStore = reader.readRowGroup(0)
     while (pages != null) {
       val rows = pages.getRowCount
       val columnIO = new ColumnIOFactory().getColumnIO(schema)
@@ -116,4 +116,3 @@ object ParquetReaderUtils {
   }
 }
 
-case class Parquet(var data: List[SimpleGroup], var schema: List[Type])
