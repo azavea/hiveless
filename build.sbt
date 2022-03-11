@@ -102,6 +102,8 @@ lazy val geoparquet = project
   .settings(name := "hiveless-geoparquet")
   .settings(
     libraryDependencies ++= Seq(
+      "org.locationtech.jts" % "jts-core" % "1.18.1",
+      "org.locationtech.sfcurve" %% "sfcurve-zorder" % "0.2.2",
       "org.apache.spark" %% "spark-core" % "3.2.0",
       "org.apache.spark" %% "spark-sql"  % "3.2.0",
       "org.apache.parquet" % "parquet-avro" % "1.13.0-SNAPSHOT",
