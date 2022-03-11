@@ -2,19 +2,24 @@ package com.azavea.geoparquet
 
 // Generic Avro dependencies
 import org.apache.avro.Schema
-import org.apache.avro.generic.GenericData
+import org.apache.avro.generic.{GenericData, GenericRecord}
 import org.apache.avro.reflect.ReflectData
+import org.apache.avro.specific.SpecificData
 import org.apache.hadoop.conf.Configuration
+import org.apache.parquet.avro.AvroWriteSupport
 import org.apache.parquet.bytes.{BytesInput, HeapByteBufferAllocator}
 import org.apache.parquet.column.page.PageWriter
 import org.apache.parquet.column.statistics.Statistics
-import org.apache.parquet.hadoop.{CodecFactory, ColumnChunkPageWriteStore, ParquetFileReader, ParquetFileWriter}
+import org.apache.parquet.hadoop.{CodecFactory, ColumnChunkPageWriteStore, ManualParquetWriter, ParquetFileReader, ParquetFileWriter}
 import org.apache.parquet.hadoop.ParquetFileWriter.Mode
 import org.apache.parquet.hadoop.util.HadoopOutputFile
 import org.apache.parquet.schema.PrimitiveType.PrimitiveTypeName
 import org.apache.parquet.schema.Types
 import org.apache.parquet.column.Encoding
+import org.apache.parquet.column.values.bloomfilter.BloomFilter
 import org.apache.parquet.format.converter.ParquetMetadataConverter
+import org.apache.parquet.hadoop.api.WriteSupport
+import org.apache.parquet.hadoop.metadata.ColumnChunkMetaData
 
 // Hadoop stuff
 import org.apache.hadoop.fs.Path;
@@ -32,8 +37,11 @@ class UserRank(val id: Int, val rank: Int)
 
 object WTest {
 
+  private def writeSupport[T](avroSchema: Schema, model: GenericData): AvroWriteSupport[T] =
+    new AvroWriteSupport((new AvroSchemaConverter).convert(avroSchema), avroSchema, model)
+
   def main(args: Array[String]): Unit = {
-    write2()
+    write3()
   }
 
   // https://github.com/hydrogen18/write-parquet-example/blob/master/src/main/java/com/hydrogen18/examples/Main.java
@@ -171,12 +179,12 @@ object WTest {
         BytesInput.fromInt(idx * 10),
         statistics
       )
-      store.flushToFileWriter(writer);
+      store.flushToFileWriter(writer)
     }
     writer.endBlock()
     // writer.end(new java.util.HashMap[String, String]())
 
-    writer.startBlock(rowCount)
+    /*writer.startBlock(rowCount)
     parquetSchema.getColumns.asScala.zipWithIndex.foreach { case (col, idx) =>
       val pageWriter: PageWriter = store.getPageWriter(col)
       pageWriter.writePageV2(
@@ -192,9 +200,9 @@ object WTest {
       store.flushToFileWriter(writer);
     }
 
-    writer.endBlock()
+    writer.endBlock()*/
 
-    writer.startBlock(rowCount * 2)
+    /*writer.startBlock(rowCount * 2)
     parquetSchema.getColumns.asScala.zipWithIndex.foreach { case (col, idx) =>
       val pageWriter: PageWriter = store.getPageWriter(col)
       pageWriter.writePageV2(
@@ -207,7 +215,7 @@ object WTest {
         BytesInput.fromInt(((idx + 31) + 10) * 10),
         statistics
       )
-      pageWriter.writePageV2(
+      /*pageWriter.writePageV2(
         rowCount,
         nullCount,
         valueCount,
@@ -216,15 +224,74 @@ object WTest {
         dataEncoding,
         BytesInput.fromInt(((idx + 32) + 10) * 10),
         statistics
-      )
+      )*/
       store.flushToFileWriter(writer);
     }
-    writer.endBlock()
+    writer.endBlock()*/
 
     writer.end(new java.util.HashMap[String, String]())
 
     // val footer = ParquetFileReader.readFooter(new Configuration(), filePath, ParquetMetadataConverter.NO_FILTER)
     // val reader = new ParquetFileReader(new Configuration(), footer.getFileMetaData(), filePath, footer.getBlocks(), parquetSchema.getColumns())
+  }
+
+  def write3() = {
+    val filePath = new Path("/Users/daunnc/subversions/git/github/pomadchin/geoparquet/examples/geoparquet/java_write_output_test_2.snappy.parquet");
+
+    // System.exit(0)
+    // val file = HadoopOutputFile.fromPath(filePath, new Configuration())
+
+    val avroSchema = ReflectData.get().getSchema(classOf[UserRank])
+    val parquetSchema = new AvroSchemaConverter().convert(avroSchema)
+
+    val blockSize = 10
+    val pageSize = 64
+    val rowCount = 1
+    val nullCount = 0
+    val valueCount = rowCount - nullCount
+
+    val d = 1
+    val r = 2
+    val v = 3
+    // TODO: what does it mean?
+    val definitionLevels = BytesInput.fromInt(d)
+    val repetitionLevels = BytesInput.fromInt(r)
+
+    val statistics =
+      Statistics
+        .getBuilderForReading(Types.required(PrimitiveTypeName.BINARY).named("test_binary"))
+        .build()
+
+    val dataEncoding = Encoding.PLAIN
+
+    def compressor(codec: CompressionCodecName) = new CodecFactory(new Configuration(), pageSize).getCompressor(codec)
+
+    val md = new java.util.HashMap[String, String]()
+    md.put("test", "lol")
+
+    // TODO: how to add metadata? through configuration?
+    val writer = new ManualParquetWriter[GenericRecord](
+      filePath,
+      writeSupport(avroSchema, SpecificData.get), // see how it is implemented for InternalRow
+      CompressionCodecName.SNAPPY,
+      ParquetWriter.DEFAULT_PAGE_SIZE,
+      new Configuration(),
+      md
+    )
+
+    (0 until 10).map { i =>
+      val r = new GenericData.Record(avroSchema)
+      r.put("id", i)
+      r.put("rank", i * 10)
+      (r, i)
+    }.foreach { case (r, i) =>
+      writer.write(r)
+      // every second row should be the next row
+      if(i % 2 == 0 && i != 0) writer.nextBlock()
+    }
+
+    writer.close()
+
   }
 }
 

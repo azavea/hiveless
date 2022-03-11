@@ -18,7 +18,8 @@ import scala.collection.mutable.ListBuffer
 object Test3 {
   def main(args: Array[String]): Unit = {
     // val path = "/Users/daunnc/subversions/git/github/pomadchin/geoparquet/examples/geoparquet/spark_output.snappy.parquet"
-    val path = "/Users/daunnc/subversions/git/github/pomadchin/geoparquet/examples/geoparquet/java_write_output_test.snappy.parquet"
+    // val path = "/Users/daunnc/subversions/git/github/pomadchin/geoparquet/examples/geoparquet/java_write_output_test.snappy.parquet"
+    val path = "/Users/daunnc/subversions/git/github/pomadchin/geoparquet/examples/geoparquet/java_write_output_test_2.snappy.parquet"
 
     val res = ParquetReaderUtils2.getParquetDataIndex(path)
 
@@ -35,11 +36,19 @@ object ParquetReaderUtils2 {
     val simpleGroups = new ListBuffer[SimpleGroup]()
     val reader = ParquetFileReader.open(HadoopInputFile.fromPath(new Path(filePath), new Configuration))
     val schema = reader.getFooter.getFileMetaData.getSchema
+
+    println("~~~~~~~~~~")
+    println(reader.getFooter.getFileMetaData.getKeyValueMetaData.asScala.toList)
+    println("~~~~~~~~~~")
+
     val fields = schema.getFields
     // reader.readOffsetIndex()
     // reader.getRowGroups.asScala.map(_.)
     // RowGroup == Page == BlockMetaData
     lazy val mds: List[BlockMetaData] = reader.getRowGroups.asScala.toList
+
+    println(s"mds.length: ${mds.length}")
+
     // chunks by 100 in this case remember in the morning
     lazy val rowCounts = mds.map(_.getRowCount)
     // sum of all rows - 10000
@@ -61,7 +70,7 @@ object ParquetReaderUtils2 {
     // read the correct offset
     // reader.readRowGroup(56)
     // var pages2: PageReadStore = reader.readNextRowGroup
-    var pages: PageReadStore = reader.readRowGroup(0)
+    var pages: PageReadStore = reader.readRowGroup(2)
     while (pages != null) {
       val rows = pages.getRowCount
       val columnIO = new ColumnIOFactory().getColumnIO(schema)

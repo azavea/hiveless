@@ -107,6 +107,10 @@ lazy val geoparquet = project
       "org.apache.parquet" % "parquet-avro" % "1.13.0-SNAPSHOT",
       "org.apache.parquet" % "parquet-arrow" % "1.13.0-SNAPSHOT",
       "org.apache.parquet" % "parquet-hadoop" % "1.13.0-SNAPSHOT",
+      "com.github.davidmoten" % "rtree" % "0.9",
+      "com.github.plokhotnyuk.rtree2d" %% "rtree2d-core" % "0.11.10",
+      // conflicts with some deps, are these local?
+      "com.google.flatbuffers" % "flatbuffers-java" % "2.0.3",
       // "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.11",
       // "org.codehaus.jackson" % "jackson-core-asl" % "1.9.11",
       "org.scalatest"    %% "scalatest"  % "3.2.10" % Test
