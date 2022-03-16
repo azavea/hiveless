@@ -115,7 +115,7 @@ object WTest {
     parquetWriter.close()
   }
 
-  def java() = {
+  def javaTest() = {
     val filePath = new Path("/tmp/java_write_output_test.snappy.parquet");
     val file     = HadoopOutputFile.fromPath(filePath, new Configuration())
 

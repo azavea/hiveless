@@ -2,7 +2,6 @@ package com.azavea.geoparquet
 
 import geotrellis.layer.{LayoutLevel, SpatialKey, ZoomedLayoutScheme}
 import geotrellis.proj4.LatLng
-import geotrellis.vector.Extent
 import geotrellis.store.index.zcurve.Z2
 import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
@@ -103,7 +102,7 @@ object ParquetPartitionedTest {
     val udfBBOX = udf { wkt: String =>
       val geom = WKT.read(wkt)
       val env  = geom.getEnvelopeInternal()
-      Extent(env.getMinX, env.getMaxX, env.getMinY, env.getMaxY)
+      bbox(env.getMinX, env.getMaxX, env.getMinY, env.getMaxY)
     }
 
     val df = ssc.read
