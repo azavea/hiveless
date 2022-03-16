@@ -12,7 +12,7 @@ import scala.io.StdIn
 
 object ParquetPartitionedTest {
   // parquet input, which is the write function output
-  val input = "/tmp/gadm_lvl2-blocked.parquet"
+  val input = "/tmp/gadm_lvl2-blocked-64m.parquet"
 
   def main(args: Array[String]): Unit = {
     val sparkConf = new SparkConf()

@@ -14,7 +14,7 @@ import org.apache.parquet.schema.Type
 
 import scala.collection.mutable.ListBuffer
 
-object Test2 {
+object ReadNaiveTest {
   def main(args: Array[String]): Unit = {
     // val path = "/tmp/spark_output.snappy.parquet"
     val path = "/tmp/java_write_output.snappy.parquet"

@@ -15,11 +15,12 @@ import org.apache.parquet.schema.Type
 import java.io.IOException
 import scala.collection.mutable.ListBuffer
 
-object Test3 {
+object ReadManualTest {
   def main(args: Array[String]): Unit = {
-    val path = "/tmp/gadm_lvl2-blocked.parquet/part-00000-682faa7f-3d07-4a45-a7a3-a5e3b9c38787-c000.snappy.parquet"
+    // val path = "/tmp/gadm_lvl2-blocked.parquet/part-00000-682faa7f-3d07-4a45-a7a3-a5e3b9c38787-c000.snappy.parquet"
+    val path = "/tmp/gadm_lvl2-blocked-64m.parquet/part-00000-2cb82daf-eaa6-4b4f-9e28-e8b8d34cb379-c000.snappy.parquet"
 
-    val res = ParquetReaderUtils2.getParquetDataIndex(path)
+    val res = ParquetReaderUtilsManual.getParquetDataIndex(path)
 
     println(s"res.schema: ${res.schema}")
     println(s"res.data.length: ${res.data.length}")
@@ -28,7 +29,7 @@ object Test3 {
 
 import scala.collection.JavaConverters._
 
-object ParquetReaderUtils2 {
+object ParquetReaderUtilsManual {
   def getParquetDataIndex(filePath: String): Parquet = {
     val simpleGroups = new ListBuffer[SimpleGroup]()
     val reader       = ParquetFileReader.open(HadoopInputFile.fromPath(new Path(filePath), new Configuration))
