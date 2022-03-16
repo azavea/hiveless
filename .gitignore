@@ -50,10 +50,4 @@ metals.sbt
 
 # Test data files #
 
-java/data
-
-# Compiled libs #
-
-java/*.dylib
-java/*.so
-java/*dll
+*.zip

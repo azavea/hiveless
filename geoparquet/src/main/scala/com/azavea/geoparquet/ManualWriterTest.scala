@@ -40,14 +40,13 @@ object WTest {
   private def writeSupport[T](avroSchema: Schema, model: GenericData): AvroWriteSupport[T] =
     new AvroWriteSupport((new AvroSchemaConverter).convert(avroSchema), avroSchema, model)
 
-  def main(args: Array[String]): Unit = {
-    write3()
-  }
+  def main(args: Array[String]): Unit =
+    manualAvro()
 
   // https://github.com/hydrogen18/write-parquet-example/blob/master/src/main/java/com/hydrogen18/examples/Main.java
 
-  def main_(args: Array[String]): Unit = {
-    val avroSchema = ReflectData.get().getSchema(classOf[UserRank])
+  def avroTest(): Unit = {
+    val avroSchema    = ReflectData.get().getSchema(classOf[UserRank])
     val parquetSchema = new AvroSchemaConverter().convert(avroSchema)
 
     /*val dataToWrite = Array.ofDim[UserRank](3)
@@ -55,9 +54,9 @@ object WTest {
     dataToWrite(1) = new UserRank(2, 0)
     dataToWrite(2) = new UserRank(3, 100)*/
 
-    val filePath = new Path("/Users/daunnc/subversions/git/github/pomadchin/geoparquet/examples/geoparquet/java_write_output.snappy.parquet");
+    val filePath  = new Path("/tmp/java_write_output.snappy.parquet");
     val blockSize = 10
-    val pageSize = 64
+    val pageSize  = 64
 
     println(avroSchema)
 
@@ -76,12 +75,14 @@ object WTest {
       .withPageSize(20)
       .build()*/
 
-    (0 until 10000).map { i =>
-      val r = new GenericData.Record(avroSchema)
-      r.put("id", i)
-      r.put("rank", i * 10)
-      r
-    }.foreach { r => parquetWriter.write(r) }
+    (0 until 10000)
+      .map { i =>
+        val r = new GenericData.Record(avroSchema)
+        r.put("id", i)
+        r.put("rank", i * 10)
+        r
+      }
+      .foreach(r => parquetWriter.write(r))
 
     /*val r1 = new GenericData.Record(avroSchema)
     r1.put("id", 1)
@@ -108,23 +109,23 @@ object WTest {
     parquetWriter.write(r3)*/
 
     // for (obj <- dataToWrite.toList) {
-      // parquetWriter.write(obj)
-   // }
+    // parquetWriter.write(obj)
+    // }
 
     parquetWriter.close()
   }
 
-  def write2() = {
-    val filePath = new Path("/Users/daunnc/subversions/git/github/pomadchin/geoparquet/examples/geoparquet/java_write_output_test.snappy.parquet");
-    val file = HadoopOutputFile.fromPath(filePath, new Configuration())
+  def java() = {
+    val filePath = new Path("/tmp/java_write_output_test.snappy.parquet");
+    val file     = HadoopOutputFile.fromPath(filePath, new Configuration())
 
-    val avroSchema = ReflectData.get().getSchema(classOf[UserRank])
+    val avroSchema    = ReflectData.get().getSchema(classOf[UserRank])
     val parquetSchema = new AvroSchemaConverter().convert(avroSchema)
 
-    val blockSize = 10
-    val pageSize = 64
-    val rowCount = 1
-    val nullCount = 0
+    val blockSize  = 10
+    val pageSize   = 64
+    val rowCount   = 1
+    val nullCount  = 0
     val valueCount = rowCount - nullCount
 
     val d = 1
@@ -235,19 +236,19 @@ object WTest {
     // val reader = new ParquetFileReader(new Configuration(), footer.getFileMetaData(), filePath, footer.getBlocks(), parquetSchema.getColumns())
   }
 
-  def write3() = {
-    val filePath = new Path("/Users/daunnc/subversions/git/github/pomadchin/geoparquet/examples/geoparquet/java_write_output_test_2.snappy.parquet");
+  def manualAvro() = {
+    val filePath = new Path("/tmp/java_write_output_test_2.snappy.parquet");
 
     // System.exit(0)
     // val file = HadoopOutputFile.fromPath(filePath, new Configuration())
 
-    val avroSchema = ReflectData.get().getSchema(classOf[UserRank])
+    val avroSchema    = ReflectData.get().getSchema(classOf[UserRank])
     val parquetSchema = new AvroSchemaConverter().convert(avroSchema)
 
-    val blockSize = 10
-    val pageSize = 64
-    val rowCount = 1
-    val nullCount = 0
+    val blockSize  = 10
+    val pageSize   = 64
+    val rowCount   = 1
+    val nullCount  = 0
     val valueCount = rowCount - nullCount
 
     val d = 1
@@ -279,16 +280,18 @@ object WTest {
       md
     )
 
-    (0 until 10).map { i =>
-      val r = new GenericData.Record(avroSchema)
-      r.put("id", i)
-      r.put("rank", i * 10)
-      (r, i)
-    }.foreach { case (r, i) =>
-      writer.write(r)
-      // every second row should be the next row
-      if(i % 2 == 0 && i != 0) writer.nextBlock()
-    }
+    (0 until 10)
+      .map { i =>
+        val r = new GenericData.Record(avroSchema)
+        r.put("id", i)
+        r.put("rank", i * 10)
+        (r, i)
+      }
+      .foreach { case (r, i) =>
+        writer.write(r)
+        // every second row should be the next row
+        if (i % 2 == 0 && i != 0) writer.nextBlock()
+      }
 
     writer.close()
 
@@ -296,7 +299,3 @@ object WTest {
 }
 
 // https://github.com/apache/parquet-mr/blob/5608695f5777de1eb0899d9075ec9411cfdf31d3/parquet-hadoop/src/test/java/org/apache/parquet/hadoop/TestColumnChunkPageWriteStore.java#L161-L181
-
-
-
-

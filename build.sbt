@@ -102,19 +102,20 @@ lazy val geoparquet = project
   .settings(name := "hiveless-geoparquet")
   .settings(
     libraryDependencies ++= Seq(
-      "org.locationtech.jts" % "jts-core" % "1.18.1",
-      "org.locationtech.sfcurve" %% "sfcurve-zorder" % "0.2.2",
-      "org.apache.spark" %% "spark-core" % "3.2.0",
-      "org.apache.spark" %% "spark-sql"  % "3.2.0",
-      "org.apache.parquet" % "parquet-avro" % "1.13.0-SNAPSHOT",
-      "org.apache.parquet" % "parquet-arrow" % "1.13.0-SNAPSHOT",
-      "org.apache.parquet" % "parquet-hadoop" % "1.13.0-SNAPSHOT",
-      "com.github.davidmoten" % "rtree" % "0.9",
-      "com.github.plokhotnyuk.rtree2d" %% "rtree2d-core" % "0.11.10",
+      "org.locationtech.jts"         % "jts-core"            % "1.18.1",
+      "org.locationtech.sfcurve"    %% "sfcurve-zorder"      % "0.2.2",
+      "org.apache.spark"            %% "spark-core"          % "3.2.0",
+      "org.apache.spark"            %% "spark-sql"           % "3.2.0",
+      "org.apache.parquet"           % "parquet-avro"        % "1.13.0-SNAPSHOT",
+      "org.apache.parquet"           % "parquet-arrow"       % "1.13.0-SNAPSHOT",
+      "org.apache.parquet"           % "parquet-hadoop"      % "1.13.0-SNAPSHOT",
+      "org.locationtech.geotrellis" %% "geotrellis-s3-spark" % "3.6.1",
+      // "com.github.davidmoten" % "rtree" % "0.9",
+      // "com.github.plokhotnyuk.rtree2d" %% "rtree2d-core" % "0.11.10",
       // conflicts with some deps, are these local?
-      "com.google.flatbuffers" % "flatbuffers-java" % "2.0.3",
+      // "com.google.flatbuffers" % "flatbuffers-java" % "2.0.3",
       // "org.codehaus.jackson" % "jackson-mapper-asl" % "1.9.11",
       // "org.codehaus.jackson" % "jackson-core-asl" % "1.9.11",
-      "org.scalatest"    %% "scalatest"  % "3.2.10" % Test
+      "org.scalatest" %% "scalatest" % "3.2.10" % Test
     )
   )
