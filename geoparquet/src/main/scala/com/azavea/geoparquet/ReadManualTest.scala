@@ -18,7 +18,7 @@ import scala.collection.mutable.ListBuffer
 object ReadManualTest {
   def main(args: Array[String]): Unit = {
     // val path = "/tmp/gadm_lvl2-blocked.parquet/part-00000-682faa7f-3d07-4a45-a7a3-a5e3b9c38787-c000.snappy.parquet"
-    val path = "/tmp/gadm_lvl2-blocked-64m.parquet/part-00000-2cb82daf-eaa6-4b4f-9e28-e8b8d34cb379-c000.snappy.parquet"
+    val path = "/tmp/gadm_lvl2-blocked-0001m.parquet/part-00007-275d04b8-72e2-4706-b227-8af1e19fe5f1-c000.snappy.parquet"
 
     val res = ParquetReaderUtilsManual.getParquetDataIndex(path)
 

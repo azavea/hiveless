@@ -8,11 +8,12 @@ import org.apache.spark.sql.SparkSession
 import org.locationtech.jts.geom._
 import org.apache.spark.sql.functions.udf
 
+import java.util.concurrent.TimeUnit
 import scala.io.StdIn
 
 object ParquetPartitionedTest {
   // parquet input, which is the write function output
-  val input = "/tmp/gadm_lvl2-blocked-64m.parquet"
+  val input = "/tmp/gadm_lvl2-blocked-001m-partitioned-sorted-dropped.parquet"
 
   def main(args: Array[String]): Unit = {
     val sparkConf = new SparkConf()
@@ -79,7 +80,9 @@ object ParquetPartitionedTest {
     val t0     = System.nanoTime()
     val result = block // call-by-name
     val t1     = System.nanoTime()
-    println("Elapsed time: " + (t1 - t0) + "ns")
+    val d      = t1 - t0
+    println(s"Elapsed time: ${TimeUnit.NANOSECONDS.toSeconds(d)} s")
+    println(s"Elapsed time: ${TimeUnit.NANOSECONDS.toMillis(d)} ms")
     result
   }
 
@@ -119,13 +122,16 @@ object ParquetPartitionedTest {
       // .repartition(200) // spatial partitioning
       .repartition($"partition")
       .sortWithinPartitions("partition", "z2_min", "z2_max")
+      // we use z2_min / max for sorting
+      // and partitioin for partitioing
+      // we don't need it to perform queries
       .drop($"z2_min")
       .drop($"z2_max")
       .drop($"partition")
       .write
       // public static final String BLOCK_SIZE = "parquet.block.size";
       //    public static final String PAGE_SIZE = "parquet.page.size";
-      .option("parquet.block.size", 64 * 1024 * 1024) // 128 * 1024 * 1024
+      .option("parquet.block.size", (0.01 * 1024 * 1024).toInt) // 128 * 1024 * 1024
       // .option("parquet.page.size", "64") // 1 * 1024 * 1024
       // .option("parquet.compression", "UNCOMPRESSED") // one of: UNCOMPRESSED, SNAPPY, GZIP, LZO, ZSTD. Default: UNCOMPRESSED. Supersedes mapred.output.compress*
       // .bucketBy(200, "z2_max")
