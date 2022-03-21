@@ -7,6 +7,8 @@ import org.apache.spark.SparkConf
 import org.apache.spark.sql.SparkSession
 import org.locationtech.jts.geom._
 import org.apache.spark.sql.functions.udf
+import org.locationtech.geomesa.spark.jts.util.WKBUtils
+import org.locationtech.geomesa.spark.jts.util.WKTUtils
 
 import java.util.concurrent.TimeUnit
 import scala.io.StdIn
@@ -38,8 +40,8 @@ object ParquetPartitionedTest {
 
   val toWKB = { wkt: String =>
     try {
-      val geom = WKT.read(wkt)
-      WKB.write(geom)
+      val geom = WKTUtils.read(wkt)
+      WKBUtils.write(geom)
     } catch {
       case e: Exception =>
         println(e)
@@ -59,13 +61,13 @@ object ParquetPartitionedTest {
     Z2(scaleLong(x), scaleLat(y)).z
 
   val toMinZ2 = udf { wkt: String =>
-    val geom = WKT.read(wkt)
+    val geom = WKTUtils.read(wkt)
     val env  = geom.getEnvelopeInternal()
     z2index(env.getMinX, env.getMinY)
   }
 
   val toMaxZ2 = udf { wkt: String =>
-    val geom = WKT.read(wkt)
+    val geom = WKTUtils.read(wkt)
     val env  = geom.getEnvelopeInternal()
     z2index(env.getMaxX, env.getMaxY)
   }
@@ -96,14 +98,14 @@ object ParquetPartitionedTest {
     val LayoutLevel(_, layout) = layoutScheme.levelForZoom(10)
 
     val udfParitionCentroid = udf { wkt: String =>
-      val geom                 = WKT.read(wkt)
+      val geom                 = WKTUtils.read(wkt)
       val p                    = geom.getEnvelopeInternal().centre()
       val SpatialKey(col, row) = layout.mapTransform(p.getX, p.getY)
       Z2(col, row).z >> 8
     }
 
     val udfBBOX = udf { wkt: String =>
-      val geom = WKT.read(wkt)
+      val geom = WKTUtils.read(wkt)
       val env  = geom.getEnvelopeInternal()
       bbox(env.getMinX, env.getMaxX, env.getMinY, env.getMaxY)
     }
@@ -183,7 +185,7 @@ object ParquetPartitionedTest {
     val env = new Envelope(7.02439457, 7.93392696, 46.42925416, 47.19834404)
 
     val myIntersects = udf { wkb: Array[Byte] =>
-      val geom = WKB.read(wkb)
+      val geom = WKBUtils.read(wkb)
       geom.getEnvelopeInternal().intersects(env)
     }
 

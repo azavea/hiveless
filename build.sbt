@@ -98,6 +98,7 @@ lazy val spatial = project
   )
 
 lazy val geoparquet = project
+  .dependsOn(spatial)
   .settings(commonSettings)
   .settings(name := "hiveless-geoparquet")
   .settings(
