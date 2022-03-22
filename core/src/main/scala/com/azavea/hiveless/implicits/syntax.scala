@@ -16,10 +16,11 @@
 
 package com.azavea.hiveless.implicits
 
-import com.azavea.hiveless.serializers.HDeserialier
+import com.azavea.hiveless.serializers.{HConverter, HDeserialier, HSerializer, UnaryDeserializer}
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
+import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 
-object syntax {
+object syntax extends Serializable {
   implicit class DeferredObjectOps(val self: GenericUDF.DeferredObject) extends AnyVal {
 
     /** Behaves like a regular get, but throws when the result is null. */
@@ -27,5 +28,18 @@ object syntax {
       case Some(r) => r
       case _       => throw HDeserialier.Errors.NullArgument
     }
+  }
+
+  implicit class ArrayDeferredObjectOps(val self: Array[GenericUDF.DeferredObject]) extends AnyVal {
+    def deserialize[F[_], T: UnaryDeserializer[F, *]](inspectors: Array[ObjectInspector]): F[T] =
+      UnaryDeserializer[F, T].deserialize(self, inspectors)
+  }
+
+  implicit class ConverterOps(val self: Any) extends AnyVal {
+    def convert[T: HConverter]: T = HConverter[T].convert(self)
+  }
+
+  implicit class SerializerOps[T](val self: T) extends AnyVal {
+    def serialize(implicit ev: HSerializer[T]): Any = HSerializer[T].serialize(self)
   }
 }

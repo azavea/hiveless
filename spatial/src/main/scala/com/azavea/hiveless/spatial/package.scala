@@ -17,22 +17,22 @@
 package com.azavea.hiveless
 
 import com.azavea.hiveless.serializers.{HConverter, HSerializer, UnaryDeserializer}
+import com.azavea.hiveless.implicits.syntax._
 import cats.Id
 import org.locationtech.jts.geom.Geometry
-import org.apache.spark.sql.jts.GeometryUDT
-import org.apache.spark.sql.catalyst.InternalRow
-import org.apache.spark.sql.types.DataType
+import org.apache.spark.sql.types.{BinaryType, DataType}
+import org.locationtech.geomesa.spark.jts.util.WKBUtils
 
 package object spatial extends Serializable {
   implicit def geometryConverter[T <: Geometry]: HConverter[T] = new HConverter[T] {
-    def convert(argument: Any): T = GeometryUDT.deserialize(argument).asInstanceOf[T]
+    def convert(argument: Any): T = WKBUtils.read(argument.asInstanceOf[Array[Byte]]).asInstanceOf[T]
   }
 
   implicit def geometryUnaryDeserializer[T <: Geometry: HConverter]: UnaryDeserializer[Id, T] =
-    (arguments, inspectors) => HConverter[T].convert(UnaryDeserializer[Id, InternalRow].deserialize(arguments, inspectors))
+    (arguments, inspectors) => arguments.deserialize[Id, Array[Byte]](inspectors).convert[T]
 
   implicit def geometrySerializer[T <: Geometry]: HSerializer[T] = new HSerializer[T] {
-    def dataType: DataType                 = GeometryUDT
-    def serialize: Geometry => InternalRow = GeometryUDT.serialize
+    def dataType: DataType                 = BinaryType
+    def serialize: Geometry => Array[Byte] = WKBUtils.write
   }
 }

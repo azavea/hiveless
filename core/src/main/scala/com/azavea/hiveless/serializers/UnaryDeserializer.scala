@@ -22,6 +22,7 @@ import org.apache.spark.sql.hive.HivelessInternals.unwrap
 import org.apache.spark.sql.types.Decimal
 import org.apache.spark.unsafe.types.UTF8String
 import cats.Id
+import cats.syntax.apply._
 import org.apache.spark.sql.catalyst.util.ArrayData
 import shapeless.HNil
 
@@ -44,6 +45,10 @@ object UnaryDeserializer extends Serializable {
   // format: on
   implicit def tryUnaryDeserializer[T: UnaryDeserializer[Id, *]]: UnaryDeserializer[Try, T] =
     (arguments, inspectors) => Try(UnaryDeserializer[Id, T].deserialize(arguments, inspectors))
+
+  /** Derive Optional UnaryDeserializers. */
+  implicit def optionalUnaryDeserializer[T: UnaryDeserializer[Id, *]]: UnaryDeserializer[Id, Option[T]] =
+    (arguments, inspectors) => (arguments.headOption, inspectors.headOption).mapN(UnaryDeserializer[Id, T].deserialize)
 
   /** Derivation helper deserializer. */
   implicit val hnilUnaryDeserializer: UnaryDeserializer[Id, HNil] = (_, _) => HNil
