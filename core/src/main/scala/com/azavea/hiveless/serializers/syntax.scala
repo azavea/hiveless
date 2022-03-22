@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.azavea.hiveless.implicits
+package com.azavea.hiveless.serializers
 
-import com.azavea.hiveless.serializers.{HConverter, HDeserialier, HSerializer, UnaryDeserializer}
+import cats.Id
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector
 
@@ -31,8 +31,11 @@ object syntax extends Serializable {
   }
 
   implicit class ArrayDeferredObjectOps(val self: Array[GenericUDF.DeferredObject]) extends AnyVal {
-    def deserialize[F[_], T: UnaryDeserializer[F, *]](inspectors: Array[ObjectInspector]): F[T] =
+    def deserializeF[F[_], T: UnaryDeserializer[F, *]](inspectors: Array[ObjectInspector]): F[T] =
       UnaryDeserializer[F, T].deserialize(self, inspectors)
+
+    def deserialize[T: UnaryDeserializer[Id, *]](inspectors: Array[ObjectInspector]): T =
+      deserializeF[Id, T](inspectors)
   }
 
   implicit class ConverterOps(val self: Any) extends AnyVal {

@@ -16,12 +16,15 @@
 
 package com.azavea.hiveless.serializers
 
+import com.azavea.hiveless.spark.encoders.syntax._
+import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder
 import org.apache.spark.sql.types._
 import org.apache.spark.unsafe.types.UTF8String
 import org.apache.spark.sql.catalyst.util.ArrayData
 
 import java.{lang => jl}
 import scala.reflect.ClassTag
+import scala.reflect.runtime.universe.TypeTag
 
 trait HSerializer[T] extends Serializable {
   def dataType: DataType
@@ -47,6 +50,12 @@ object HSerializer extends Serializable {
   def instance[T](dt: DataType, s: T => Any): HSerializer[T] = new HSerializer[T] {
     val dataType: DataType  = dt
     def serialize: T => Any = s
+  }
+
+  /** Derive HSerializer from ExpressionEncoder. */
+  implicit def expressionEncoderSerializer[T: TypeTag](implicit enc: ExpressionEncoder[T]): HSerializer[T] = new HSerializer[T] {
+    def dataType: DataType  = enc.schema
+    def serialize: T => Any = _.toInternalRow
   }
 
   implicit val booleanSerializer: HSerializer[Boolean] = new IdHSerializer[Boolean] { def dataType: DataType = BooleanType }

@@ -17,18 +17,19 @@
 package com.azavea.hiveless.spatial
 
 import com.azavea.hiveless.serializers.{HConverter, HSerializer, UnaryDeserializer}
-import com.azavea.hiveless.implicits.syntax._
+import com.azavea.hiveless.serializers.syntax._
+import com.azavea.hiveless.spark.geotrellis.encoders.StandardEncoders
 import cats.Id
 import geotrellis.proj4.CRS
 import org.apache.spark.sql.types.{DataType, StringType}
 
-package object index extends Serializable {
+package object index extends StandardEncoders {
   implicit def crsConverter: HConverter[CRS] = new HConverter[CRS] {
     def convert(argument: Any): CRS = CRS.fromString(argument.convert[String])
   }
 
   implicit def crsUnaryDeserializer: UnaryDeserializer[Id, CRS] =
-    (arguments, inspectors) => arguments.deserialize[Id, String](inspectors).convert[CRS]
+    (arguments, inspectors) => arguments.deserialize[String](inspectors).convert[CRS]
 
   implicit def crsSerializer: HSerializer[CRS] = new HSerializer[CRS] {
     def dataType: DataType    = StringType

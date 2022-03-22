@@ -17,7 +17,7 @@
 package com.azavea.hiveless
 
 import com.azavea.hiveless.serializers.{HConverter, HSerializer, UnaryDeserializer}
-import com.azavea.hiveless.implicits.syntax._
+import com.azavea.hiveless.serializers.syntax._
 import cats.Id
 import org.locationtech.jts.geom.Geometry
 import org.apache.spark.sql.types.{BinaryType, DataType}
@@ -29,7 +29,7 @@ package object spatial extends Serializable {
   }
 
   implicit def geometryUnaryDeserializer[T <: Geometry: HConverter]: UnaryDeserializer[Id, T] =
-    (arguments, inspectors) => arguments.deserialize[Id, Array[Byte]](inspectors).convert[T]
+    (arguments, inspectors) => arguments.deserialize[Array[Byte]](inspectors).convert[T]
 
   implicit def geometrySerializer[T <: Geometry]: HSerializer[T] = new HSerializer[T] {
     def dataType: DataType                 = BinaryType

@@ -18,6 +18,7 @@ package com.azavea.hiveless.spatial.index
 
 import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.spatial._
+import com.azavea.hiveless.implicits.tuplers._
 import geotrellis.layer.{SpatialKey, ZoomedLayoutScheme}
 import geotrellis.vector._
 import geotrellis.proj4.{CRS, LatLng}
@@ -26,20 +27,30 @@ import org.locationtech.jts.geom.Geometry
 
 class ST_PartitionCentroid extends HUDF[(Geometry, Int, Option[CRS], Option[Int], Option[Double], Option[Int]), Long] {
   val name: String = "st_partitionCentroid"
-  def function = {
-    case (geom: Geometry, zoom: Int, crsOpt: Option[CRS], tileSizeOpt: Option[Int], resolutionThresholdOpt: Option[Double], bitsOpt: Option[Int]) =>
-      // set default values
-      val crs                 = crsOpt.getOrElse(LatLng)
-      val tileSize            = tileSizeOpt.getOrElse(ZoomedLayoutScheme.DEFAULT_TILE_SIZE)
-      val resolutionThreshold = resolutionThresholdOpt.getOrElse(ZoomedLayoutScheme.DEFAULT_RESOLUTION_THRESHOLD)
-      val bits                = bitsOpt.getOrElse(8)
+  def function     = ST_PartitionCentroid.function
+}
 
-      // compute key
-      val SpatialKey(col, row) = new ZoomedLayoutScheme(crs, tileSize, resolutionThreshold)
-        .levelForZoom(zoom)
-        .layout
-        .mapTransform(geom.extent.center)
+object ST_PartitionCentroid {
+  def function(
+      geom: Geometry,
+      zoom: Int,
+      crsOpt: Option[CRS],
+      tileSizeOpt: Option[Int],
+      resolutionThresholdOpt: Option[Double],
+      bitsOpt: Option[Int]
+  ): Long = {
+    // set default values
+    val crs                 = crsOpt.getOrElse(LatLng)
+    val tileSize            = tileSizeOpt.getOrElse(ZoomedLayoutScheme.DEFAULT_TILE_SIZE)
+    val resolutionThreshold = resolutionThresholdOpt.getOrElse(ZoomedLayoutScheme.DEFAULT_RESOLUTION_THRESHOLD)
+    val bits                = bitsOpt.getOrElse(8)
 
-      Z2(col, row).z >> bits
+    // compute key
+    val SpatialKey(col, row) = new ZoomedLayoutScheme(crs, tileSize, resolutionThreshold)
+      .levelForZoom(zoom)
+      .layout
+      .mapTransform(geom.extent.center)
+
+    Z2(col, row).z >> bits
   }
 }

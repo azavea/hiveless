@@ -17,7 +17,9 @@
 package com.azavea.hiveless.implicits
 
 object tuplers extends Serializable {
-  implicit def function2Tupler[T0, T1, R](f: (T0, T1) => R): ((T0, T1)) => R                         = f.tupled
-  implicit def function3Tupler[T0, T1, T2, R](f: (T0, T1, T2) => R): ((T0, T1, T2)) => R             = f.tupled
-  implicit def function4Tupler[T0, T1, T2, T3, R](f: (T0, T1, T2, T3) => R): ((T0, T1, T2, T3)) => R = f.tupled
+  implicit def function2Tupler[T0, T1, R](f: (T0, T1) => R): ((T0, T1)) => R                                                 = f.tupled
+  implicit def function3Tupler[T0, T1, T2, R](f: (T0, T1, T2) => R): ((T0, T1, T2)) => R                                     = f.tupled
+  implicit def function4Tupler[T0, T1, T2, T3, R](f: (T0, T1, T2, T3) => R): ((T0, T1, T2, T3)) => R                         = f.tupled
+  implicit def function5Tupler[T0, T1, T2, T3, T4, R](f: (T0, T1, T2, T3, T4) => R): ((T0, T1, T2, T3, T4)) => R             = f.tupled
+  implicit def function6Tupler[T0, T1, T2, T3, T4, T5, R](f: (T0, T1, T2, T3, T4, T5) => R): ((T0, T1, T2, T3, T4, T5)) => R = f.tupled
 }
