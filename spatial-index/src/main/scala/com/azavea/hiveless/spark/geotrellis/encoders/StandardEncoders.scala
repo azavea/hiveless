@@ -25,8 +25,8 @@ import scala.reflect.runtime.universe.TypeTag
 trait StandardEncoders extends Serializable {
   def expressionEncoder[T: TypeTag]: ExpressionEncoder[T] = ExpressionEncoder()
 
-  implicit lazy val extentEncoder: ExpressionEncoder[Extent]   = expressionEncoder
-  implicit lazy val z2IndexEncoder: ExpressionEncoder[Z2Index] = expressionEncoder
+  implicit val extentEncoder: ExpressionEncoder[Extent]   = expressionEncoder
+  implicit val z2IndexEncoder: ExpressionEncoder[Z2Index] = expressionEncoder
 }
 
 object StandardEncoders extends StandardEncoders

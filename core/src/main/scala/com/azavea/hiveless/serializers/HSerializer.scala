@@ -44,7 +44,7 @@ object HSerializer extends Serializable {
    * Intentionally not used for instances implementation, causes the following failure on DataBricks:
    *   Unable to find class: com.azavea.hiveless.serializers.HSerializer$$$Lambda$5659/1670981434
    *   Serialization trace:
-   *   s$1 (com.azavea.hiveless.serializers.HSerializer$$anon$1)
+   *     s$1 (com.azavea.hiveless.serializers.HSerializer$$anon$1)
    */
   // format: on
   def instance[T](dt: DataType, s: T => Any): HSerializer[T] = new HSerializer[T] {
@@ -52,8 +52,22 @@ object HSerializer extends Serializable {
     def serialize: T => Any = s
   }
 
-  /** Derive HSerializer from ExpressionEncoder. */
-  implicit def expressionEncoderSerializer[T: TypeTag](implicit enc: ExpressionEncoder[T]): HSerializer[T] = new HSerializer[T] {
+  // format: off
+  /**
+   * Derive HSerializer from ExpressionEncoder.
+   * Intentionally not used for instances implementation, causes the following failure on DataBricks:
+   *   org.apache.spark.SparkException: Job aborted due to stage failure: Task serialization failed: com.esotericsoftware.kryo.KryoException: java.util.ConcurrentModificationException
+   *   Serialization trace:
+   *     classes (sun.misc.Launcher$AppClassLoader)
+   *     classloader (java.security.ProtectionDomain)
+   *     context (java.security.AccessControlContext)
+   *     acc (com.databricks.backend.daemon.driver.ClassLoaders$LibraryClassLoader)
+   *     classLoader (scala.reflect.runtime.JavaMirrors$JavaMirror)
+   *     mirror (scala.reflect.api.TypeTags$TypeTagImpl)
+   *     tg$1 (com.azavea.hiveless.serializers.HSerializer$$anon$2)
+   */
+  // format: on
+  def expressionEncoderSerializer[T: TypeTag](implicit enc: ExpressionEncoder[T]): HSerializer[T] = new HSerializer[T] {
     def dataType: DataType  = enc.schema
     def serialize: T => Any = _.toInternalRow
   }

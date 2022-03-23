@@ -25,7 +25,7 @@ import scala.reflect.runtime.universe.TypeTag
 /**
  * Source: https://github.com/locationtech/rasterframes/blob/0.10.1/core/src/main/scala/org/locationtech/rasterframes/encoders/syntax/package.scala
  */
-package object syntax {
+package object syntax extends Serializable {
   implicit class CachedExpressionOps[T](val self: T) extends AnyVal {
     def toInternalRow(implicit tag: TypeTag[T], encoder: ExpressionEncoder[T]): InternalRow = {
       val toRow = SerializersCache.serializer[T]

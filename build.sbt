@@ -7,8 +7,9 @@ val sparkVersion      = "3.1.3"
 val catsVersion       = "2.6.1"
 val shapelessVersion  = "2.3.3"                                   // to be compatible with Spark 3.1.x
 val scalaTestVersion  = "3.2.11"
+val framelessVersion  = "0.11.1"
 val geomesaVersion    = "3.3.0"
-val geotrellisVersion = "3.6.1+0-6b5868af+20220321-1909-SNAPSHOT" //"3.6.1"
+val geotrellisVersion = "3.6.1+1-e69dfae5+20220322-1723-SNAPSHOT" //"3.6.1"
 
 lazy val commonSettings = Seq(
   scalaVersion       := scalaVersions.head,
