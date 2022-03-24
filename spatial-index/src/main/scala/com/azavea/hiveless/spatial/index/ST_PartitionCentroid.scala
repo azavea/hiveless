@@ -37,15 +37,13 @@ object ST_PartitionCentroid {
       tileSizeOpt: Option[Int],
       bitsOpt: Option[Int],
       crsOpt: Option[CRS],
-      resolutionThresholdOpt: Option[Double],
+      resolutionThresholdOpt: Option[Double]
   ): Long = {
-    // set default values
     val crs                 = crsOpt.getOrElse(LatLng)
     val tileSize            = tileSizeOpt.getOrElse(ZoomedLayoutScheme.DEFAULT_TILE_SIZE)
     val resolutionThreshold = resolutionThresholdOpt.getOrElse(ZoomedLayoutScheme.DEFAULT_RESOLUTION_THRESHOLD)
     val bits                = bitsOpt.getOrElse(8)
 
-    // compute key
     val SpatialKey(col, row) = new ZoomedLayoutScheme(crs, tileSize, resolutionThreshold)
       .levelForZoom(zoom)
       .layout
