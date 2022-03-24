@@ -25,7 +25,7 @@ import geotrellis.proj4.{CRS, LatLng}
 import geotrellis.store.index.zcurve.Z2
 import org.locationtech.jts.geom.Geometry
 
-class ST_PartitionCentroid extends HUDF[(Geometry, Int, Option[CRS], Option[Int], Option[Double], Option[Int]), Long] {
+class ST_PartitionCentroid extends HUDF[(Geometry, Int, Option[Int], Option[Int], Option[CRS], Option[Double]), Long] {
   val name: String = "st_partitionCentroid"
   def function     = ST_PartitionCentroid.function
 }
@@ -34,10 +34,10 @@ object ST_PartitionCentroid {
   def function(
       geom: Geometry,
       zoom: Int,
-      crsOpt: Option[CRS],
       tileSizeOpt: Option[Int],
+      bitsOpt: Option[Int],
+      crsOpt: Option[CRS],
       resolutionThresholdOpt: Option[Double],
-      bitsOpt: Option[Int]
   ): Long = {
     // set default values
     val crs                 = crsOpt.getOrElse(LatLng)
