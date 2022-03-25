@@ -20,10 +20,11 @@ import com.azavea.hiveless.serializers.{HConverter, HSerializer, UnaryDeserializ
 import com.azavea.hiveless.serializers.syntax._
 import com.azavea.hiveless.spark.encoders.syntax._
 import com.azavea.hiveless.spark.geotrellis.encoders.StandardEncoders
-import cats.Id
 import com.azavea.hiveless.spark.geotrellis.Z2Index
+import cats.Id
 import geotrellis.proj4.CRS
 import geotrellis.vector.Extent
+import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.types.{DataType, StringType}
 
 package object index extends StandardEncoders {
@@ -43,12 +44,12 @@ package object index extends StandardEncoders {
    * HSerializer.expressionEncoderSerializer causes serialization issues on DataBricks. TODO: investigate this issue.
    */
   implicit def extentSerializer: HSerializer[Extent] = new HSerializer[Extent] {
-    def dataType: DataType       = extentEncoder.schema
-    def serialize: Extent => Any = _.toInternalRow
+    def dataType: DataType               = extentEncoder.schema
+    def serialize: Extent => InternalRow = _.toInternalRow
   }
 
   implicit def z2IndexSerializer: HSerializer[Z2Index] = new HSerializer[Z2Index] {
-    def dataType: DataType        = z2IndexEncoder.schema
-    def serialize: Z2Index => Any = _.toInternalRow
+    def dataType: DataType                = z2IndexEncoder.schema
+    def serialize: Z2Index => InternalRow = _.toInternalRow
   }
 }
