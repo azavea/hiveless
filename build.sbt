@@ -1,15 +1,26 @@
 import de.heikoseeberger.sbtheader._
 import java.time.Year
 
-val scalaVersions = Seq("2.12.15")
+val scalaVersions = Seq("2.12.15", "2.13.8")
 
-val sparkVersion      = "3.1.3"
-val catsVersion       = "2.6.1"
-val shapelessVersion  = "2.3.3"                                   // to be compatible with Spark 3.1.x
+val catsVersion       = "2.7.0"
+val shapelessVersion  = "2.3.3"                     // to be compatible with Spark 3.1.x
 val scalaTestVersion  = "3.2.11"
 val framelessVersion  = "0.11.1"
 val geomesaVersion    = "3.3.0"
-val geotrellisVersion = "3.6.1+1-e69dfae5+20220322-1723-SNAPSHOT" //"3.6.1"
+val geotrellisVersion = "3.6.1+5-076b1953-SNAPSHOT" //"3.6.1"
+
+def ver(for212: String, for213: String) = Def.setting {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, 12)) => for212
+    case Some((2, 13)) => for213
+    case _             => sys.error("not good")
+  }
+}
+
+def spark(module: String) = Def.setting {
+  "org.apache.spark" %% s"spark-$module" % ver("3.1.3", "3.2.1").value
+}
 
 lazy val commonSettings = Seq(
   scalaVersion       := scalaVersions.head,
@@ -68,10 +79,10 @@ lazy val core = project
   .settings(
     addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full),
     libraryDependencies ++= Seq(
-      "org.typelevel"    %% "cats-core"  % catsVersion,
-      "com.chuusai"      %% "shapeless"  % shapelessVersion,
-      "org.apache.spark" %% "spark-hive" % sparkVersion     % Provided,
-      "org.scalatest"    %% "scalatest"  % scalaTestVersion % Test
+      "org.typelevel"    %% "cats-core" % catsVersion,
+      "com.chuusai"      %% "shapeless" % shapelessVersion,
+      spark("hive").value % Provided,
+      "org.scalatest"    %% "scalatest" % scalaTestVersion % Test
     )
   )
 
