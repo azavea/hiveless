@@ -1,7 +1,7 @@
 import de.heikoseeberger.sbtheader._
 import java.time.Year
 
-val scalaVersions = Seq("2.12.15", "2.13.8")
+val scalaVersions = Seq("2.12.15")
 
 val catsVersion       = "2.7.0"
 val shapelessVersion  = "2.3.3" // to be compatible with Spark 3.1.x
