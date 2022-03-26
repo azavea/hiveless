@@ -4,11 +4,11 @@ import java.time.Year
 val scalaVersions = Seq("2.12.15", "2.13.8")
 
 val catsVersion       = "2.7.0"
-val shapelessVersion  = "2.3.3"                     // to be compatible with Spark 3.1.x
+val shapelessVersion  = "2.3.3" // to be compatible with Spark 3.1.x
 val scalaTestVersion  = "3.2.11"
 val framelessVersion  = "0.11.1"
 val geomesaVersion    = "3.3.0"
-val geotrellisVersion = "3.6.1+5-076b1953-SNAPSHOT" //"3.6.1"
+val geotrellisVersion = "3.6.1+1-e4aeec2a-SNAPSHOT"
 
 def ver(for212: String, for213: String) = Def.setting {
   CrossVersion.partialVersion(scalaVersion.value) match {
@@ -59,7 +59,8 @@ lazy val commonSettings = Seq(
         existingText.flatMap(_ => existingText.map(_.trim)).getOrElse(newText)
       }
     )
-  )
+  ),
+  resolvers += "sonatype-snapshot" at "https://oss.sonatype.org/content/repositories/snapshots/"
 )
 
 lazy val root = (project in file("."))
