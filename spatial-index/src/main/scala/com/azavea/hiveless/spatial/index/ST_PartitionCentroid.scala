@@ -18,7 +18,7 @@ package com.azavea.hiveless.spatial.index
 
 import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.spatial._
-import com.azavea.hiveless.implicits.tuplers._
+import com.azavea.hiveless.implicits.tupler._
 import geotrellis.layer.{SpatialKey, ZoomedLayoutScheme}
 import geotrellis.vector._
 import geotrellis.proj4.{CRS, LatLng}
