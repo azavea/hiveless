@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Azavea
+ * Copyright 2022 Azavea
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-package com.azavea.hiveless.spatial
+package com.azavea.hiveless.spatial.index
 
 import com.azavea.hiveless.HUDF
-import com.azavea.hiveless.implicits.tuplers._
-import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
+import com.azavea.hiveless.spatial._
+import geotrellis.vector._
 import org.locationtech.jts.geom.Geometry
 
-import java.{lang => jl}
-
-class ST_Intersects extends HUDF[(Geometry, Geometry), jl.Boolean] {
-  val name: String = "st_intersects"
-  def function     = SpatialRelationFunctions.ST_Intersects
+class ST_ExtentToGeom extends HUDF[Extent, Geometry] {
+  val name: String = "st_extentToGeom"
+  def function     = _.toPolygon
 }

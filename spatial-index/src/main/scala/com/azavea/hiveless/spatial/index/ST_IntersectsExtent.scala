@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.azavea.hiveless.spatial
+package com.azavea.hiveless.spatial.index
 
 import com.azavea.hiveless.HUDF
+import com.azavea.hiveless.spatial._
 import com.azavea.hiveless.implicits.tuplers._
-import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
+import geotrellis.vector._
 import org.locationtech.jts.geom.Geometry
 
-import java.{lang => jl}
-
-class ST_Intersects extends HUDF[(Geometry, Geometry), jl.Boolean] {
-  val name: String = "st_intersects"
-  def function     = SpatialRelationFunctions.ST_Intersects
+class ST_IntersectsExtent extends HUDF[(Extent, Geometry), Boolean] {
+  val name: String = "st_intersectsExtent"
+  def function     = { (extent: Extent, geom: Geometry) => extent.intersects(geom.extent) }
 }
