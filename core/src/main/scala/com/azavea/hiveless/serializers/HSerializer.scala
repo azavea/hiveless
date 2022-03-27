@@ -55,7 +55,8 @@ object HSerializer extends Serializable {
   // format: off
   /**
    * Derive HSerializer from ExpressionEncoder.
-   * Intentionally not used for instances implementation, causes the following failure on DataBricks:
+   * Intentionally not used for instances implementation, causes the following failure on DataBricks;
+   * TypeTags are not Kryo serializable by default:
    *   org.apache.spark.SparkException: Job aborted due to stage failure: Task serialization failed: com.esotericsoftware.kryo.KryoException: java.util.ConcurrentModificationException
    *   Serialization trace:
    *     classes (sun.misc.Launcher$AppClassLoader)

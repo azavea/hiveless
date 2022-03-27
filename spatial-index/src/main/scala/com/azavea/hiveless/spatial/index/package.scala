@@ -40,9 +40,7 @@ package object index extends StandardEncoders {
     def serialize: CRS => Any = crs => crs.toProj4String.serialize
   }
 
-  /**
-   * HSerializer.expressionEncoderSerializer causes serialization issues on DataBricks. TODO: investigate this issue.
-   */
+  /** HSerializer.expressionEncoderSerializer is not used since TypeTags are not Kryo serializable by default. */
   implicit def extentSerializer: HSerializer[Extent] = new HSerializer[Extent] {
     def dataType: DataType               = extentEncoder.schema
     def serialize: Extent => InternalRow = _.toInternalRow
@@ -52,4 +50,8 @@ package object index extends StandardEncoders {
     def dataType: DataType                = z2IndexEncoder.schema
     def serialize: Z2Index => InternalRow = _.toInternalRow
   }
+
+  /** UnaryDeserializer.expressionEncoderUnaryDeserializer since TypeTags are not Kryo serializable by default. */
+  implicit def extentUnaryDeserializer: UnaryDeserializer[Id, Extent] =
+    (arguments, inspectors) => arguments.deserialize[InternalRow](inspectors).as[Extent]
 }

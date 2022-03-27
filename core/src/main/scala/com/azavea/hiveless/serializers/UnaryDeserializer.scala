@@ -51,12 +51,29 @@ object UnaryDeserializer extends Serializable {
   implicit def tryUnaryDeserializer[T: UnaryDeserializer[Id, *]]: UnaryDeserializer[Try, T] =
     (arguments, inspectors) => Try(id[T].deserialize(arguments, inspectors))
 
-  /** Derive Optional UnaryDeserializers. */
   implicit def optionalUnaryDeserializer[T: UnaryDeserializer[Id, *]]: UnaryDeserializer[Id, Option[T]] =
     (arguments, inspectors) => (arguments.headOption, inspectors.headOption).mapN(id[T].deserialize)
 
-  /** Derive UnaryDeserializers from ExpressionEncoders. */
-  implicit def expressionEncoderUnaryDeserializer[T: TypeTag: ExpressionEncoder]: UnaryDeserializer[Id, T] =
+  // format: off
+  /**
+   * Derive UnaryDeserializers from ExpressionEncoders.
+   * Intentionally not used for instances implementation, causes the following failure on DataBricks;
+   * TypeTags are not Kryo serializable by default:
+   *   org.apache.spark.SparkException: Job aborted due to stage failure: Task serialization failed: com.esotericsoftware.kryo.KryoException: java.util.ConcurrentModificationException
+   *   Serialization trace:
+   *     classes (sun.misc.Launcher$AppClassLoader)
+   *     classloader (java.security.ProtectionDomain)
+   *     context (java.security.AccessControlContext)
+   *     acc (com.databricks.backend.daemon.driver.ClassLoaders$LibraryClassLoader)
+   *     classLoader (scala.reflect.runtime.JavaMirrors$JavaMirror)
+   *     mirror (scala.reflect.api.TypeTags$TypeTagImpl)
+   *     evidence$3$1 (com.azavea.hiveless.serializers.UnaryDeserializer$$anonfun$expressionEncoderUnaryDeserializer$2)
+   *     evidence$1$1 (com.azavea.hiveless.serializers.UnaryDeserializer$$anonfun$tryUnaryDeserializer$3)
+   *     dh$1 (com.azavea.hiveless.serializers.GenericDeserializer$$anon$4)
+   *     d$2 (com.azavea.hiveless.serializers.GenericDeserializer$$anon$2)
+   */
+  // format: on
+  def expressionEncoderUnaryDeserializer[T: TypeTag: ExpressionEncoder]: UnaryDeserializer[Id, T] =
     (arguments, inspectors) => arguments.deserialize[InternalRow](inspectors).as[T]
 
   /** Derivation helper deserializer. */
