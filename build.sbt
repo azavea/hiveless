@@ -6,7 +6,6 @@ val scalaVersions = Seq("2.12.15")
 val catsVersion       = "2.7.0"
 val shapelessVersion  = "2.3.3" // to be compatible with Spark 3.1.x
 val scalaTestVersion  = "3.2.11"
-val framelessVersion  = "0.11.1"
 val geomesaVersion    = "3.3.0"
 val geotrellisVersion = "3.6.1+1-e4aeec2a-SNAPSHOT"
 
