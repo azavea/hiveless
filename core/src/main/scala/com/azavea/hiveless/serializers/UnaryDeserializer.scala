@@ -16,22 +16,28 @@
 
 package com.azavea.hiveless.serializers
 
-import com.azavea.hiveless.implicits.syntax._
+import com.azavea.hiveless.serializers.syntax._
+import com.azavea.hiveless.spark.encoders.syntax._
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.hive.HivelessInternals.unwrap
 import org.apache.spark.sql.types.Decimal
 import org.apache.spark.unsafe.types.UTF8String
 import cats.Id
+import cats.syntax.apply._
+import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder
 import org.apache.spark.sql.catalyst.util.ArrayData
 import shapeless.HNil
 
 import scala.reflect.ClassTag
 import scala.util.Try
+import scala.reflect.runtime.universe.TypeTag
 
 trait UnaryDeserializer[F[_], T] extends HDeserialier[F, T]
 
 object UnaryDeserializer extends Serializable {
   def apply[F[_], T](implicit ev: UnaryDeserializer[F, T]): UnaryDeserializer[F, T] = ev
+
+  def id[T](implicit ev: UnaryDeserializer[Id, T]): UnaryDeserializer[Id, T] = ev
 
   // format: off
   /**
@@ -43,7 +49,32 @@ object UnaryDeserializer extends Serializable {
    */
   // format: on
   implicit def tryUnaryDeserializer[T: UnaryDeserializer[Id, *]]: UnaryDeserializer[Try, T] =
-    (arguments, inspectors) => Try(UnaryDeserializer[Id, T].deserialize(arguments, inspectors))
+    (arguments, inspectors) => Try(id[T].deserialize(arguments, inspectors))
+
+  implicit def optionalUnaryDeserializer[T: UnaryDeserializer[Id, *]]: UnaryDeserializer[Id, Option[T]] =
+    (arguments, inspectors) => (arguments.headOption, inspectors.headOption).mapN(id[T].deserialize)
+
+  // format: off
+  /**
+   * Derive UnaryDeserializers from ExpressionEncoders.
+   * Intentionally not used for instances implementation, causes the following failure on DataBricks;
+   * TypeTags are not Kryo serializable by default:
+   *   org.apache.spark.SparkException: Job aborted due to stage failure: Task serialization failed: com.esotericsoftware.kryo.KryoException: java.util.ConcurrentModificationException
+   *   Serialization trace:
+   *     classes (sun.misc.Launcher$AppClassLoader)
+   *     classloader (java.security.ProtectionDomain)
+   *     context (java.security.AccessControlContext)
+   *     acc (com.databricks.backend.daemon.driver.ClassLoaders$LibraryClassLoader)
+   *     classLoader (scala.reflect.runtime.JavaMirrors$JavaMirror)
+   *     mirror (scala.reflect.api.TypeTags$TypeTagImpl)
+   *     evidence$3$1 (com.azavea.hiveless.serializers.UnaryDeserializer$$anonfun$expressionEncoderUnaryDeserializer$2)
+   *     evidence$1$1 (com.azavea.hiveless.serializers.UnaryDeserializer$$anonfun$tryUnaryDeserializer$3)
+   *     dh$1 (com.azavea.hiveless.serializers.GenericDeserializer$$anon$4)
+   *     d$2 (com.azavea.hiveless.serializers.GenericDeserializer$$anon$2)
+   */
+  // format: on
+  def expressionEncoderUnaryDeserializer[T: TypeTag: ExpressionEncoder]: UnaryDeserializer[Id, T] =
+    (arguments, inspectors) => arguments.deserialize[InternalRow](inspectors).as[T]
 
   /** Derivation helper deserializer. */
   implicit val hnilUnaryDeserializer: UnaryDeserializer[Id, HNil] = (_, _) => HNil

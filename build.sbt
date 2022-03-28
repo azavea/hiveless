@@ -3,6 +3,25 @@ import java.time.Year
 
 val scalaVersions = Seq("2.12.15")
 
+val catsVersion       = "2.7.0"
+val shapelessVersion  = "2.3.3" // to be compatible with Spark 3.1.x
+val scalaTestVersion  = "3.2.11"
+val framelessVersion  = "0.11.1"
+val geomesaVersion    = "3.3.0"
+val geotrellisVersion = "3.6.1+1-e4aeec2a-SNAPSHOT"
+
+def ver(for212: String, for213: String) = Def.setting {
+  CrossVersion.partialVersion(scalaVersion.value) match {
+    case Some((2, 12)) => for212
+    case Some((2, 13)) => for213
+    case _             => sys.error("not good")
+  }
+}
+
+def spark(module: String) = Def.setting {
+  "org.apache.spark" %% s"spark-$module" % ver("3.1.3", "3.2.1").value
+}
+
 lazy val commonSettings = Seq(
   scalaVersion       := scalaVersions.head,
   crossScalaVersions := scalaVersions,
@@ -40,7 +59,8 @@ lazy val commonSettings = Seq(
         existingText.flatMap(_ => existingText.map(_.trim)).getOrElse(newText)
       }
     )
-  )
+  ),
+  resolvers += "sonatype-snapshot" at "https://oss.sonatype.org/content/repositories/snapshots/"
 )
 
 lazy val root = (project in file("."))
@@ -52,7 +72,7 @@ lazy val root = (project in file("."))
     publish            := {},
     publishLocal       := {}
   )
-  .aggregate(core, spatial)
+  .aggregate(core, spatial, `spatial-index`)
 
 lazy val core = project
   .settings(commonSettings)
@@ -60,10 +80,10 @@ lazy val core = project
   .settings(
     addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full),
     libraryDependencies ++= Seq(
-      "org.typelevel"    %% "cats-core"  % "2.6.1",
-      "com.chuusai"      %% "shapeless"  % "2.3.3", // to be compatible with Spark 3.1.x
-      "org.apache.spark" %% "spark-hive" % "3.1.2" % Provided,
-      "org.scalatest"    %% "scalatest"  % "3.2.11" % Test
+      "org.typelevel"    %% "cats-core" % catsVersion,
+      "com.chuusai"      %% "shapeless" % shapelessVersion,
+      spark("hive").value % Provided,
+      "org.scalatest"    %% "scalatest" % scalaTestVersion % Test
     )
   )
 
@@ -73,8 +93,19 @@ lazy val spatial = project
   .settings(name := "hiveless-spatial")
   .settings(
     libraryDependencies ++= Seq(
-      "org.locationtech.geomesa" %% "geomesa-spark-jts" % "3.3.0",
-      "org.scalatest"            %% "scalatest"         % "3.2.10" % Test
+      "org.locationtech.geomesa" %% "geomesa-spark-jts" % geomesaVersion,
+      "org.scalatest"            %% "scalatest"         % scalaTestVersion % Test
+    )
+  )
+
+lazy val `spatial-index` = project
+  .dependsOn(spatial % "compile->compile;provided->provided")
+  .settings(commonSettings)
+  .settings(name := "hiveless-spatial-index")
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.locationtech.geotrellis" %% "geotrellis-store" % geotrellisVersion,
+      "org.scalatest"               %% "scalatest"        % scalaTestVersion % Test
     ),
     assembly / test := {},
     assembly / assemblyShadeRules := {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Azavea
+ * Copyright 2022 Azavea
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package com.azavea.hiveless.implicits
+package com.azavea.hiveless.spatial.index
 
-object tuplers extends Serializable {
-  implicit def function2Tupler[T0, T1, R](f: (T0, T1) => R): ((T0, T1)) => R                         = f.tupled
-  implicit def function3Tupler[T0, T1, T2, R](f: (T0, T1, T2) => R): ((T0, T1, T2)) => R             = f.tupled
-  implicit def function4Tupler[T0, T1, T2, T3, R](f: (T0, T1, T2, T3) => R): ((T0, T1, T2, T3)) => R = f.tupled
+import com.azavea.hiveless.HUDF
+import com.azavea.hiveless.spatial._
+import geotrellis.vector._
+import org.locationtech.jts.geom.Geometry
+
+class ST_ExtentToGeom extends HUDF[Extent, Geometry] {
+  val name: String = "st_extentToGeom"
+  def function     = _.toPolygon
 }

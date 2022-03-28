@@ -71,6 +71,8 @@ object GenericDeserializer extends Serializable {
       dt: GenericDeserializer[F, T]
   ): GenericDeserializer[F, H :: T] = new GenericDeserializer[F, H :: T] {
     def deserialize(arguments: Array[GenericUDF.DeferredObject], inspectors: Array[ObjectInspector]): F[H :: T] =
-      (dh.deserialize(arguments.head, inspectors.head), dt.deserialize(arguments.tail, inspectors.tail)).mapN(_ :: _)
+      // take and drop allow us to handle options safely
+      // take is left for semantics reasons only
+      (dh.deserialize(arguments.take(1), inspectors.take(1)), dt.deserialize(arguments.drop(1), inspectors.drop(1))).mapN(_ :: _)
   }
 }

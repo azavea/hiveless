@@ -17,7 +17,7 @@
 package com.azavea.hiveless.spatial
 
 import com.azavea.hiveless.HUDF
-import com.azavea.hiveless.implicits.tuplers._
+import com.azavea.hiveless.implicits.tupler._
 import org.locationtech.geomesa.spark.jts.udf.GeometricConstructorFunctions
 import org.locationtech.jts.geom.Geometry
 

@@ -16,12 +16,15 @@
 
 package com.azavea.hiveless.serializers
 
+import com.azavea.hiveless.spark.encoders.syntax._
+import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder
 import org.apache.spark.sql.types._
 import org.apache.spark.unsafe.types.UTF8String
 import org.apache.spark.sql.catalyst.util.ArrayData
 
 import java.{lang => jl}
 import scala.reflect.ClassTag
+import scala.reflect.runtime.universe.TypeTag
 
 trait HSerializer[T] extends Serializable {
   def dataType: DataType
@@ -41,12 +44,33 @@ object HSerializer extends Serializable {
    * Intentionally not used for instances implementation, causes the following failure on DataBricks:
    *   Unable to find class: com.azavea.hiveless.serializers.HSerializer$$$Lambda$5659/1670981434
    *   Serialization trace:
-   *   s$1 (com.azavea.hiveless.serializers.HSerializer$$anon$1)
+   *     s$1 (com.azavea.hiveless.serializers.HSerializer$$anon$1)
    */
   // format: on
   def instance[T](dt: DataType, s: T => Any): HSerializer[T] = new HSerializer[T] {
     val dataType: DataType  = dt
     def serialize: T => Any = s
+  }
+
+  // format: off
+  /**
+   * Derive HSerializer from ExpressionEncoder.
+   * Intentionally not used for instances implementation, causes the following failure on DataBricks;
+   * TypeTags are not Kryo serializable by default:
+   *   org.apache.spark.SparkException: Job aborted due to stage failure: Task serialization failed: com.esotericsoftware.kryo.KryoException: java.util.ConcurrentModificationException
+   *   Serialization trace:
+   *     classes (sun.misc.Launcher$AppClassLoader)
+   *     classloader (java.security.ProtectionDomain)
+   *     context (java.security.AccessControlContext)
+   *     acc (com.databricks.backend.daemon.driver.ClassLoaders$LibraryClassLoader)
+   *     classLoader (scala.reflect.runtime.JavaMirrors$JavaMirror)
+   *     mirror (scala.reflect.api.TypeTags$TypeTagImpl)
+   *     tg$1 (com.azavea.hiveless.serializers.HSerializer$$anon$2)
+   */
+  // format: on
+  def expressionEncoderSerializer[T: TypeTag](implicit enc: ExpressionEncoder[T]): HSerializer[T] = new HSerializer[T] {
+    def dataType: DataType  = enc.schema
+    def serialize: T => Any = _.toInternalRow
   }
 
   implicit val booleanSerializer: HSerializer[Boolean] = new IdHSerializer[Boolean] { def dataType: DataType = BooleanType }

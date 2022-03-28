@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 Azavea
+ * Copyright 2022 Azavea
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,14 @@
  * limitations under the License.
  */
 
-package com.azavea.hiveless.implicits
+package com.azavea.hiveless.spatial.index
 
-import com.azavea.hiveless.serializers.HDeserialier
-import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
+import com.azavea.hiveless.HUDF
+import com.azavea.hiveless.spatial._
+import geotrellis.vector._
+import org.locationtech.jts.geom.Geometry
 
-object syntax {
-  implicit class DeferredObjectOps(val self: GenericUDF.DeferredObject) extends AnyVal {
-
-    /** Behaves like a regular get, but throws when the result is null. */
-    def getNonEmpty: AnyRef = Option(self.get) match {
-      case Some(r) => r
-      case _       => throw HDeserialier.Errors.NullArgument
-    }
-  }
+class ST_ExtentFromGeom extends HUDF[Geometry, Extent] {
+  val name: String = "st_extentFromGeom"
+  def function     = _.extent
 }

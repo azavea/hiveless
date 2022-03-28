@@ -17,13 +17,13 @@
 package com.azavea.hiveless.spatial
 
 import com.azavea.hiveless.HUDF
-import com.azavea.hiveless.implicits.tuplers._
+import com.azavea.hiveless.implicits.tupler._
 import org.locationtech.geomesa.spark.jts.udf.SpatialRelationFunctions
 import org.locationtech.jts.geom.Geometry
 
 import java.{lang => jl}
 
 class ST_Intersects extends HUDF[(Geometry, Geometry), jl.Boolean] {
-  val name: String = "st_intersection"
+  val name: String = "st_intersects"
   def function     = SpatialRelationFunctions.ST_Intersects
 }
