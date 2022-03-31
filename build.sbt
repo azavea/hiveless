@@ -7,10 +7,10 @@ val catsVersion       = "2.7.0"
 val shapelessVersion  = "2.3.3" // to be compatible with Spark 3.1.x
 val scalaTestVersion  = "3.2.11"
 val geomesaVersion    = "3.3.0"
-val geotrellisVersion = "3.6.1+1-e4aeec2a-SNAPSHOT"
+val geotrellisVersion = "3.6.1+9-fdefb1d3-SNAPSHOT"
 
-// GT depends on Shapeless 2.3.7
-// To maintain better compat with Spark 3.1.x and DataBricks 9.1 we won't to depend on Shapeless 2.3.3
+// GeoTrellis depends on Shapeless 2.3.7
+// To maintain better compat with Spark 3.1.x and DataBricks 9.1 we need to depend on Shapeless 2.3.3
 val excludedDependencies = List(
   ExclusionRule("com.chuusai", "shapeless_2.12"),
   ExclusionRule("com.chuusai", "shapeless_2.13")
