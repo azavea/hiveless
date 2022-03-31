@@ -9,6 +9,13 @@ val scalaTestVersion  = "3.2.11"
 val geomesaVersion    = "3.3.0"
 val geotrellisVersion = "3.6.1+1-e4aeec2a-SNAPSHOT"
 
+// GT depends on Shapeless 2.3.7
+// To maintain better compat with Spark 3.1.x and DataBricks 9.1 we won't to depend on Shapeless 2.3.3
+val excludedDependencies = List(
+  ExclusionRule("com.chuusai", "shapeless_2.12"),
+  ExclusionRule("com.chuusai", "shapeless_2.13")
+)
+
 def ver(for212: String, for213: String) = Def.setting {
   CrossVersion.partialVersion(scalaVersion.value) match {
     case Some((2, 12)) => for212
@@ -103,7 +110,7 @@ lazy val `spatial-index` = project
   .settings(name := "hiveless-spatial-index")
   .settings(
     libraryDependencies ++= Seq(
-      "org.locationtech.geotrellis" %% "geotrellis-store" % geotrellisVersion exclude ("com.chuusai", "shapeless"),
+      "org.locationtech.geotrellis" %% "geotrellis-store" % geotrellisVersion excludeAll (excludedDependencies: _*),
       "org.scalatest"               %% "scalatest"        % scalaTestVersion % Test
     ),
     assembly / test := {},
