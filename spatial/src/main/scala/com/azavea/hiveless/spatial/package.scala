@@ -18,14 +18,15 @@ package com.azavea.hiveless
 
 import com.azavea.hiveless.serializers.{HConverter, HSerializer, UnaryDeserializer}
 import com.azavea.hiveless.serializers.syntax._
+import com.azavea.hiveless.spatial.util.TWKBUtils
 import cats.Id
 import org.locationtech.jts.geom.Geometry
 import org.apache.spark.sql.types.{BinaryType, DataType}
-import org.locationtech.geomesa.spark.jts.util.WKBUtils
+// import org.locationtech.geomesa.spark.jts.util.WKBUtils
 
 package object spatial extends Serializable {
   implicit def geometryConverter[T <: Geometry]: HConverter[T] = new HConverter[T] {
-    def convert(argument: Any): T = WKBUtils.read(argument.asInstanceOf[Array[Byte]]).asInstanceOf[T]
+    def convert(argument: Any): T = TWKBUtils.read(argument.asInstanceOf[Array[Byte]]).asInstanceOf[T]
   }
 
   implicit def geometryUnaryDeserializer[T <: Geometry: HConverter]: UnaryDeserializer[Id, T] =
@@ -33,6 +34,6 @@ package object spatial extends Serializable {
 
   implicit def geometrySerializer[T <: Geometry]: HSerializer[T] = new HSerializer[T] {
     def dataType: DataType                 = BinaryType
-    def serialize: Geometry => Array[Byte] = WKBUtils.write
+    def serialize: Geometry => Array[Byte] = TWKBUtils.write
   }
 }

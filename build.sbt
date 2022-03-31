@@ -44,6 +44,7 @@ lazy val commonSettings = Seq(
     "-target:jvm-1.8" // ,
     // "-Xsource:3"
   ),
+  javacOptions ++= Seq("-source", "1.8", "-target", "1.8"),
   licenses               := Seq("Apache-2.0" -> url("http://www.apache.org/licenses/LICENSE-2.0.html")),
   homepage               := Some(url("https://github.com/azavea/hiveless")),
   versionScheme          := Some("semver-spec"),
