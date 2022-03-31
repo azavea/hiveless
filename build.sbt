@@ -103,7 +103,7 @@ lazy val `spatial-index` = project
   .settings(name := "hiveless-spatial-index")
   .settings(
     libraryDependencies ++= Seq(
-      "org.locationtech.geotrellis" %% "geotrellis-store" % geotrellisVersion,
+      "org.locationtech.geotrellis" %% "geotrellis-store" % geotrellisVersion exclude ("com.chuusai", "shapeless"),
       "org.scalatest"               %% "scalatest"        % scalaTestVersion % Test
     ),
     assembly / test := {},
