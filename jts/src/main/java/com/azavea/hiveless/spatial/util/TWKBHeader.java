@@ -142,18 +142,18 @@ class TWKBHeader {
     @Override
     public String toString() {
         return "TWKBHeader{" +
-            "geometryType=" + geometryType +
-            ", xyPrecision=" + xyPrecision +
-            ", hasBBOX=" + hasBBOX +
-            ", hasSize=" + hasSize +
-            ", hasIdList=" + hasIdList +
-            ", isEmpty=" + isEmpty +
-            ", hasZ=" + hasZ +
-            ", hasM=" + hasM +
-            ", zPrecision=" + zPrecision +
-            ", mPrecision=" + mPrecision +
-            ", geometryBodySize=" + geometryBodySize +
-            '}';
+                "geometryType=" + geometryType +
+                ", xyPrecision=" + xyPrecision +
+                ", hasBBOX=" + hasBBOX +
+                ", hasSize=" + hasSize +
+                ", hasIdList=" + hasIdList +
+                ", isEmpty=" + isEmpty +
+                ", hasZ=" + hasZ +
+                ", hasM=" + hasM +
+                ", zPrecision=" + zPrecision +
+                ", mPrecision=" + mPrecision +
+                ", geometryBodySize=" + geometryBodySize +
+                '}';
     }
 
     public int geometryBodySize() {
@@ -255,22 +255,22 @@ class TWKBHeader {
 
     public int getPrecision(final int dimensionIndex) {
         switch (dimensionIndex) {
-        case 0:
-        case 1:
-            return xyPrecision;
-        case 2:
-            if (!(hasZ || hasM)) {
-                throw new IllegalArgumentException("Geometry only has XY dimensions.");
-            }
-            return hasZ ? zPrecision : mPrecision;
-        case 3:
-            if (!(hasZ && hasM)) {
-                throw new IllegalArgumentException("Geometry has no M dimension.");
-            }
-            return mPrecision;
-        default:
-            throw new IllegalArgumentException(
-                    "Dimension index shall be between 0 and 3: " + dimensionIndex);
+            case 0:
+            case 1:
+                return xyPrecision;
+            case 2:
+                if (!(hasZ || hasM)) {
+                    throw new IllegalArgumentException("Geometry only has XY dimensions.");
+                }
+                return hasZ ? zPrecision : mPrecision;
+            case 3:
+                if (!(hasZ && hasM)) {
+                    throw new IllegalArgumentException("Geometry has no M dimension.");
+                }
+                return mPrecision;
+            default:
+                throw new IllegalArgumentException(
+                        "Dimension index shall be between 0 and 3: " + dimensionIndex);
         }
     }
 
