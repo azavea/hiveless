@@ -5,6 +5,7 @@ CREATE OR REPLACE FUNCTION st_asGeoHash as 'com.azavea.hiveless.spatial.ST_AsGeo
 CREATE OR REPLACE FUNCTION st_asGeoJson as 'com.azavea.hiveless.spatial.ST_AsGeoJson';
 CREATE OR REPLACE FUNCTION st_asLatLonText as 'com.azavea.hiveless.spatial.ST_AsLatLonText';
 CREATE OR REPLACE FUNCTION st_asText as 'com.azavea.hiveless.spatial.ST_AsText';
+CREATE OR REPLACE FUNCTION st_asTWKB as 'com.azavea.hiveless.spatial.ST_AsTWKB';
 CREATE OR REPLACE FUNCTION st_boundary as 'com.azavea.hiveless.spatial.ST_Boundary';
 CREATE OR REPLACE FUNCTION st_box2DFromGeoHash as 'com.azavea.hiveless.spatial.ST_GeomFromGeoHash';
 CREATE OR REPLACE FUNCTION st_bufferPoint as 'com.azavea.hiveless.spatial.ST_BufferPoint';
