@@ -13,8 +13,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
- * 
+ *
+ *
  * Original file: https://svn.apache.org/repos/asf/mahout/branches/mahout-0.8/core/src/main/java/org/apache/mahout/math/Varint.java
  */
 package com.azavea.hiveless.spatial.util;

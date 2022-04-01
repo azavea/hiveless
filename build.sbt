@@ -6,6 +6,7 @@ val scalaVersions = Seq("2.12.15")
 val catsVersion       = "2.7.0"
 val shapelessVersion  = "2.3.3" // to be compatible with Spark 3.1.x
 val scalaTestVersion  = "3.2.11"
+val jtsVersion        = "1.18.1"
 val geomesaVersion    = "3.3.0"
 val geotrellisVersion = "3.6.1+9-fdefb1d3-SNAPSHOT"
 
@@ -67,7 +68,9 @@ lazy val commonSettings = Seq(
       }
     )
   ),
-  resolvers += "sonatype-snapshot" at "https://oss.sonatype.org/content/repositories/snapshots/"
+  addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full),
+  resolvers += "sonatype-snapshot" at "https://oss.sonatype.org/content/repositories/snapshots/",
+  libraryDependencies += "org.scalatest" %% "scalatest" % scalaTestVersion % Test
 )
 
 lazy val root = (project in file("."))
@@ -79,41 +82,36 @@ lazy val root = (project in file("."))
     publish            := {},
     publishLocal       := {}
   )
-  .aggregate(core, spatial, `spatial-index`)
+  .aggregate(core, jts, spatial, `spatial-index`)
 
 lazy val core = project
   .settings(commonSettings)
   .settings(name := "hiveless-core")
   .settings(
-    addCompilerPlugin("org.typelevel" % "kind-projector" % "0.13.2" cross CrossVersion.full),
     libraryDependencies ++= Seq(
       "org.typelevel"    %% "cats-core" % catsVersion,
       "com.chuusai"      %% "shapeless" % shapelessVersion,
-      spark("hive").value % Provided,
-      "org.scalatest"    %% "scalatest" % scalaTestVersion % Test
+      spark("hive").value % Provided
     )
   )
 
+lazy val jts = project
+  .settings(commonSettings)
+  .settings(name := "hiveless-jts")
+  .settings(libraryDependencies += "org.locationtech.jts" % "jts-core" % jtsVersion)
+
 lazy val spatial = project
-  .dependsOn(core % "compile->compile;provided->provided")
+  .dependsOn(core % "compile->compile;provided->provided", jts)
   .settings(commonSettings)
   .settings(name := "hiveless-spatial")
-  .settings(
-    libraryDependencies ++= Seq(
-      "org.locationtech.geomesa" %% "geomesa-spark-jts" % geomesaVersion,
-      "org.scalatest"            %% "scalatest"         % scalaTestVersion % Test
-    )
-  )
+  .settings(libraryDependencies += "org.locationtech.geomesa" %% "geomesa-spark-jts" % geomesaVersion)
 
 lazy val `spatial-index` = project
   .dependsOn(spatial % "compile->compile;provided->provided")
   .settings(commonSettings)
   .settings(name := "hiveless-spatial-index")
   .settings(
-    libraryDependencies ++= Seq(
-      "org.locationtech.geotrellis" %% "geotrellis-store" % geotrellisVersion excludeAll (excludedDependencies: _*),
-      "org.scalatest"               %% "scalatest"        % scalaTestVersion % Test
-    ),
+    libraryDependencies += "org.locationtech.geotrellis" %% "geotrellis-store" % geotrellisVersion excludeAll (excludedDependencies: _*),
     assembly / test := {},
     assembly / assemblyShadeRules := {
       val shadePackage = "com.azavea.shaded.hiveless"

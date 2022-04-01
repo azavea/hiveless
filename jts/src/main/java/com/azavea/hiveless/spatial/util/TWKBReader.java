@@ -9,7 +9,6 @@
  *
  * http://www.eclipse.org/org/documents/edl-v10.php.
  */
-
 package com.azavea.hiveless.spatial.util;
 
 import java.io.ByteArrayInputStream;
