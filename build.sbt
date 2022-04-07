@@ -112,7 +112,7 @@ lazy val `spatial-index` = project
   .settings(name := "hiveless-spatial-index")
   .settings(
     libraryDependencies += "org.locationtech.geotrellis" %% "geotrellis-store" % geotrellisVersion excludeAll (excludedDependencies: _*),
-    assembly / test := {},
+    assembly / test                                      := {},
     assembly / assemblyShadeRules := {
       val shadePackage = "com.azavea.shaded.hiveless"
       Seq(

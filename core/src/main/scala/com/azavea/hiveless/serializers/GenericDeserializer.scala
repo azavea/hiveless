@@ -30,15 +30,15 @@ object GenericDeserializer extends Serializable {
 
   /** A corner case, to avoid Tuple1[T] usage. */
   implicit def genericDeserializerTuple1[F[_]: Functor, T](implicit
-      d: GenericDeserializer[F, T :: HNil]
+    d: GenericDeserializer[F, T :: HNil]
   ): GenericDeserializer[F, T] = new GenericDeserializer[F, T] {
     def deserialize(arguments: Array[GenericUDF.DeferredObject], inspectors: Array[ObjectInspector]): F[T] =
       d.deserialize(arguments, inspectors).map(_.head)
   }
 
   implicit def genericDeserializerTuple[F[_]: Functor, T: IsTuple, L <: HList](implicit
-      gen: Generic.Aux[T, L],
-      d: GenericDeserializer[F, L]
+    gen: Generic.Aux[T, L],
+    d: GenericDeserializer[F, L]
   ): GenericDeserializer[F, T] = new GenericDeserializer[F, T] {
     def deserialize(arguments: Array[GenericUDF.DeferredObject], inspectors: Array[ObjectInspector]): F[T] =
       d.deserialize(arguments, inspectors).map(gen.from)
@@ -67,8 +67,8 @@ object GenericDeserializer extends Serializable {
    */
   // format: on
   implicit def genericDeserializerHCons[F[_]: Apply, H, T <: HList](implicit
-      dh: UnaryDeserializer[F, H],
-      dt: GenericDeserializer[F, T]
+    dh: UnaryDeserializer[F, H],
+    dt: GenericDeserializer[F, T]
   ): GenericDeserializer[F, H :: T] = new GenericDeserializer[F, H :: T] {
     def deserialize(arguments: Array[GenericUDF.DeferredObject], inspectors: Array[ObjectInspector]): F[H :: T] =
       // take and drop allow us to handle options safely
