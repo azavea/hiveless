@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.apache.spark.sql.hive.hiveless.spatial.rules
+package com.azavea.hiveless.spark.spatial.rules
 
 import com.azavea.hiveless.spatial._
 import com.azavea.hiveless.spatial.index.ST_IntersectsExtent
@@ -22,31 +22,34 @@ import com.azavea.hiveless.serializers.syntax._
 import org.locationtech.jts.geom.Geometry
 import geotrellis.vector._
 import cats.syntax.option._
+import org.apache.spark.sql.hive.HivelessInternals.GenericUDF
+import org.apache.spark.sql.hive.rules.syntax._
 import org.apache.spark.sql.catalyst.expressions._
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.catalyst.plans.logical.{Filter, LogicalPlan}
 import org.apache.spark.sql.catalyst.rules.Rule
-import org.apache.spark.sql.hive.HiveGenericUDF
 
 object SpatialFilterPushdownRules extends Rule[LogicalPlan] {
 
   def apply(plan: LogicalPlan): LogicalPlan =
     plan.transformDown {
       // HiveGenericUDF is a private[hive] case class
-      case Filter(condition: HiveGenericUDF, plan) if condition.of[ST_IntersectsExtent] =>
+      case Filter(condition: GenericUDF, plan) if condition.of[ST_IntersectsExtent] =>
         // extract bbox, snd
         val Seq(bboxExpr, geometryExpr) = condition.children
         // extract extent from the right
         val extent = geometryExpr.eval(null).convert[Geometry].extent
 
         // transform expression
-        val expr = List(
-          IsNotNull(bboxExpr),
-          GreaterThanOrEqual(GetStructField(bboxExpr, 0, "xmin".some), Literal(extent.xmin)),
-          GreaterThanOrEqual(GetStructField(bboxExpr, 1, "ymin".some), Literal(extent.ymin)),
-          LessThanOrEqual(GetStructField(bboxExpr, 2, "xmax".some), Literal(extent.xmax)),
-          LessThanOrEqual(GetStructField(bboxExpr, 3, "ymax".some), Literal(extent.ymax))
-        ).and
+        val expr = AndList(
+          List(
+            IsNotNull(bboxExpr),
+            GreaterThanOrEqual(GetStructField(bboxExpr, 0, "xmin".some), Literal(extent.xmin)),
+            GreaterThanOrEqual(GetStructField(bboxExpr, 1, "ymin".some), Literal(extent.ymin)),
+            LessThanOrEqual(GetStructField(bboxExpr, 2, "xmax".some), Literal(extent.xmax)),
+            LessThanOrEqual(GetStructField(bboxExpr, 3, "ymax".some), Literal(extent.ymax))
+          )
+        )
 
         Filter(expr, plan)
     }
