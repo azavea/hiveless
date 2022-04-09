@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.apache.spark.sql.hive.rules
+package com.azavea.hiveless.spark.rules
 
-import org.apache.spark.sql.hive.HivelessInternals.GenericUDF
 import org.apache.spark.sql.catalyst.expressions.{And, Expression}
+import org.apache.spark.sql.hive.HivelessInternals.HiveGenericUDF
 
 import scala.reflect.{classTag, ClassTag}
 
 package object syntax extends Serializable {
-  implicit class HiveGenericUDFOps(val self: GenericUDF) extends AnyVal {
+  implicit class HiveGenericUDFOps(val self: HiveGenericUDF) extends AnyVal {
     def of[T: ClassTag]: Boolean = self.funcWrapper.functionClassName == classTag[T].toString
   }
 

@@ -16,14 +16,13 @@
 
 package com.azavea.hiveless.spark.spatial.rules
 
+import com.azavea.hiveless.spark.rules.syntax._
 import com.azavea.hiveless.spatial._
 import com.azavea.hiveless.spatial.index.ST_IntersectsExtent
 import com.azavea.hiveless.serializers.syntax._
-import org.locationtech.jts.geom.Geometry
 import geotrellis.vector._
 import cats.syntax.option._
-import org.apache.spark.sql.hive.HivelessInternals.GenericUDF
-import org.apache.spark.sql.hive.rules.syntax._
+import org.apache.spark.sql.hive.HivelessInternals.HiveGenericUDF
 import org.apache.spark.sql.catalyst.expressions._
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.sql.catalyst.plans.logical.{Filter, LogicalPlan}
@@ -34,7 +33,7 @@ object SpatialFilterPushdownRules extends Rule[LogicalPlan] {
   def apply(plan: LogicalPlan): LogicalPlan =
     plan.transformDown {
       // HiveGenericUDF is a private[hive] case class
-      case Filter(condition: GenericUDF, plan) if condition.of[ST_IntersectsExtent] =>
+      case Filter(condition: HiveGenericUDF, plan) if condition.of[ST_IntersectsExtent] =>
         // extract bbox, snd
         val Seq(bboxExpr, geometryExpr) = condition.children
         // extract extent from the right
