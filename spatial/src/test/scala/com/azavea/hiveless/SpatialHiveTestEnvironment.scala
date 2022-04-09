@@ -29,10 +29,12 @@ import scala.util.Properties
 trait SpatialHiveTestEnvironment extends TestEnvironment { self: Suite with BeforeAndAfterAll =>
   import SpatialHiveTestEnvironment._
 
-  private def spatialFunctions: List[String] =
+  def loadSQL(path: String): List[String] =
     Source
-      .fromFile(new File("../spatial/sql/createUDFs.sql").toURI)
+      .fromFile(new File(path).toURI)
       .using(_.mkString.split(";").toList.map(_.trim).filter(_.nonEmpty))
+
+  def spatialFunctions: List[String] = loadSQL("../spatial/sql/createUDFs.sql")
 
   // function to override Hive SQL functions registration
   def registerHiveUDFs(ssc: SparkSession): Unit =

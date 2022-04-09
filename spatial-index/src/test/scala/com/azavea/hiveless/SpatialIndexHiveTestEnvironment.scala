@@ -20,21 +20,8 @@ import org.apache.spark.sql.hive.hiveless.spatial.rules.SpatialFilterPushdownRul
 import org.apache.spark.sql.{SQLContext, SparkSession}
 import org.scalatest.{BeforeAndAfterAll, Suite}
 
-import java.io.File
-import scala.io.Source
-
 trait SpatialIndexHiveTestEnvironment extends SpatialHiveTestEnvironment { self: Suite with BeforeAndAfterAll =>
-  import SpatialHiveTestEnvironment._
-
-  private def spatialFunctions: List[String] =
-    Source
-      .fromFile(new File("../spatial/sql/createUDFs.sql").toURI)
-      .using(_.mkString.split(";").toList.map(_.trim).filter(_.nonEmpty))
-
-  private def spatialIndexFunctions: List[String] =
-    Source
-      .fromFile(new File("../spatial-index/sql/createUDFs.sql").toURI)
-      .using(_.mkString.split(";").toList.map(_.trim).filter(_.nonEmpty))
+  def spatialIndexFunctions: List[String] = loadSQL("../spatial-index/sql/createUDFs.sql")
 
   // function to override Hive SQL functions registration
   override def registerHiveUDFs(ssc: SparkSession): Unit =
