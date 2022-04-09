@@ -16,7 +16,7 @@
 
 package com.azavea.hiveless
 
-import org.apache.spark.sql.hive.hiveless.spatial.rules.SpatialFilterPushdownRules
+import com.azavea.hiveless.spark.spatial.rules.SpatialFilterPushdownRules
 import org.apache.spark.sql.{SQLContext, SparkSession}
 import org.scalatest.{BeforeAndAfterAll, Suite}
 
