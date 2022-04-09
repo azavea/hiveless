@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.azavea.hiveless.index
+package com.azavea.hiveless.spatial.index
 
-import com.azavea.hiveless.{HiveTestEnvironment, TestTables}
-import com.azavea.hiveless.HiveTestEnvironment
+import com.azavea.hiveless.{SpatialIndexHiveTestEnvironment, SpatialIndexTestTables}
 import org.apache.spark.sql.catalyst.plans.logical.Filter
 import org.scalatest.funspec.AnyFunSpec
 
-class STIndexSpec extends AnyFunSpec with HiveTestEnvironment with TestTables {
+class STIndexSpec extends AnyFunSpec with SpatialIndexHiveTestEnvironment with SpatialIndexTestTables {
 
   describe("ST Index functions spec") {
     it("ST_IntersectsExtent should filter a CSV file") {

@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-package com.azavea.hiveless.core
+package com.azavea.hiveless.spatial
 
-import com.azavea.hiveless.{HiveTestEnvironment, TestTables}
-import com.azavea.hiveless.HiveTestEnvironment
+import com.azavea.hiveless.{SpatialHiveTestEnvironment, SpatialTestTables}
 import org.scalatest.funspec.AnyFunSpec
 
-class STCoreSpec extends AnyFunSpec with HiveTestEnvironment with TestTables {
-  describe("ST Core functions spec") {
+class STSpec extends AnyFunSpec with SpatialHiveTestEnvironment with SpatialTestTables {
+  describe("ST functions spec") {
     it("ST_Intersects should filter a CSV view") {
       val df = ssc.sql(
         """
