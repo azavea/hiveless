@@ -50,6 +50,7 @@ lazy val commonSettings = Seq(
   homepage               := Some(url("https://github.com/azavea/hiveless")),
   versionScheme          := Some("semver-spec"),
   Test / publishArtifact := false,
+  Test / fork            := true,
   developers := List(
     Developer(
       "pomadchin",
@@ -104,10 +105,15 @@ lazy val spatial = project
   .dependsOn(core % "compile->compile;provided->provided", jts)
   .settings(commonSettings)
   .settings(name := "hiveless-spatial")
-  .settings(libraryDependencies += "org.locationtech.geomesa" %% "geomesa-spark-jts" % geomesaVersion)
+  .settings(
+    libraryDependencies ++= Seq(
+      "org.locationtech.geomesa"    %% "geomesa-spark-jts"        % geomesaVersion,
+      "org.locationtech.geotrellis" %% "geotrellis-spark-testkit" % geotrellisVersion % Test excludeAll (excludedDependencies: _*)
+    )
+  )
 
 lazy val `spatial-index` = project
-  .dependsOn(spatial % "compile->compile;provided->provided")
+  .dependsOn(spatial % "compile->compile;provided->provided;test->test")
   .settings(commonSettings)
   .settings(name := "hiveless-spatial-index")
   .settings(
