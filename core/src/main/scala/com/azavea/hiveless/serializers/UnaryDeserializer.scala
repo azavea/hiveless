@@ -87,7 +87,7 @@ object UnaryDeserializer extends Serializable {
   def expressionEncoderUnaryDeserializer[T: TypeTag: ExpressionEncoder]: UnaryDeserializer[Id, T] =
     (arguments, inspectors) => arguments.deserialize[InternalRow](inspectors).as[T]
 
-  /** Derivation helper deserializer. */
+  /** Derivation helper deserializers. */
   implicit val hnilUnaryDeserializer: UnaryDeserializer[Id, HNil] = (_, _) => HNil
 
   implicit val cnilUnaryDeserializer: UnaryDeserializer[Id, CNil] = (_, _) => null.asInstanceOf[CNil]
@@ -175,6 +175,7 @@ object UnaryDeserializer extends Serializable {
       Try(arrayDataUnaryDeserializer.deserialize(arguments, inspectors).toArray[T](HSerializer[T].dataType))
         .getOrElse(nativeArrayUnaryDeserializer.deserialize(arguments, inspectors))
 
+  /** Coproduct deserializer. */
   implicit def unaryDeserializerCCons[H, T <: Coproduct](implicit
     dh: UnaryDeserializer[Id, H],
     dt: UnaryDeserializer[Id, T]

@@ -106,5 +106,57 @@ class STIndexSpec extends AnyFunSpec with SpatialIndexHiveTestEnvironment with S
 
       dfc shouldBe dfec
     }
+
+    it("ST_IntersectsExtent optimization failure (Extent, Extent)") {
+      val df = ssc.sql(
+        """
+          |SELECT * FROM polygons_parquet WHERE ST_IntersectsExtent(bbox, bbox)
+          |""".stripMargin
+      )
+
+      val dfe = ssc.sql(
+        """
+          |SELECT * FROM polygons_parquet
+          |WHERE bbox.xmin >= -75.5859375
+          |AND bbox.ymin >= 40.3251777
+          |AND bbox.xmax <= -72.4101562
+          |AND bbox.ymax <= 43.1971673
+          |""".stripMargin
+      )
+
+      df.count() shouldBe dfe.count()
+
+      // compare optimized plans filters
+      val dfc  = df.queryExecution.optimizedPlan.collect { case Filter(condition, _) => condition }
+      val dfec = dfe.queryExecution.optimizedPlan.collect { case Filter(condition, _) => condition }
+
+      dfc shouldNot be(dfec)
+    }
+
+    it("ST_IntersectsExtent optimization failure (Extent, Geometry)") {
+      val df = ssc.sql(
+        """
+          |SELECT * FROM polygons_parquet WHERE ST_IntersectsExtent(bbox, geom)
+          |""".stripMargin
+      )
+
+      val dfe = ssc.sql(
+        """
+          |SELECT * FROM polygons_parquet
+          |WHERE bbox.xmin >= -75.5859375
+          |AND bbox.ymin >= 40.3251777
+          |AND bbox.xmax <= -72.4101562
+          |AND bbox.ymax <= 43.1971673
+          |""".stripMargin
+      )
+
+      df.count() shouldBe dfe.count()
+
+      // compare optimized plans filters
+      val dfc  = df.queryExecution.optimizedPlan.collect { case Filter(condition, _) => condition }
+      val dfec = dfe.queryExecution.optimizedPlan.collect { case Filter(condition, _) => condition }
+
+      dfc shouldNot be(dfec)
+    }
   }
 }

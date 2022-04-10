@@ -17,7 +17,9 @@
 package com.azavea.hiveless.spark.rules
 
 import org.apache.spark.sql.catalyst.expressions.{And, Expression}
+import org.apache.spark.sql.hive.HivelessInternals
 import org.apache.spark.sql.hive.HivelessInternals.HiveGenericUDF
+import org.apache.spark.sql.types.{DataType, StructType}
 
 import scala.reflect.{classTag, ClassTag}
 
@@ -27,4 +29,12 @@ package object syntax extends Serializable {
   }
 
   def AndList(list: List[Expression]): Expression = list.reduce(And)
+
+  implicit class DataTypeConformityOps(val left: DataType) extends AnyVal {
+    def conformsToSchema(schema: StructType): Boolean =
+      HivelessInternals.WithTypeConformity(left).conformsTo(schema)
+
+    def conformsToDataType(dataType: DataType): Boolean =
+      HivelessInternals.WithTypeConformity(left).conformsTo(dataType)
+  }
 }
