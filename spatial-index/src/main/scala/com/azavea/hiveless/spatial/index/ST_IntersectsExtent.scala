@@ -18,11 +18,32 @@ package com.azavea.hiveless.spatial.index
 
 import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.spatial._
-import com.azavea.hiveless.implicits.tupler._
+import com.azavea.hiveless.serializers.UnaryDeserializer
 import geotrellis.vector._
 import org.locationtech.jts.geom.Geometry
+import shapeless._
 
-class ST_IntersectsExtent extends HUDF[(Extent, Geometry), Boolean] {
+class ST_IntersectsExtent extends HUDF[(Extent :+: Geometry :+: CNil, Extent :+: Geometry :+: CNil), Boolean] {
   val name: String = "st_intersectsExtent"
-  def function     = { (extent: Extent, geom: Geometry) => extent.intersects(geom.extent) }
+  def function = { case (left: (Extent :+: Geometry :+: CNil), right: (Extent :+: Geometry :+: CNil)) =>
+    val l = left
+      .select[Extent]
+      .getOrElse(
+        left
+          .select[Geometry]
+          .map(_.extent)
+          .getOrElse(throw UnaryDeserializer.Errors.ProductDeserializationError[(Extent, Geometry)](this.getClass, "first"))
+      )
+
+    val r = right
+      .select[Extent]
+      .getOrElse(
+        right
+          .select[Geometry]
+          .map(_.extent)
+          .getOrElse(throw UnaryDeserializer.Errors.ProductDeserializationError[(Extent, Geometry)](this.getClass, "second"))
+      )
+
+    l.intersects(r)
+  }
 }

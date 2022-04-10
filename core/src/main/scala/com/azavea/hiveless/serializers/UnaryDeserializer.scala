@@ -18,6 +18,7 @@ package com.azavea.hiveless.serializers
 
 import com.azavea.hiveless.serializers.syntax._
 import com.azavea.hiveless.spark.encoders.syntax._
+import com.azavea.hiveless.utils.HShow
 import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.sql.hive.HivelessInternals.unwrap
 import org.apache.spark.sql.types.Decimal
@@ -26,7 +27,7 @@ import cats.Id
 import cats.syntax.apply._
 import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder
 import org.apache.spark.sql.catalyst.util.ArrayData
-import shapeless.HNil
+import shapeless.{:+:, CNil, Coproduct, HNil, Inl, Inr, IsTuple}
 
 import scala.reflect.ClassTag
 import scala.util.Try
@@ -35,6 +36,16 @@ import scala.reflect.runtime.universe.TypeTag
 trait UnaryDeserializer[F[_], T] extends HDeserialier[F, T]
 
 object UnaryDeserializer extends Serializable {
+  sealed abstract class Errors(override val getMessage: String) extends RuntimeException
+  object Errors {
+    case class ProductDeserializationError[T: IsTuple: HShow](clz: Class[_], name: String)
+        extends Errors(
+          s"""
+             |${clz.getName}: could not deserialize the $name input argument:
+             |should match one of the following types: ${HShow[T].show().trim.init}""".stripMargin
+        )
+  }
+
   def apply[F[_], T](implicit ev: UnaryDeserializer[F, T]): UnaryDeserializer[F, T] = ev
 
   def id[T](implicit ev: UnaryDeserializer[Id, T]): UnaryDeserializer[Id, T] = ev
@@ -76,8 +87,10 @@ object UnaryDeserializer extends Serializable {
   def expressionEncoderUnaryDeserializer[T: TypeTag: ExpressionEncoder]: UnaryDeserializer[Id, T] =
     (arguments, inspectors) => arguments.deserialize[InternalRow](inspectors).as[T]
 
-  /** Derivation helper deserializer. */
+  /** Derivation helper deserializers. */
   implicit val hnilUnaryDeserializer: UnaryDeserializer[Id, HNil] = (_, _) => HNil
+
+  implicit val cnilUnaryDeserializer: UnaryDeserializer[Id, CNil] = (_, _) => null.asInstanceOf[CNil]
 
   /** Spark internal deserializers. */
   implicit val internalRowUnaryDeserializer: UnaryDeserializer[Id, InternalRow] =
@@ -161,4 +174,11 @@ object UnaryDeserializer extends Serializable {
     (arguments, inspectors) =>
       Try(arrayDataUnaryDeserializer.deserialize(arguments, inspectors).toArray[T](HSerializer[T].dataType))
         .getOrElse(nativeArrayUnaryDeserializer.deserialize(arguments, inspectors))
+
+  /** Coproduct deserializer. */
+  implicit def unaryDeserializerCCons[H, T <: Coproduct](implicit
+    dh: UnaryDeserializer[Id, H],
+    dt: UnaryDeserializer[Id, T]
+  ): UnaryDeserializer[Id, H :+: T] =
+    (arguments, inspectors) => Try(dh.deserialize(arguments, inspectors)).map(Inl(_)).getOrElse(Inr(dt.deserialize(arguments, inspectors)))
 }

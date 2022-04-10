@@ -58,4 +58,8 @@ object HivelessInternals extends HiveInspectors with Serializable {
     case null => null.asInstanceOf[RT]
     case out1 => f(out1)
   }
+
+  implicit class WithTypeConformity(val left: DataType) extends AnyVal {
+    def conformsTo(right: DataType): Boolean = right.acceptsType(left)
+  }
 }
