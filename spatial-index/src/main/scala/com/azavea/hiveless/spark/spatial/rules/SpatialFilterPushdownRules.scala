@@ -19,7 +19,7 @@ package com.azavea.hiveless.spark.spatial.rules
 import com.azavea.hiveless.spark.rules.syntax._
 import com.azavea.hiveless.spatial._
 import com.azavea.hiveless.spatial.index._
-import com.azavea.hiveless.spatial.index.ST_IntersectsExtent
+import com.azavea.hiveless.spatial.index.ST_Intersects
 import com.azavea.hiveless.serializers.syntax._
 import geotrellis.vector._
 import cats.syntax.option._
@@ -39,16 +39,21 @@ object SpatialFilterPushdownRules extends Rule[LogicalPlan] {
   def apply(plan: LogicalPlan): LogicalPlan =
     plan.transformDown {
       // HiveGenericUDF is a private[hive] case class
-      case f @ Filter(condition: HiveGenericUDF, plan) if condition.of[ST_IntersectsExtent] =>
+      case f @ Filter(condition: HiveGenericUDF, plan) if condition.of[ST_Intersects] =>
         try {
-          // ST_IntersectsExtent is NOT polymorphic by the first argument
-          // Optimization is done with an assumption that it is always Extent
           val Seq(extentExpr, geometryExpr) = condition.children
+
+          // ST_Intersects is polymorphic by the first argument
+          // Optimization is done only when the first argument is Extent
+          if (!extentExpr.dataType.conformsToSchema(extentEncoder.schema))
+            throw new UnsupportedOperationException(
+              s"${classOf[ST_Intersects]} push-down optimization works on the Extent column data type only."
+            )
 
           // transform expression
           val expr = Try {
+            // ST_Intersects is polymorphic by the second argument
             // Extract Extent literal from the right
-            // ST_IntersectsExtent is polymorphic by the second argument
             // The second argument can be Geometry or Extent
             val g = geometryExpr.eval(null)
             Try(g.convert[Geometry].extent).getOrElse(g.convert[Extent])
@@ -95,7 +100,7 @@ object SpatialFilterPushdownRules extends Rule[LogicalPlan] {
               }*/
 
               throw new UnsupportedOperationException(
-                s"${classOf[ST_IntersectsExtent]} push-down optimization works with Geometry and Extent Literals only."
+                s"${classOf[ST_Intersects]} push-down optimization works with Geometry and Extent Literals only."
               )
           }
 
@@ -105,7 +110,7 @@ object SpatialFilterPushdownRules extends Rule[LogicalPlan] {
           case e: Throwable =>
             logger.warn(
               s"""
-                 |${this.getClass.getName}:: ${classOf[ST_IntersectsExtent]} optimization failed: ${e.getMessage}
+                 |${this.getClass.getName} ${classOf[ST_Intersects]} optimization failed.
                  |StackTrace: ${ExceptionUtils.getStackTrace(e)}
                  |""".stripMargin
             )

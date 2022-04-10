@@ -18,31 +18,32 @@ package com.azavea.hiveless.spatial.index
 
 import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.spatial._
+import com.azavea.hiveless.implicits.tupler._
 import com.azavea.hiveless.serializers.UnaryDeserializer
 import geotrellis.vector._
 import org.locationtech.jts.geom.Geometry
 import shapeless._
 
-class ST_IntersectsExtent extends HUDF[(Extent :+: Geometry :+: CNil, Extent :+: Geometry :+: CNil), Boolean] {
-  val name: String = "st_intersectsExtent"
-  def function = { case (left: (Extent :+: Geometry :+: CNil), right: (Extent :+: Geometry :+: CNil)) =>
+class ST_Intersects extends HUDF[(ST_Intersects.Arg, ST_Intersects.Arg), Boolean] {
+  val name: String = "st_intersects"
+  def function     = ST_Intersects.apply
+}
+
+object ST_Intersects {
+  import UnaryDeserializer.Errors.ProductDeserializationError
+
+  type Arg = Extent :+: Geometry :+: CNil
+
+  def apply(left: Arg, right: Arg): Boolean = {
     val l = left
       .select[Extent]
-      .getOrElse(
-        left
-          .select[Geometry]
-          .map(_.extent)
-          .getOrElse(throw UnaryDeserializer.Errors.ProductDeserializationError[(Extent, Geometry)](this.getClass, "first"))
-      )
+      .orElse(left.select[Geometry].map(_.extent))
+      .getOrElse(throw ProductDeserializationError[(Extent, Geometry)](this.getClass, "first"))
 
     val r = right
       .select[Extent]
-      .getOrElse(
-        right
-          .select[Geometry]
-          .map(_.extent)
-          .getOrElse(throw UnaryDeserializer.Errors.ProductDeserializationError[(Extent, Geometry)](this.getClass, "second"))
-      )
+      .orElse(right.select[Geometry].map(_.extent))
+      .getOrElse(throw ProductDeserializationError[(Extent, Geometry)](this.getClass, "second"))
 
     l.intersects(r)
   }
