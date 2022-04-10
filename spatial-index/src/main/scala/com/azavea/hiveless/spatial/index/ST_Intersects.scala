@@ -26,7 +26,7 @@ import shapeless._
 
 class ST_Intersects extends HUDF[(ST_Intersects.Arg, ST_Intersects.Arg), Boolean] {
   val name: String = "st_intersects"
-  def function     = ST_Intersects.apply
+  def function     = ST_Intersects.function
 }
 
 object ST_Intersects {
@@ -34,16 +34,11 @@ object ST_Intersects {
 
   type Arg = Extent :+: Geometry :+: CNil
 
-  def apply(left: Arg, right: Arg): Boolean = {
-    val l = left
-      .select[Extent]
-      .orElse(left.select[Geometry].map(_.extent))
-      .getOrElse(throw ProductDeserializationError[Arg](this.getClass, "first"))
+  def parseExtent(a: Arg): Option[Extent] = a.select[Extent].orElse(a.select[Geometry].map(_.extent))
 
-    val r = right
-      .select[Extent]
-      .orElse(right.select[Geometry].map(_.extent))
-      .getOrElse(throw ProductDeserializationError[Arg](this.getClass, "second"))
+  def function(left: Arg, right: Arg): Boolean = {
+    val l = parseExtent(left).getOrElse(throw ProductDeserializationError[Arg](classOf[ST_Intersects], "first"))
+    val r = parseExtent(right).getOrElse(throw ProductDeserializationError[Arg](classOf[ST_Intersects], "second"))
 
     l.intersects(r)
   }
