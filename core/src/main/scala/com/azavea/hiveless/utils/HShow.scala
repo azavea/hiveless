@@ -33,12 +33,18 @@ object HShow extends LowPriorityHShow {
     () => sl.show()
 
   /** Derive HShow for HList. */
-  implicit val hshowHNil: HShow[HNil]                                                                  = () => ""
-  implicit def hshowHCons[H: ClassTag, T <: HList](implicit sh: HShow[H], st: HShow[T]): HShow[H :: T] = () => s"${sh.show()}, ${st.show()}"
+  implicit val hshowHNil: HShow[HNil] = () => ""
+  implicit def hshowHCons[H: ClassTag, T <: HList](implicit sh: HShow[H], st: HShow[T]): HShow[H :: T] = () => {
+    val (h, t) = (sh.show(), st.show())
+    if (t.isEmpty) h else s"$h, $t"
+  }
 
   /** Derive HShow for Coproduct. */
-  implicit val hshowCNil: HShow[CNil]                                                                       = () => ""
-  implicit def hshowCCons[H: ClassTag, T <: Coproduct](implicit sh: HShow[H], st: HShow[T]): HShow[H :+: T] = () => s"${sh.show()}, ${st.show()}"
+  implicit val hshowCNil: HShow[CNil] = () => ""
+  implicit def hshowCCons[H: ClassTag, T <: Coproduct](implicit sh: HShow[H], st: HShow[T]): HShow[H :+: T] = () => {
+    val (h, t) = (sh.show(), st.show())
+    if (t.isEmpty) h else s"$h, $t"
+  }
 }
 
 trait LowPriorityHShow extends Serializable {

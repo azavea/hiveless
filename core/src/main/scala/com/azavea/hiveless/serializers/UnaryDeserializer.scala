@@ -42,7 +42,7 @@ object UnaryDeserializer extends Serializable {
         extends Errors(
           s"""
              |${clz.getName}: could not deserialize the $name input argument:
-             |should match one of the following types: ${HShow[T].show().trim.init}""".stripMargin
+             |should match one of the following types: ${HShow[T].show()}""".stripMargin
         )
   }
 
