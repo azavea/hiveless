@@ -20,7 +20,7 @@ import com.azavea.hiveless.spark.rules.syntax._
 import com.azavea.hiveless.spatial._
 import com.azavea.hiveless.spatial.index._
 import com.azavea.hiveless.spatial.index.ST_Intersects
-import com.azavea.hiveless.serializers.UnaryDeserializer.Errors.ProductDeserializationError
+import com.azavea.hiveless.serializers.HDeserializer.Errors.ProductDeserializationError
 import com.azavea.hiveless.serializers.syntax._
 import geotrellis.vector._
 import cats.syntax.option._

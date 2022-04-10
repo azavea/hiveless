@@ -26,15 +26,15 @@ object syntax extends Serializable {
     /** Behaves like a regular get, but throws when the result is null. */
     def getNonEmpty: AnyRef = Option(self.get) match {
       case Some(r) => r
-      case _       => throw HDeserialier.Errors.NullArgument
+      case _       => throw HDeserializer.Errors.NullArgument
     }
   }
 
   implicit class ArrayDeferredObjectOps(val self: Array[GenericUDF.DeferredObject]) extends AnyVal {
-    def deserializeF[F[_], T: UnaryDeserializer[F, *]](inspectors: Array[ObjectInspector]): F[T] =
-      UnaryDeserializer[F, T].deserialize(self, inspectors)
+    def deserializeF[F[_], T: HDeserializer[F, *]](inspectors: Array[ObjectInspector]): F[T] =
+      HDeserializer[F, T].deserialize(self, inspectors)
 
-    def deserialize[T: UnaryDeserializer[Id, *]](inspectors: Array[ObjectInspector]): T =
+    def deserialize[T: HDeserializer[Id, *]](inspectors: Array[ObjectInspector]): T =
       deserializeF[Id, T](inspectors)
   }
 

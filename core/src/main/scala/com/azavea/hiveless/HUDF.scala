@@ -16,13 +16,13 @@
 
 package com.azavea.hiveless
 
-import com.azavea.hiveless.serializers.{GenericDeserializer, HDeserialier, HSerializer}
+import com.azavea.hiveless.serializers.{HDeserializer, HSerializer}
 import org.apache.hadoop.hive.ql.udf.generic.GenericUDF
 import org.apache.spark.sql.types.DataType
 
 import scala.util.{Failure, Success, Try}
 
-abstract class HUDF[P, R](implicit d: GenericDeserializer[Try, P], s: HSerializer[R]) extends HGenericUDF[R] {
+abstract class HUDF[P, R](implicit d: HDeserializer[Try, P], s: HSerializer[R]) extends HGenericUDF[R] {
   def dataType: DataType  = s.dataType
   def serialize: R => Any = s.serialize
   def function: P => R
@@ -33,7 +33,7 @@ abstract class HUDF[P, R](implicit d: GenericDeserializer[Try, P], s: HSerialize
       // if arguments are null we can't deserialize it
       // however nulls can appear due to filtering results (that's how it is handled)
       // that is not an error state
-      case Failure(HDeserialier.Errors.NullArgument) => null.asInstanceOf[R]
-      case Failure(e)                                => throw e
+      case Failure(HDeserializer.Errors.NullArgument) => null.asInstanceOf[R]
+      case Failure(e)                                 => throw e
     }
 }

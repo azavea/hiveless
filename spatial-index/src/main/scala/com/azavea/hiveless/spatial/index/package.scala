@@ -16,7 +16,7 @@
 
 package com.azavea.hiveless.spatial
 
-import com.azavea.hiveless.serializers.{HConverter, HSerializer, UnaryDeserializer}
+import com.azavea.hiveless.serializers.{HConverter, HDeserializer, HSerializer}
 import com.azavea.hiveless.serializers.syntax._
 import com.azavea.hiveless.spark.encoders.syntax._
 import com.azavea.hiveless.spark.geotrellis.encoders.StandardEncoders
@@ -36,7 +36,7 @@ package object index extends StandardEncoders {
     def convert(argument: Any): Extent = argument.convert[InternalRow].as[Extent]
   }
 
-  implicit def crsUnaryDeserializer: UnaryDeserializer[Id, CRS] =
+  implicit def crsUnaryDeserializer: HDeserializer[Id, CRS] =
     (arguments, inspectors) => arguments.deserialize[String](inspectors).convert[CRS]
 
   implicit def crsSerializer: HSerializer[CRS] = new HSerializer[CRS] {
@@ -55,7 +55,7 @@ package object index extends StandardEncoders {
     def serialize: Z2Index => InternalRow = _.toInternalRow
   }
 
-  /** UnaryDeserializer.expressionEncoderUnaryDeserializer since TypeTags are not Kryo serializable by default. */
-  implicit def extentUnaryDeserializer: UnaryDeserializer[Id, Extent] =
+  /** HDeserializer.HDeserializerExpressionEncoder since TypeTags are not Kryo serializable by default. */
+  implicit def extentUnaryDeserializer: HDeserializer[Id, Extent] =
     (arguments, inspectors) => arguments.deserialize[InternalRow](inspectors).as[Extent]
 }
