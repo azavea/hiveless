@@ -27,6 +27,7 @@ import cats.Id
 import cats.syntax.apply._
 import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder
 import org.apache.spark.sql.catalyst.util.ArrayData
+import shapeless.ops.coproduct.{CoproductToEither, EitherToCoproduct}
 import shapeless.{:+:, CNil, Coproduct, HNil, Inl, Inr, IsTuple}
 
 import scala.reflect.ClassTag
@@ -175,7 +176,14 @@ object UnaryDeserializer extends Serializable {
       Try(arrayDataUnaryDeserializer.deserialize(arguments, inspectors).toArray[T](HSerializer[T].dataType))
         .getOrElse(nativeArrayUnaryDeserializer.deserialize(arguments, inspectors))
 
-  /** Coproduct deserializer. */
+  /** Coproduct deserializers. */
+  implicit def eitherDeserializer[L, R, P <: Coproduct](implicit
+    etp: EitherToCoproduct.Aux[L, R, P],
+    dp: UnaryDeserializer[Id, P],
+    pte: CoproductToEither.Aux[P, Either[L, R]]
+  ): UnaryDeserializer[Id, Either[L, R]] =
+    (arguments, inspectors) => pte(dp.deserialize(arguments, inspectors))
+
   implicit def unaryDeserializerCCons[H, T <: Coproduct](implicit
     dh: UnaryDeserializer[Id, H],
     dt: UnaryDeserializer[Id, T]

@@ -16,6 +16,7 @@
 
 package com.azavea.hiveless.utils
 
+import shapeless.ops.coproduct.EitherToCoproduct
 import shapeless.{:+:, ::, CNil, Coproduct, Generic, HList, HNil, IsTuple}
 
 import scala.reflect.{classTag, ClassTag}
@@ -31,6 +32,10 @@ object HShow extends LowPriorityHShow {
   /** Derive HShow for Tuples. */
   implicit def hshowGeneric[T: IsTuple, L <: HList](implicit gen: Generic.Aux[T, L], sl: HShow[L]): HShow[T] =
     () => sl.show()
+
+  /** Derive HShow for Either. */
+  implicit def hshowEither[L, R, P <: Coproduct](implicit etp: EitherToCoproduct.Aux[L, R, P], sp: HShow[P]): HShow[Either[L, R]] =
+    () => sp.show()
 
   /** Derive HShow for HList. */
   implicit val hshowHNil: HShow[HNil] = () => ""
