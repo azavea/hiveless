@@ -19,7 +19,6 @@ package com.azavea.hiveless.spatial.index
 import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.spatial._
 import geotrellis.vector._
-import org.locationtech.jts.geom.Geometry
 
 class ST_ExtentToGeom extends HUDF[Extent, Geometry] {
   val name: String = "st_extentToGeom"

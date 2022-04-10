@@ -21,7 +21,6 @@ import com.azavea.hiveless.spatial._
 import com.azavea.hiveless.implicits.tupler._
 import geotrellis.proj4.CRS
 import geotrellis.vector._
-import org.locationtech.jts.geom.Geometry
 
 class ST_GeomReproject extends HUDF[(Geometry, CRS, CRS), Geometry] {
   val name: String = "st_geomReproject"

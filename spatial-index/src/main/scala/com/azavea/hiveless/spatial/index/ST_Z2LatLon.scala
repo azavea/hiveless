@@ -20,7 +20,7 @@ import com.azavea.hiveless.HUDF
 import com.azavea.hiveless.spark.geotrellis.Z2Index
 import com.azavea.hiveless.spatial._
 import geotrellis.store.index.zcurve.Z2
-import org.locationtech.jts.geom.Geometry
+import geotrellis.vector.Geometry
 
 class ST_Z2LatLon extends HUDF[Geometry, Z2Index] {
   val name: String = "st_z2LatLon"

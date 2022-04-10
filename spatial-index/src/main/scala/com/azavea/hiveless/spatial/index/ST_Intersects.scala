@@ -21,7 +21,6 @@ import com.azavea.hiveless.spatial._
 import com.azavea.hiveless.implicits.tupler._
 import com.azavea.hiveless.serializers.UnaryDeserializer
 import geotrellis.vector._
-import org.locationtech.jts.geom.Geometry
 import shapeless._
 
 class ST_Intersects extends HUDF[(ST_Intersects.Arg, ST_Intersects.Arg), Boolean] {
@@ -36,9 +35,11 @@ object ST_Intersects {
 
   def parseExtent(a: Arg): Option[Extent] = a.select[Extent].orElse(a.select[Geometry].map(_.extent))
 
+  private def parseExtentUnsafe(a: Arg, aname: String): Extent =
+    parseExtent(a).getOrElse(throw ProductDeserializationError[Arg](classOf[ST_Intersects], aname))
+
   def function(left: Arg, right: Arg): Boolean = {
-    val l = parseExtent(left).getOrElse(throw ProductDeserializationError[Arg](classOf[ST_Intersects], "first"))
-    val r = parseExtent(right).getOrElse(throw ProductDeserializationError[Arg](classOf[ST_Intersects], "second"))
+    val (l, r) = (parseExtentUnsafe(left, "first"), parseExtentUnsafe(right, "second"))
 
     l.intersects(r)
   }
