@@ -16,6 +16,7 @@
 
 package com.azavea.hiveless.serializers
 
+import org.apache.spark.sql.catalyst.InternalRow
 import org.apache.spark.unsafe.types.UTF8String
 
 import java.{lang => jl}
@@ -38,6 +39,9 @@ object HConverter extends Serializable {
   implicit val byteConverter: HConverter[Byte]       = new IdHConverter[Byte] {}
   implicit val stringConverter: HConverter[String] = new HConverter[String] {
     def convert(argument: Any): String = argument.asInstanceOf[UTF8String].toString
+  }
+  implicit val internalRowConverter: HConverter[InternalRow] = new HConverter[InternalRow] {
+    def convert(argument: Any): InternalRow = argument.asInstanceOf[InternalRow]
   }
 
   implicit val jlBooleanConverter: HConverter[jl.Boolean] = new IdHConverter[jl.Boolean] {}
