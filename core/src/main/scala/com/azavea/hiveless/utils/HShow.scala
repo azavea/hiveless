@@ -16,7 +16,7 @@
 
 package com.azavea.hiveless.utils
 
-import shapeless.{::, Generic, HList, HNil, IsTuple}
+import shapeless.{:+:, ::, CNil, Coproduct, Generic, HList, HNil, IsTuple}
 
 import scala.reflect.{classTag, ClassTag}
 
@@ -34,7 +34,11 @@ object HShow extends LowPriorityHShow {
 
   /** Derive HShow for HList. */
   implicit val hshowHNil: HShow[HNil]                                                                  = () => ""
-  implicit def hshowCCons[H: ClassTag, T <: HList](implicit sh: HShow[H], st: HShow[T]): HShow[H :: T] = () => s"${sh.show()}, ${st.show()}"
+  implicit def hshowHCons[H: ClassTag, T <: HList](implicit sh: HShow[H], st: HShow[T]): HShow[H :: T] = () => s"${sh.show()}, ${st.show()}"
+
+  /** Derive HShow for Coproduct. */
+  implicit val hshowCNil: HShow[CNil]                                                                       = () => ""
+  implicit def hshowCCons[H: ClassTag, T <: Coproduct](implicit sh: HShow[H], st: HShow[T]): HShow[H :+: T] = () => s"${sh.show()}, ${st.show()}"
 }
 
 trait LowPriorityHShow extends Serializable {

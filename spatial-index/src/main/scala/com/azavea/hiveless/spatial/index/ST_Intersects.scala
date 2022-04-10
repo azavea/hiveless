@@ -38,12 +38,12 @@ object ST_Intersects {
     val l = left
       .select[Extent]
       .orElse(left.select[Geometry].map(_.extent))
-      .getOrElse(throw ProductDeserializationError[(Extent, Geometry)](this.getClass, "first"))
+      .getOrElse(throw ProductDeserializationError[Arg](this.getClass, "first"))
 
     val r = right
       .select[Extent]
       .orElse(right.select[Geometry].map(_.extent))
-      .getOrElse(throw ProductDeserializationError[(Extent, Geometry)](this.getClass, "second"))
+      .getOrElse(throw ProductDeserializationError[Arg](this.getClass, "second"))
 
     l.intersects(r)
   }

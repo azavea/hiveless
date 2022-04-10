@@ -38,7 +38,7 @@ trait UnaryDeserializer[F[_], T] extends HDeserialier[F, T]
 object UnaryDeserializer extends Serializable {
   sealed abstract class Errors(override val getMessage: String) extends RuntimeException
   object Errors {
-    case class ProductDeserializationError[T: IsTuple: HShow](clz: Class[_], name: String)
+    case class ProductDeserializationError[T: HShow](clz: Class[_], name: String)
         extends Errors(
           s"""
              |${clz.getName}: could not deserialize the $name input argument:
