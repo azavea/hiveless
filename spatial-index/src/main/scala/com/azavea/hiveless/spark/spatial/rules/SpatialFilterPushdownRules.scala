@@ -20,6 +20,7 @@ import com.azavea.hiveless.spark.rules.syntax._
 import com.azavea.hiveless.spatial._
 import com.azavea.hiveless.spatial.index._
 import com.azavea.hiveless.spatial.index.ST_Intersects
+import com.azavea.hiveless.serializers.UnaryDeserializer.Errors.ProductDeserializationError
 import com.azavea.hiveless.serializers.syntax._
 import geotrellis.vector._
 import cats.syntax.option._
@@ -38,7 +39,6 @@ object SpatialFilterPushdownRules extends Rule[LogicalPlan] {
 
   def apply(plan: LogicalPlan): LogicalPlan =
     plan.transformDown {
-      // HiveGenericUDF is a private[hive] case class
       case f @ Filter(condition: HiveGenericUDF, plan) if condition.of[ST_Intersects] =>
         try {
           val Seq(extentExpr, geometryExpr) = condition.children
@@ -51,15 +51,16 @@ object SpatialFilterPushdownRules extends Rule[LogicalPlan] {
             )
 
           // transform expression
-          val expr = Try {
-            // ST_Intersects is polymorphic by the second argument
-            // Extract Extent literal from the right
-            // The second argument can be Geometry or Extent
-            val g = geometryExpr.eval(null)
-            Try(g.convert[Geometry].extent).getOrElse(g.convert[Extent])
-          } match {
+          val expr = Try(geometryExpr.eval(null)) match {
             // Literals push-down support only
-            case Success(extent) =>
+            case Success(g) =>
+              // ST_Intersects is polymorphic by the second argument
+              // Extract Extent literal from the right
+              // The second argument can be Geometry or Extent
+              val extent = Try(g.convert[Geometry].extent)
+                .orElse(Try(g.convert[Extent]))
+                .getOrElse(throw ProductDeserializationError[ST_Intersects.Arg](classOf[ST_Intersects], "second"))
+
               // transform expression
               AndList(
                 List(

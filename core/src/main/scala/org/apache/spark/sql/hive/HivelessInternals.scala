@@ -21,6 +21,7 @@ import org.apache.hadoop.hive.serde2.objectinspector.primitive.PrimitiveObjectIn
 import org.apache.spark.sql.types._
 
 object HivelessInternals extends HiveInspectors with Serializable {
+  // HiveGenericUDF is a private[hive] case class
   type HiveGenericUDF = org.apache.spark.sql.hive.HiveGenericUDF
 
   def toWritableInspector(dataType: DataType): ObjectInspector = dataType match {
