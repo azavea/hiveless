@@ -33,13 +33,13 @@ object ST_Intersects {
 
   type Arg = Extent :+: Geometry :+: CNil
 
-  def parseExtent(a: Arg): Option[Extent] = a.select[Extent].orElse(a.select[Geometry].map(_.extent))
+  def parseGeometry(a: Arg): Option[Geometry] = a.select[Geometry].orElse(a.select[Extent].map(_.toPolygon()))
 
-  private def parseExtentUnsafe(a: Arg, aname: String): Extent =
-    parseExtent(a).getOrElse(throw ProductDeserializationError[Arg](classOf[ST_Intersects], aname))
+  private def parseGeometryUnsafe(a: Arg, aname: String): Geometry =
+    parseGeometry(a).getOrElse(throw ProductDeserializationError[Arg](classOf[ST_Intersects], aname))
 
   def function(left: Arg, right: Arg): Boolean = {
-    val (l, r) = (parseExtentUnsafe(left, "first"), parseExtentUnsafe(right, "second"))
+    val (l, r) = (parseGeometryUnsafe(left, "first"), parseGeometryUnsafe(right, "second"))
 
     l.intersects(r)
   }
