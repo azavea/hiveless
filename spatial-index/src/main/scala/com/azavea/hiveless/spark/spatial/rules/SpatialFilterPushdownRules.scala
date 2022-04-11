@@ -47,7 +47,7 @@ object SpatialFilterPushdownRules extends Rule[LogicalPlan] {
           // Optimization is done only when the first argument is Extent
           if (!extentExpr.dataType.conformsToSchema(extentEncoder.schema))
             throw new UnsupportedOperationException(
-              s"${classOf[ST_Intersects]} push-down optimization works on the Extent column data type only."
+              s"${classOf[ST_Intersects]} push-down optimization works on the ${classOf[Extent]} column data type only."
             )
 
           // transform expression
@@ -98,12 +98,12 @@ object SpatialFilterPushdownRules extends Rule[LogicalPlan] {
                 )
               } else {
                 throw new UnsupportedOperationException(
-                  "Geometry Envelope values extraction is not supported by the internal Geometry representation.".stripMargin
+                  s"${classOf[Geometry]} Envelope values extraction is not supported by the internal ${classOf[Geometry]} representation.".stripMargin
                 )
               }*/
 
               throw new UnsupportedOperationException(
-                s"${classOf[ST_Intersects]} push-down optimization works with Geometry and Extent Literals only."
+                s"${classOf[ST_Intersects]} push-down optimization works with ${classOf[Geometry]} and ${classOf[Extent]} Literals only."
               )
           }
 
@@ -113,7 +113,7 @@ object SpatialFilterPushdownRules extends Rule[LogicalPlan] {
           case e: Throwable =>
             logger.warn(
               s"""
-                 |${this.getClass.getName} ${classOf[ST_Intersects]} optimization failed.
+                 |${this.getClass.getName} ${classOf[ST_Intersects]} optimization failed, using the original plan.
                  |StackTrace: ${ExceptionUtils.getStackTrace(e)}
                  |""".stripMargin
             )
