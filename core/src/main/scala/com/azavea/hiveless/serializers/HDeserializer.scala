@@ -33,7 +33,7 @@ import org.apache.spark.sql.catalyst.util.ArrayData
 import shapeless.ops.coproduct.{CoproductToEither, EitherToCoproduct}
 import shapeless.{:+:, ::, CNil, Coproduct, Generic, HList, HNil, Inl, Inr, IsTuple}
 
-import scala.reflect.ClassTag
+import scala.reflect.{classTag, ClassTag}
 import scala.util.Try
 import scala.reflect.runtime.universe.TypeTag
 
@@ -48,11 +48,11 @@ object HDeserializer extends Serializable {
   sealed abstract class Errors(override val getMessage: String) extends RuntimeException
   object Errors {
     final case object NullArgument extends Errors("NULL argument passed.")
-    final case class ProductDeserializationError[T: HShow](clz: Class[_], name: String)
+    final case class ProductDeserializationError[T: ClassTag, A: HShow](name: String)
         extends Errors(
           s"""
-             |${clz.getName}: could not deserialize the $name input argument:
-             |should match one of the following types: ${HShow[T].show()}""".stripMargin
+             |${classTag[T]}: could not deserialize the $name input argument,
+             |it should match one of the following types: ${HShow[A].show()}""".stripMargin
         )
   }
 

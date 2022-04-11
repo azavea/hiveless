@@ -59,7 +59,7 @@ object SpatialFilterPushdownRules extends Rule[LogicalPlan] {
               // The second argument can be Geometry or Extent
               val (extent, isGeometry) = Try(g.convert[Geometry].extent -> true)
                 .orElse(Try(g.convert[Extent] -> false))
-                .getOrElse(throw ProductDeserializationError[ST_Intersects.Arg](classOf[ST_Intersects], "second"))
+                .getOrElse(throw ProductDeserializationError[ST_Intersects, ST_Intersects.Arg]("second"))
 
               // transform expression
               AndList(
