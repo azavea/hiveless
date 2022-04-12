@@ -42,7 +42,7 @@ object SpatialFilterPushdownRules extends Rule[LogicalPlan] {
     /**
      * transform is an alias to transformDown
      * The transformDown usage causes the following error on DataBricks 9.1:
-     *   * java.lang.NoClassDefFoundError: LogicalPlan,transformDown(Lscala/PartialFunction;)Lorg/apache/spark/sql/catalyst/plans/logical/LogicalPlan;
+     *   java.lang.NoClassDefFoundError: LogicalPlan.transformDown(Lscala/PartialFunction;)Lorg/apache/spark/sql/catalyst/plans/logical/LogicalPlan;
      */
     // format: on
     plan.transform {
