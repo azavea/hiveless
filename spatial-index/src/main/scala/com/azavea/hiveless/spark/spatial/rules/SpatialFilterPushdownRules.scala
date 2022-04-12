@@ -38,7 +38,14 @@ object SpatialFilterPushdownRules extends Rule[LogicalPlan] {
   @transient private[this] lazy val logger = getLogger
 
   def apply(plan: LogicalPlan): LogicalPlan =
-    plan.transformDown {
+    // format: off
+    /**
+     * transform is an alias to transformDown
+     * The transformDown usage causes the following error on DataBricks 9.1:
+     *   * java.lang.NoClassDefFoundError: LogicalPlan,transformDown(Lscala/PartialFunction;)Lorg/apache/spark/sql/catalyst/plans/logical/LogicalPlan;
+     */
+    // format: on
+    plan.transform {
       case f @ Filter(condition: HiveGenericUDF, plan) if condition.of[ST_Intersects] =>
         try {
           val Seq(extentExpr, geometryExpr) = condition.children
