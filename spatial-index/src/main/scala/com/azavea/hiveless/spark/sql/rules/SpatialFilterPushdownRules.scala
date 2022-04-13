@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.azavea.hiveless.spark.spatial.rules
+package com.azavea.hiveless.spark.sql.rules
 
 import com.azavea.hiveless.spark.rules.syntax._
 import com.azavea.hiveless.spatial._
