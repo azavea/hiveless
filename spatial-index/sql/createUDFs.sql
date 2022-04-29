@@ -1,3 +1,4 @@
+CREATE OR REPLACE FUNCTION st_contains as 'com.azavea.hiveless.spatial.index.ST_Contains';
 CREATE OR REPLACE FUNCTION st_crsFromText as 'com.azavea.hiveless.spatial.index.ST_CrsFromText';
 CREATE OR REPLACE FUNCTION st_extentFromGeom as 'com.azavea.hiveless.spatial.index.ST_ExtentFromGeom';
 CREATE OR REPLACE FUNCTION st_extentToGeom as 'com.azavea.hiveless.spatial.index.ST_ExtentToGeom';

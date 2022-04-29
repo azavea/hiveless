@@ -23,6 +23,7 @@ import org.apache.spark.sql.types.DataType
 import scala.util.{Failure, Success, Try}
 
 abstract class HUDF[P, R](implicit d: HDeserializer[Try, P], s: HSerializer[R]) extends HGenericUDF[R] {
+  def name: String        = this.getClass.getName.split("\\.").last
   def dataType: DataType  = s.dataType
   def serialize: R => Any = s.serialize
   def function: P => R
