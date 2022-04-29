@@ -68,18 +68,24 @@ object SpatialFilterPushdownRules extends Rule[LogicalPlan] {
                 .orElse(Try(g.convert[Extent] -> false))
                 .getOrElse(throw ProductDeserializationError[ST_Intersects, ST_Intersects.Arg]("second"))
 
+              // ::: (if (isGeometry) List(condition) else Nil)
               // transform expression
-              AndList(
-                List(
+              val expanded =
+                And(
                   IsNotNull(extentExpr),
-                  GreaterThanOrEqual(GetStructField(extentExpr, 0, "xmin".some), Literal(extent.xmin)),
-                  GreaterThanOrEqual(GetStructField(extentExpr, 1, "ymin".some), Literal(extent.ymin)),
-                  LessThanOrEqual(GetStructField(extentExpr, 2, "xmax".some), Literal(extent.xmax)),
-                  LessThanOrEqual(GetStructField(extentExpr, 3, "ymax".some), Literal(extent.ymax))
-                  // the old condition node is a secondary filter which is not pushed down
-                  // it is needed in case it is a Geometry intersection
-                ) ::: (if (isGeometry) List(condition) else Nil)
-              )
+                  OrList(
+                    List(
+                      GreaterThanOrEqual(GetStructField(extentExpr, 0, "xmin".some), Literal(extent.xmin)),
+                      GreaterThanOrEqual(GetStructField(extentExpr, 1, "ymin".some), Literal(extent.ymin)),
+                      LessThanOrEqual(GetStructField(extentExpr, 2, "xmax".some), Literal(extent.xmax)),
+                      LessThanOrEqual(GetStructField(extentExpr, 3, "ymax".some), Literal(extent.ymax))
+                      // the old condition node is a secondary filter which is not pushed down
+                      // it is needed in case it is a Geometry intersection
+                    )
+                  )
+                )
+
+              if (isGeometry) And(expanded, condition) else expanded
             // Expression
             case Failure(_) =>
               // In case on the right we have an Expression, no further optimizations needed and
@@ -94,13 +100,17 @@ object SpatialFilterPushdownRules extends Rule[LogicalPlan] {
               //
               // The rough implementation of the idea above (The transformed plan for Extent, which is not pushed down):
               /*if (geometryExpr.dataType.conformsToSchema(extentEncoder.schema)) {
-                AndList(
-                  List(
-                    IsNotNull(extentExpr),
-                    GreaterThanOrEqual(GetStructField(extentExpr, 0, "xmin".some), GetStructField(geometryExpr, 0, "xmin".some)),
-                    GreaterThanOrEqual(GetStructField(extentExpr, 1, "ymin".some), GetStructField(geometryExpr, 1, "ymin".some)),
-                    LessThanOrEqual(GetStructField(extentExpr, 2, "xmax".some), GetStructField(geometryExpr, 2, "xmax".some)),
-                    LessThanOrEqual(GetStructField(extentExpr, 3, "ymax".some), GetStructField(geometryExpr, 3, "ymax".some))
+                And(
+                  IsNotNull(extentExpr),
+                  OrList(
+                    List(
+                      GreaterThanOrEqual(GetStructField(extentExpr, 0, "xmin".some), GetStructField(geometryExpr, 0, "xmin".some)),
+                      GreaterThanOrEqual(GetStructField(extentExpr, 1, "ymin".some), GetStructField(geometryExpr, 1, "ymin".some)),
+                      LessThanOrEqual(GetStructField(extentExpr, 2, "xmax".some), GetStructField(geometryExpr, 2, "xmax".some)),
+                      LessThanOrEqual(GetStructField(extentExpr, 3, "ymax".some), GetStructField(geometryExpr, 3, "ymax".some))
+                      // the old condition node is a secondary filter which is not pushed down
+                      // it is needed in case it is a Geometry intersection
+                    )
                   )
                 )
               } else {
