@@ -24,6 +24,5 @@ import org.locationtech.jts.geom.Geometry
 import java.{lang => jl}
 
 class ST_Contains extends HUDF[(Geometry, Geometry), jl.Boolean] {
-  val name: String = "st_contains"
-  def function     = SpatialRelationFunctions.ST_Contains
+  def function = SpatialRelationFunctions.ST_Contains
 }

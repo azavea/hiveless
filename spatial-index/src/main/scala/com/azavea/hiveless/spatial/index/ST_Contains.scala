@@ -23,11 +23,11 @@ import com.azavea.hiveless.serializers.HDeserializer.Errors.ProductDeserializati
 import geotrellis.vector._
 import shapeless._
 
-class ST_Intersects extends HUDF[(ST_Intersects.Arg, ST_Intersects.Arg), Boolean] {
-  def function = ST_Intersects.function
+class ST_Contains extends HUDF[(ST_Contains.Arg, ST_Contains.Arg), Boolean] {
+  def function = ST_Contains.function
 }
 
-object ST_Intersects {
+object ST_Contains {
   // We could use Either[Extent, Geometry], but Either has no safe fall back CNil
   // which may lead to derivation error messages rather than parsing
   type Arg = Extent :+: Geometry :+: CNil
@@ -35,11 +35,11 @@ object ST_Intersects {
   def parseGeometry(a: Arg): Option[Geometry] = a.select[Geometry].orElse(a.select[Extent].map(_.toPolygon()))
 
   private def parseGeometryUnsafe(a: Arg, aname: String): Geometry =
-    parseGeometry(a).getOrElse(throw ProductDeserializationError[ST_Intersects, Arg](aname))
+    parseGeometry(a).getOrElse(throw ProductDeserializationError[ST_Contains, Arg](aname))
 
   def function(left: Arg, right: Arg): Boolean = {
     val (l, r) = (parseGeometryUnsafe(left, "first"), parseGeometryUnsafe(right, "second"))
 
-    l.intersects(r)
+    l.contains(r)
   }
 }
