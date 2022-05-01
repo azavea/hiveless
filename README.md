@@ -41,6 +41,15 @@ CREATE OR REPLACE FUNCTION st_simplify as 'com.azavea.hiveless.spatial.ST_Simpli
 
 The full list of supported functions can be found [here](./spatial/sql/createUDFs.sql).
 
+## Spatial Query optimizations
+
+```scala
+import com.azavea.hiveless.spark.sql.rules.SpatialFilterPushdownRules
+
+val spark: SparkSession = ???
+SpatialFilterPushdownRules.registerOptimizations(sparkContext.sqlContext)
+```
+
 ## License
 Code is provided under the Apache 2.0 license available at http://opensource.org/licenses/Apache-2.0,
 as well as in the LICENSE file. This is the same license used as Spark.
