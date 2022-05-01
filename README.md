@@ -41,7 +41,7 @@ CREATE OR REPLACE FUNCTION st_simplify as 'com.azavea.hiveless.spatial.ST_Simpli
 
 The full list of supported functions can be found [here](./spatial/sql/createUDFs.sql).
 
-## Spatial Query optimizations
+## Spatial Query Optimizations
 
 There are two types of supported optimizations: `ST_Intersects` and `ST_Contains`, which allow Spark to push down predicates when possible.
 
