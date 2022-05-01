@@ -43,7 +43,7 @@ The full list of supported functions can be found [here](./spatial/sql/createUDF
 
 ## Spatial Query optimizations
 
-There are two types of supported optimizations: `ST_Intersects` and `ST_Contains`, which help Spark to push down predicates when possible.
+There are two types of supported optimizations: `ST_Intersects` and `ST_Contains`, which allow Spark to push down predicates when possible.
 
 To enable optimizations:
 
