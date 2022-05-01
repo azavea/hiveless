@@ -43,11 +43,24 @@ The full list of supported functions can be found [here](./spatial/sql/createUDF
 
 ## Spatial Query optimizations
 
+There are two types of supported optimizations: `ST_Intersects` and `ST_Contains`, which help Spark to push down predicates when possible.
+
+To enable optimizations:
+
 ```scala
 import com.azavea.hiveless.spark.sql.rules.SpatialFilterPushdownRules
 
 val spark: SparkSession = ???
 SpatialFilterPushdownRules.registerOptimizations(sparkContext.sqlContext)
+```
+
+It is also possible to set it through the Spark configuration via the optimizations injector:
+
+```scala
+import com.azavea.hiveless.spark.sql.SpatialFilterPushdownOptimizations
+
+val conf: SparkConfig = ???
+config.set("spark.sql.extensions", classOf[SpatialFilterPushdownOptimizations].getName)
 ```
 
 ## License
