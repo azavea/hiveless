@@ -16,7 +16,9 @@
 
 package com.azavea.hiveless.serializers
 
+import com.azavea.hiveless.serializers.syntax._
 import com.azavea.hiveless.spark.encoders.syntax._
+
 import org.apache.spark.sql.catalyst.encoders.ExpressionEncoder
 import org.apache.spark.sql.types._
 import org.apache.spark.unsafe.types.UTF8String
@@ -106,6 +108,6 @@ object HSerializer extends Serializable {
 
   implicit def arraySerializer[T: HSerializer: ClassTag: λ[τ => C[τ] => Seq[τ]], C[_]]: HSerializer[C[T]] = new HSerializer[C[T]] {
     def dataType: DataType     = ArrayType(HSerializer[T].dataType)
-    def serialize: C[T] => Any = seq => ArrayData.toArrayData(seq.toArray)
+    def serialize: C[T] => Any = seq => ArrayData.toArrayData(seq.map(_.serialize).toArray)
   }
 }
